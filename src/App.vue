@@ -1,14 +1,11 @@
 <template>
-  <div>Hello {{ value }}</div>
+  <v-app>
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
-<script>
-export default {
-  name: "App",
-  data() {
-    return {
-      value: "World"
-    };
-  }
-};
+<script lang="ts" setup>
+  //
 </script>
