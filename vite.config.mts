@@ -64,12 +64,6 @@ export default defineConfig({
     ],
   },
   server: {
-    // proxy: {
-    //   '^hello': {
-    //     secure: false,
-    //     target: 'https://localhost:7135'
-    //   }
-    // },
     port: 3000,
     https: {
       pfx: fs.readFileSync('localhost.pfx'),
