@@ -35,7 +35,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   data() {
     return {
-      drawer: null,
+      drawer: false,
     }
   }
 });
