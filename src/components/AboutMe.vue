@@ -17,6 +17,6 @@ import { useAppStore } from "@/store/app";
 import { storeToRefs } from 'pinia'
 
 const appStore = useAppStore();
-const { homePage } = storeToRefs(appStore)
-const page = ref(homePage)
+const { aboutPage } = storeToRefs(appStore)
+const page = ref(aboutPage)
 </script>

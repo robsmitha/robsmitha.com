@@ -3,7 +3,7 @@
     flat
   >
   <v-app-bar-title>
-    <v-icon>mdi-hand-wave-outline</v-icon>
+    <v-btn density="comfortable" icon="mdi-hand-wave-outline" href="/"></v-btn>
   </v-app-bar-title>
     <v-spacer></v-spacer>
     <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
@@ -14,7 +14,8 @@
       temporary
   >
     <v-list density="compact" nav>
-      <v-list-item prepend-icon="mdi-clock-fast" title="Coming Soon!" value="home"></v-list-item>
+      <v-list-item prepend-icon="mdi-home-outline" title="Home" value="home" to="/"></v-list-item>
+      <v-list-item prepend-icon="mdi-information-outline" title="About" value="about" to="/about"></v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>

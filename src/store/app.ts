@@ -12,6 +12,7 @@ export const useAppStore = defineStore('app', {
   }),
   getters: {
     homePage: (state) => state.pages.find((page) => page.slug === 'home-page'),
+    aboutPage: (state) => state.pages.find((page) => page.slug === 'about-page'),
   },
   actions: {
     async fetchPages(): Promise<void> {
