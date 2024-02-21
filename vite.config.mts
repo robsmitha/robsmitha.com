@@ -65,9 +65,10 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    https: {
-      pfx: fs.readFileSync('localhost.pfx'),
-      passphrase: 'password'
-    }
+    // TODO: swa proxy does not like ssl
+    // https: {
+    //   pfx: fs.readFileSync('localhost.pfx'),
+    //   passphrase: 'password'
+    // }
   },
 })
