@@ -12,7 +12,6 @@
   <v-navigation-drawer
       v-model="drawer"
       temporary
-      location="right"
   >
     <v-list density="compact" nav>
       <v-list-item title="Pages"></v-list-item>

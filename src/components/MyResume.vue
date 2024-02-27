@@ -26,7 +26,7 @@
             <v-window-item v-for="slug in skills.keys()" :value="slug" :key="slug">
                 <v-container>
                   <v-row>
-                      <v-col v-for="tag in skills.get(slug)" :key="tag.id" cols="3">
+                      <v-col v-for="tag in skills.get(slug)" :key="tag.id" md="3" sm="4" cols="12">
                           <v-card :text="tag.name" height="75" variant="outlined" color="primary">
                           </v-card>
                       </v-col>
