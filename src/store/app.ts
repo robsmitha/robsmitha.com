@@ -42,8 +42,7 @@ export const useAppStore = defineStore('app', {
       const identity: ClaimsIdentity = await response.json();
       if (identity?.clientPrincipal) {
         this.userDetails = identity.clientPrincipal.userDetails
-      }  
-      console.log("fetchAuth", identity)
+      }
     }
   }
 })
