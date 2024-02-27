@@ -6,7 +6,7 @@
     ></v-skeleton-loader>
     <template v-else>
       <h1 v-html="page.title.rendered" class="pb-4"></h1>
-      <div v-html="page.content.rendered"></div>
+      <div class="mb-3" v-html="page.content.rendered"></div>
     </template>
   </v-container>
 </template>
