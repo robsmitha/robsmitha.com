@@ -17,10 +17,18 @@ export const useAppStore = defineStore('app', {
     userDetails: undefined
   }),
   getters: {
+    // auth
     signedIn: (state) => state.userDetails !== undefined,
+
+    // pages
     homePage: (state) => state.pages.find((page) => page.slug === 'home-page'),
     aboutPage: (state) => state.pages.find((page) => page.slug === 'about-page'),
+
+    // posts
     summaryPost: (state) => state.posts.find((post) => post.slug === 'summary'),
+    professionalExperiencePost: (state) => state.posts.find((post) => post.slug === 'professional-experience-achievements'),
+
+    // tags
     summaryPostTags: (state) => {
       const summary = state.posts.find((post) => post.slug === 'summary');
       return state.tags.filter(t => summary?.tags.includes(t.id));

@@ -18,7 +18,7 @@
       <v-divider></v-divider>
       <v-list-item prepend-icon="mdi-home-outline" title="Home" value="home" to="/"></v-list-item>
       <v-list-item prepend-icon="mdi-information-outline" title="About" value="about" to="/about"></v-list-item>
-      <v-list-item prepend-icon="mdi-file-account" title="Resume" value="resume" to="/resume"></v-list-item>
+      <v-list-item prepend-icon="mdi-briefcase-outline" title="Resume" value="resume" to="/resume"></v-list-item>
 
       <v-list-item :subtitle="store.signedIn ? store.userDetails : 'Sign in'"></v-list-item>
       <v-list-item v-if="!store.signedIn" prepend-icon="mdi-github" title="Github" href=".auth/login/github"></v-list-item>
