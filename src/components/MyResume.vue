@@ -1,34 +1,63 @@
 <template>
   <v-container>
-    <v-skeleton-loader
-      v-if="!summary"
-      type="article"
-    ></v-skeleton-loader>
-    <template v-else>
-      <h1 v-html="summary?.title.rendered" class="pb-4"></h1>
-      <div class="text-body-1 mb-2" v-html="summary?.content.rendered"></div>
-      <template v-if="summaryTags?.length > 0">
-          <div class="text-subtitle-1 font-weight-bold mb-1">Core Competencies:</div>
-          <v-chip v-for="t in summaryTags" :key="t.id" size="small" color="primary" class="mr-2 mb-2">{{ t.name }}</v-chip>
-      </template>
-    </template>
-    <div class="text-subtitle-1 font-weight-bold my-1">Skills & Tools</div>
-    <v-divider class="my-1"></v-divider>
-    <v-skeleton-loader
-      v-if="tagsByPost.size === 0"
-      type="paragraph"
-    ></v-skeleton-loader>
-    <v-sheet v-else v-for="slug in skills.keys()" :value="slug" :key="slug">
-      <span class="text-overline pr-2">{{ slug }}:</span>
-      <span class="text-body-2" v-for="(t, i) in skills.get(slug)" :key="t.id">{{ t.name }}<span v-if="i < (skills.get(slug)?.length ?? 0) - 1">, </span></span>
-    </v-sheet>
-    <div class="text-subtitle-1 font-weight-bold my-1">Professional Experience & Achievements</div>
-    <v-divider class="my-1"></v-divider>
-    <v-skeleton-loader
-      v-if="!professionalExperience"
-      type="article"
-    ></v-skeleton-loader>
-    <div class="professional-experience" v-html="professionalExperience?.content.rendered"></div>
+    <v-card>
+      <v-card-title class="text-title-1 font-weight-bold">Summary</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <v-skeleton-loader
+          v-if="!summary"
+          type="paragraph"
+        ></v-skeleton-loader>
+        <template v-else>
+          <div class="text-body-1 mb-2" v-html="summary?.content.rendered"></div>
+          <template v-if="summaryTags?.length > 0">
+              <div class="text-subtitle-1 font-weight-bold mb-1">Core Competencies:</div>
+              <v-chip v-for="t in summaryTags" :key="t.id" size="small" color="primary" class="mr-2 mb-2">{{ t.name }}</v-chip>
+          </template>
+        </template>
+      </v-card-text>
+
+      <v-toolbar density="compact">
+        <v-toolbar-title class="text-subtitle-1 font-weight-bold">Skills & Tools</v-toolbar-title>
+      </v-toolbar>
+      <v-card-text>
+        <v-skeleton-loader
+          v-if="tagsByPost.size === 0"
+          type="paragraph"
+        ></v-skeleton-loader>
+        <v-sheet v-else v-for="slug in skills.keys()" :value="slug" :key="slug">
+          <span class="text-overline pr-2">{{ slug }}:</span>
+          <span class="text-body-2" v-for="(t, i) in skills.get(slug)" :key="t.id">{{ t.name }}<span v-if="i < (skills.get(slug)?.length ?? 0) - 1">, </span></span>
+        </v-sheet>
+      </v-card-text>
+
+      <v-toolbar density="compact">
+        <v-toolbar-title class="text-subtitle-1 font-weight-bold">Professional Experience & Achievements</v-toolbar-title>
+      </v-toolbar>
+      <v-card-text>
+        <v-skeleton-loader
+          v-if="!experience"
+          type="article"
+        ></v-skeleton-loader>
+        <div class="professional-experience" v-html="experience?.content.rendered"></div>
+      </v-card-text>
+
+      <v-toolbar density="compact">
+        <v-toolbar-title class="text-subtitle-1 font-weight-bold">Education</v-toolbar-title>
+      </v-toolbar>
+      <v-card-text>
+        <v-skeleton-loader
+          v-if="!education"
+          type="paragraph"
+        ></v-skeleton-loader>
+        <div v-html="education?.content.rendered" class="mb-5"></div>
+        <v-row>
+          <v-col v-for="t in educationTags" :key="t.id" sm="6" cols="12" class="py-0">
+            <v-icon>mdi-check</v-icon> <span class="caption">{{ t.name }}</span>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 
@@ -48,12 +77,16 @@ const {
   summaryPost, 
   summaryPostTags,
   tagsByPost,
-  professionalExperiencePost
+  experiencePost,
+  educationPost,
+  educationPostTags
 } = storeToRefs(appStore)
 
 const summary = ref(summaryPost)
 const summaryTags = ref(summaryPostTags)
 const skills = ref(tagsByPost);
-const professionalExperience = ref(professionalExperiencePost);
+const experience = ref(experiencePost)
+const education = ref(educationPost)
+const educationTags = ref(educationPostTags)
 
 </script>

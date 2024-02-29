@@ -26,11 +26,16 @@ export const useAppStore = defineStore('app', {
 
     // posts
     summaryPost: (state) => state.posts.find((post) => post.slug === 'summary'),
-    professionalExperiencePost: (state) => state.posts.find((post) => post.slug === 'professional-experience-achievements'),
+    experiencePost: (state) => state.posts.find((post) => post.slug === 'professional-experience-achievements'),
+    educationPost: (state) => state.posts.find((post) => post.slug === 'education-certification'),
 
     // tags
     summaryPostTags: (state) => {
       const summary = state.posts.find((post) => post.slug === 'summary');
+      return state.tags.filter(t => summary?.tags.includes(t.id));
+    },
+    educationPostTags: (state) => {
+      const summary = state.posts.find((post) => post.slug === 'education-certification');
       return state.tags.filter(t => summary?.tags.includes(t.id));
     },
     tagsByPost: (state) : Map<string, WpTag[]> => {
