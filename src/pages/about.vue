@@ -1,5 +1,5 @@
 <template>
-  <AboutMe />
+  <MyResume />
 </template>
 
 <script lang="ts" setup>

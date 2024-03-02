@@ -1,22 +1,14 @@
 <template>
   <v-container>
-    <v-skeleton-loader
-      v-if="!page"
-      type="article"
-    ></v-skeleton-loader>
-    <template v-else>
-      <h1 v-html="page.title.rendered" class="pb-4"></h1>
-      <div class="mb-3" v-html="page.content.rendered"></div>
-    </template>
-  </v-container>
+    <v-row>
+      <v-col md="6" offset-md="3">
+        <h1 class="pb-4">Welcome</h1>
+        <div class="mb-2">👋 Hello World, thanks for stopping by! I don’t have much content yet but here is some information about the site.</div>
+        <div class="mb-2">💻 This website is built with VueJS and hosted as an Azure Static Web app. The page content is served from a headless CMS (WordPress) and the site deployment is handled with Github Actions.</div>
+      </v-col>
+    </v-row>
+ </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useAppStore } from "@/store/app";
-import { storeToRefs } from 'pinia'
-
-const appStore = useAppStore();
-const { homePage } = storeToRefs(appStore)
-const page = ref(homePage)
 </script>
