@@ -16,7 +16,7 @@
   >
     <v-list density="compact" nav>
       <v-list-item prepend-icon="mdi-home-outline" title="Home" value="home" to="/"></v-list-item>
-      <v-list-item prepend-icon="mdi-information-outline" title="About" value="about" to="/about"></v-list-item>
+      <v-list-item prepend-icon="mdi-information-outline" title="Career" value="about" to="/about"></v-list-item>
       <v-divider />
       <v-list-item prepend-icon="mdi-open-in-new" subtitle="External Links"></v-list-item>
       <v-list-item prepend-icon="mdi-github" title="GitHub" href="https://github.com/robsmitha" target="_blank"></v-list-item>
