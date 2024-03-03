@@ -1,17 +1,17 @@
 <template>
   <v-container>
-    <v-skeleton-loader
-      v-if="!page"
-      type="article"
-    ></v-skeleton-loader>
-    <template v-else>
-      <v-row>
-        <v-col md="6" offset-md="3">
+    <v-row>
+      <v-col>
+        <v-skeleton-loader
+          v-if="!page"
+          type="article"
+        ></v-skeleton-loader>
+        <template v-else>
           <h1 v-html="page.title.rendered" class="pb-4"></h1>
           <div v-html="page.content.rendered"></div>
-        </v-col>
-      </v-row>
-    </template>
+        </template>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
