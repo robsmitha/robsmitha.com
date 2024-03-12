@@ -126,7 +126,7 @@ const groupBy = [
         key: 'repo_name',
         order: 'asc',
     },
-]
+] as SortItem[]
 const headers = [
     { title: 'Repo', key: 'data-table-group' },
     { title: 'File', key: 'name' },

@@ -25,17 +25,14 @@ const route = useRoute()
 const message = ref('Requesting access token..')
 const loading = ref(true)
 
-watch(store.hasValidAccessToken, async (token: string) => {
-    if(token?.length > 0){
-        message.value = "Successfully retreived GitHub Access Token!"
-    }
-})
-
 const code = route.query['code']?.toString()
 const state = route.query['state']?.toString()
 if (code && state) {
     store.requestGitHubAccessToken(code, state)
-        .then(_ => router.push('/code'))
+        .then(_ => {
+            router.push('/code')
+            message.value = "Successfully retreived GitHub Access Token!"
+        })
         .catch(_ => {
             message.value = "There was a problem getting the access token. Please try again."
             loading.value = false
