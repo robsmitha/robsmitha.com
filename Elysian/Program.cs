@@ -11,15 +11,15 @@ using Microsoft.Extensions.Hosting;
 var host = new HostBuilder()
     .ConfigureAppConfiguration((context, config) =>
     {
-        if (context.HostingEnvironment.IsDevelopment())
+        if (false && context.HostingEnvironment.IsDevelopment())
         {
             config.AddUserSecrets<Program>();
         }
         else
         {
-            var builtConfig = config.Build();
-            var keyVaultUrl = builtConfig.GetValue<Uri>("KeyVaultUri");
-            config.AddAzureKeyVault(keyVaultUrl, new DefaultAzureCredential());
+            //var builtConfig = config.Build();
+            //var keyVaultUrl = builtConfig.GetValue<Uri>("KeyVaultUri");
+            //config.AddAzureKeyVault(keyVaultUrl, new DefaultAzureCredential());
         }
     })
     .ConfigureServices((hostContext, services) =>
