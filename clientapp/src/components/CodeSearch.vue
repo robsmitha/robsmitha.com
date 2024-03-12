@@ -116,6 +116,7 @@ export type SearchItem = {
 
 import { useAppStore } from '@/store/app'
 import { ref, watch } from 'vue'
+import type { VDataTable } from 'vuetify/components'
 
 const loading = ref(false)
 const search = ref('')
@@ -126,7 +127,7 @@ const groupBy = [
         key: 'repo_name',
         order: 'asc',
     },
-] as SortItem[]
+] as VDataTable['$props']['groupBy']
 const headers = [
     { title: 'Repo', key: 'data-table-group' },
     { title: 'File', key: 'name' },
