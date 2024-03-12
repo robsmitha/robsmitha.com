@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 var host = new HostBuilder()
     .ConfigureAppConfiguration((context, config) =>
     {
-        if (false && context.HostingEnvironment.IsDevelopment())
+        if (context.HostingEnvironment.IsDevelopment())
         {
             config.AddUserSecrets<Program>();
         }
