@@ -1,0 +1,42 @@
+﻿using System.Security.Claims;
+
+namespace Elysian.Infrastructure.Identity
+{
+    public interface IClaimsPrincipalAccessor
+    {
+        ClaimsPrincipal? Principal { get; set; }
+        string? UserId { get; }
+        bool IsAuthenticated { get; }
+    }
+
+    public class ClaimsPrincipalAccessor : IClaimsPrincipalAccessor
+    {
+        private readonly AsyncLocal<ContextHolder> _context = new();
+
+        public ClaimsPrincipal? Principal
+        {
+            get => _context.Value?.Context;
+            set
+            {
+                var holder = _context.Value;
+                if (holder is not null)
+                {
+                    holder.Context = null;
+                }
+
+                if (value is not null)
+                {
+                    _context.Value = new ContextHolder { Context = value };
+                }
+            }
+        }
+
+        public string? UserId => Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated ?? false;
+
+        private class ContextHolder
+        {
+            public ClaimsPrincipal? Context;
+        }
+    }
+}

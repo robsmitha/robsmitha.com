@@ -1,26 +1,30 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col md="8">
-        <v-skeleton-loader
-          v-if="!page"
-          type="article"
-        ></v-skeleton-loader>
-        <template v-else>
-          <h1 v-html="page.title.rendered" class="pb-4"></h1>
-          <div v-html="page.content.rendered"></div>
-        </template>
-      </v-col>
-      <v-col md="4">
-        <v-img 
-          :width="300"
-          aspect-ratio="4/3"
-          cover
-          src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_fatherhood_-7-i19.svg">
-        </v-img>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-sheet color="grey-lighten-4" class="py-3">
+    <v-container>
+      <v-row>
+        <v-col md="8" cols="12">
+          <v-skeleton-loader
+            v-if="!page"
+            type="article"
+          ></v-skeleton-loader>
+          <template v-else>
+            <v-card>
+              <v-card-title v-html="page.title.rendered"></v-card-title>
+              <v-card-text v-html="page.content.rendered"></v-card-text>
+            </v-card>
+          </template>
+        </v-col>
+        <v-col md="4" cols="12">
+          <v-img 
+            :width="300"
+            aspect-ratio="4/3"
+            cover
+            src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_fatherhood_-7-i19.svg">
+          </v-img>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-sheet>
 </template>
 
 <script setup lang="ts">
