@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "types": ["vite-plugin-vue-layouts/client", "node"],
+    "types": ["vite-plugin-vue-layouts/client", "node", "vuetify"],
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",

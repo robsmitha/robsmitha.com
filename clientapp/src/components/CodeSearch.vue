@@ -116,6 +116,7 @@ export type SearchItem = {
 
 import { useAppStore } from '@/store/app'
 import { ref, watch } from 'vue'
+import { SortItem } from 'vuetify/lib'
 
 const loading = ref(false)
 const search = ref('')
