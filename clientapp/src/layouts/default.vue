@@ -1,11 +1,9 @@
 <template>
-  <v-app>
-    <DefaultBar />
+  <DefaultBar />
 
-    <DefaultView />
+  <DefaultView />
 
-    <DefaultFooter />
-  </v-app>
+  <DefaultFooter />
 </template>
 
 <script lang="ts" setup>

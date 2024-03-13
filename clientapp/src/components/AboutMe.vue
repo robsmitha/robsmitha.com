@@ -5,16 +5,16 @@
         <v-col md="8" cols="12">
           <v-skeleton-loader
             v-if="!page"
-            type="article"
+            type="paragraph"
           ></v-skeleton-loader>
           <template v-else>
-            <v-card>
+            <v-card color="transparent" flat>
               <v-card-title v-html="page.title.rendered"></v-card-title>
               <v-card-text v-html="page.content.rendered"></v-card-text>
             </v-card>
           </template>
         </v-col>
-        <v-col md="4" cols="12">
+        <v-col md="4" cols="12"  class="d-flex justify-center align-center">
           <v-img 
             :width="300"
             aspect-ratio="4/3"

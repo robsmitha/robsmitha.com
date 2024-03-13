@@ -1,9 +1,9 @@
 <template>
-    <v-sheet color="grey-lighten-4">
+    <v-sheet color="grey-lighten-4" class="mb-5">
         <v-container>
             <v-row>
                 <v-col cols="12">
-                    <v-card class="mb-5">
+                    <v-card>
                         <v-card-text class="pb-0">
                             <v-row>
                                 <v-col md="6" cols="12">
@@ -14,13 +14,17 @@
                                         <v-icon color="warning">mdi-alert</v-icon>
                                         Please sign in with <a :href="gitHubLoginUrl">GitHub</a> or <a :href="microsoftLoginUrl">Microsoft</a> to access search
                                     </template>
+                                    <template v-else-if="!store.hasValidAccessToken">
+                                        <v-icon color="info">mdi-information</v-icon>
+                                        Authorize the OAuth App to access the GitHub REST API <a href="https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-code" target="_blank">Search Code</a> endpoint
+                                    </template>
                                     <template v-else>
                                         <span class="text-grey-darken-1">
                                             Powered by GitHub REST API <a href="https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-code" target="_blank">Search Code</a> endpoint
                                         </span>
                                     </template>
                                 </v-col>
-                                <v-col md="6" cols="12">
+                                <v-col md="6" cols="12" class="text-right">
                                     <v-text-field
                                         v-if="store.hasValidAccessToken"
                                         v-model="search" 
@@ -32,7 +36,9 @@
                                         @click:append-inner="searchGitHub"
                                         @keypress.enter="searchGitHub"
                                     ></v-text-field>
-                                    <v-btn v-else-if="store.signedIn && !store.hasValidAccessToken" color="primary" :loading="loading" @click="authorizeGitHubApp" block>Authorize robsmitha.com</v-btn>
+                                    <v-btn v-else-if="store.signedIn" @click="authorizeGitHubApp" color="black">
+                                        <v-icon>mdi-github</v-icon>  Authorize App
+                                    </v-btn>
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -46,20 +52,20 @@
                         >
                             <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
                                 <tr>
-                                    <td>
+                                    <td style="white-space: nowrap;">
                                         <v-btn
                                             :icon="isGroupOpen(item) ? '$expand' : '$next'"
                                             size="small"
                                             variant="text"
                                             @click="toggleGroup(item)"
                                         ></v-btn>
-                                        <span style="white-space: nowrap;" class="font-weight-bold">{{ item.value }}</span>
+                                        <span class="font-weight-bold">{{ item.value }}</span>
                                     </td>
                                     <td>
                                         <v-badge class="text-right" color="primary" inline :content="`${items.filter(i => i.repo_name === item.value ).length} Files`">
                                         </v-badge>
                                     </td>
-                                    <td>
+                                    <td v-if="!$vuetify.display.mobile">
                                         robsmitha/{{ item.value }}
                                     </td>
                                     <td>
@@ -77,7 +83,7 @@
                                     <td>
                                         {{ item.name }}
                                     </td>
-                                    <td>
+                                    <td v-if="!$vuetify.display.mobile">
                                         {{ item.path }}
                                     </td>
                                     <td>
@@ -97,12 +103,6 @@
 </template>
 
 <script setup lang="ts">
-
-export type SearchRepo = {
-    repo_name: string;
-    repo_description: string | null;
-    items: SearchItem[]
-}
 
 export type SearchItem = {
     sha: string;
@@ -134,8 +134,9 @@ const headers = [
     { title: 'Path', key: 'path' },
     { title: '' },
 ]
-const gitHubLoginUrl = `/.auth/login/github?post_login_redirect_uri=${encodeURIComponent(document.referrer)}code`
-const microsoftLoginUrl = `/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(document.referrer)}code`
+const gitHubLoginUrl = `/.auth/login/github?post_login_redirect_uri=${encodeURIComponent(document.referrer)}`
+const microsoftLoginUrl = `/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(document.referrer)}`
+
 // TODO: get Sample Terms from WP. ex. Stripe, Congress, Stocks, Plaid, Google, etc.
 watch(search, async (newSearch: string) => {
     if(!newSearch || newSearch.length === 0){

@@ -17,6 +17,7 @@ var host = new HostBuilder()
         }
         else
         {
+            // TODO: FunctionApp has access policy but cannot access keyvault
             //var builtConfig = config.Build();
             //var keyVaultUrl = builtConfig.GetValue<Uri>("KeyVaultUri");
             //config.AddAzureKeyVault(keyVaultUrl, new DefaultAzureCredential());

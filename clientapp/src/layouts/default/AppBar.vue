@@ -1,6 +1,13 @@
 <template>
     <div>
-      <v-app-bar>
+      <v-app-bar 
+        :color="!drawer && transparency ? 'transparent' : 'white'" 
+        :class="{
+          'text-white': !drawer && transparency
+        }" 
+        flat
+        fixed
+      >
         <template #prepend>
           <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         </template>
@@ -36,8 +43,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAppStore } from "@/store/app"
+import { useRoute } from 'vue-router'
+const route = useRoute()
+
 const store = useAppStore()
 store.fetchPages()
 store.fetchPosts()
@@ -45,4 +55,11 @@ store.fetchTags()
 store.fetchAuth()
 
 const drawer = ref(false)
+const transparency = ref(true)
+
+onMounted(() =>{
+  window.addEventListener('scroll', () => {
+    transparency.value = window.scrollY <= 75
+  })
+})
 </script>
