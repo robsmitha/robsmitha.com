@@ -45,13 +45,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useAppStore } from "@/store/app"
-import { useRoute } from 'vue-router'
-const route = useRoute()
 
 const store = useAppStore()
-store.fetchPages()
-store.fetchPosts()
-store.fetchTags()
+store.fetchContent()
 store.fetchAuth()
 
 const drawer = ref(false)

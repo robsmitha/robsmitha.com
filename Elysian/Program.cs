@@ -28,6 +28,7 @@ var host = new HostBuilder()
         services.AddHttpClient();
         services.AddSingleton<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
         services.AddSingleton<IGitHubService, GitHubService>();
+        services.AddSingleton<IWordPressService, WordPressService>();
         services.AddDbContext<ElysianContext>(options => options.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection")));
     })
     .ConfigureFunctionsWorkerDefaults(worker =>

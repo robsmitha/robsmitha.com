@@ -55,17 +55,16 @@ export const useAppStore = defineStore('app', {
     }
   },
   actions: {
-    async fetchPages(): Promise<void> {
-      const response = await fetch('https://robsmitha-cms.azurewebsites.net/wp-json/wp/v2/pages');
-      this.pages = await response.json();
-    },
-    async fetchPosts(): Promise<void> {
-      const response = await fetch('https://robsmitha-cms.azurewebsites.net/wp-json/wp/v2/posts');
-      this.posts = await response.json();
-    },
-    async fetchTags(): Promise<void> {
-      const response = await fetch('https://robsmitha-cms.azurewebsites.net/wp-json/wp/v2/tags?per_page=100');
-      this.tags = await response.json();
+    async fetchContent(): Promise<void> {
+      const response = await fetch('/api/WordPressContent');
+      if (!response.ok){
+        console.error("Failed to get page content.")
+        return
+      }
+      const data = await response.json()
+      this.pages = data.Pages
+      this.posts = data.Posts
+      this.tags = data.Tags
     },
     async fetchAuth(): Promise<void> {
       const response = await fetch('/.auth/me');
