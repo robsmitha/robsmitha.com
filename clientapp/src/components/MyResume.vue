@@ -45,10 +45,14 @@
               <v-toolbar-title class="text-subtitle-1 font-weight-bold">Professional Experience & Achievements</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
-              <v-skeleton-loader
-                v-if="!experience"
-                type="article"
-              ></v-skeleton-loader>
+              <template v-if="!experience">
+                <v-skeleton-loader
+                  
+                  v-for="i in 3"
+                  :key="i"
+                  type="article"
+                ></v-skeleton-loader>
+              </template>
               <div class="professional-experience" v-html="experience?.content.rendered"></div>
             </v-card-text>
 

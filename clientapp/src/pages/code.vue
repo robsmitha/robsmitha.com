@@ -1,9 +1,10 @@
 <template>
-    <HelloWorld 
-        text="Code Search" 
+    <!-- <HelloWorld 
+        text="Search Code" 
         :actions="actions" 
         src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/code-dark.jpg"
-    />
+        :height="300"
+    /> -->
     <CodeSearch />
 </template>
 

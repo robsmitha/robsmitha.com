@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Azure.Functions.Worker;
 using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
+using Elysian.Application.Interfaces;
 
 namespace Elysian.Infrastructure.Identity
 {

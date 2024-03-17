@@ -1,14 +1,8 @@
-﻿using System.Security.Claims;
+﻿using Elysian.Application.Interfaces;
+using System.Security.Claims;
 
 namespace Elysian.Infrastructure.Identity
 {
-    public interface IClaimsPrincipalAccessor
-    {
-        ClaimsPrincipal? Principal { get; set; }
-        string? UserId { get; }
-        bool IsAuthenticated { get; }
-    }
-
     public class ClaimsPrincipalAccessor : IClaimsPrincipalAccessor
     {
         private readonly AsyncLocal<ContextHolder> _context = new();

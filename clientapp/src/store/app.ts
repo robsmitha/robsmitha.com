@@ -1,11 +1,12 @@
 // Utilities
 import { defineStore } from 'pinia'
-import { ClaimsIdentity, WpPage, WpPost, WpTag } from './types'
+import { ClaimsIdentity, WpPage, WpPost, WpTag, WpCategory } from './types'
 
 type State = {
   pages: WpPage[],
   posts: WpPost[],
   tags: WpTag[],
+  categories: WpCategory[],
   userDetails: string | undefined,
   hasGitHubAccessToken: boolean | undefined
 }
@@ -15,6 +16,7 @@ export const useAppStore = defineStore('app', {
     pages: [],
     posts: [],
     tags: [],
+    categories: [],
     userDetails: undefined,
     hasGitHubAccessToken: undefined
   }),
@@ -52,6 +54,24 @@ export const useAppStore = defineStore('app', {
         post && map.set(post.slug, state.tags.filter(t => post.tags.includes(t.id)))
       });
       return map;
+    },
+    groupedCategories: (state: State) : Map<number, WpCategory[]> => {
+      const categoryMap = new Map<number, WpCategory[]>();
+      state.categories.forEach(category => {
+        const parentId = category.parent;
+        if (parentId === 0 && !categoryMap.has(category.id)) {
+          categoryMap.set(category.id, []);
+        } else if (categoryMap.has(parentId)) {
+          categoryMap.get(parentId)?.push(category);
+        } else {
+            categoryMap.set(parentId, [category]);
+        }
+      })
+      
+      return categoryMap;
+    },
+    parentCategories: (state: State) : Set<WpCategory> => {
+      return new Set(state.categories.filter(c => c.parent === 0))
     }
   },
   actions: {
@@ -65,6 +85,7 @@ export const useAppStore = defineStore('app', {
       this.pages = data.Pages
       this.posts = data.Posts
       this.tags = data.Tags
+      this.categories = data.Categories
     },
     async fetchAuth(): Promise<void> {
       const response = await fetch('/.auth/me');

@@ -1,9 +1,9 @@
 <template>
-  <HelloWorld 
+  <!-- <HelloWorld 
     text="Curriculum Vitae"
     :actions="actions"
     src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/work-3.jpg"
-  />
+  /> -->
   <MyResume />
 </template>
 

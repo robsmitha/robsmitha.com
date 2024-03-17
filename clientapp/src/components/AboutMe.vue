@@ -3,10 +3,18 @@
     <v-container>
       <v-row>
         <v-col md="8" cols="12">
-          <v-skeleton-loader
-            v-if="!page"
-            type="paragraph"
-          ></v-skeleton-loader>
+          <template v-if="!page">
+            <v-skeleton-loader
+              type="article"
+              color="transparent"
+            ></v-skeleton-loader>
+            <v-skeleton-loader
+              v-for="i in 2"
+              :key="i"
+              type="paragraph"
+              color="transparent"
+            ></v-skeleton-loader>
+          </template>
           <template v-else>
             <v-card color="transparent" flat>
               <v-card-title v-html="page.title.rendered"></v-card-title>

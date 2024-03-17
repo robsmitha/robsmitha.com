@@ -107,6 +107,28 @@ export interface WpTagLinks {
     curies:         Cury[];
 }
 
+export interface WpCategory {
+    id:          number;
+    count:       number;
+    description: string;
+    link:        string;
+    name:        string;
+    slug:        string;
+    taxonomy:    Taxonomy;
+    parent:      number;
+    meta:        any[];
+    _links:      Links;
+}
+
+export interface WpCategoryLinks {
+    self:           About[];
+    collection:     About[];
+    about:          About[];
+    up?:            Up[];
+    "wp:post_type": About[];
+    curies:         Cury[];
+}
+
 export interface About {
     href: string;
 }
@@ -153,4 +175,13 @@ export interface WpTerm {
     taxonomy:   string;
     embeddable: boolean;
     href:       string;
+}
+
+export interface Up {
+    embeddable: boolean;
+    href:       string;
+}
+
+export enum Taxonomy {
+    Category = "category",
 }

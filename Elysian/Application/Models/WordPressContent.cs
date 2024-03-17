@@ -11,9 +11,6 @@ namespace Elysian.Application.Models
         public dynamic Pages { get; set; }
         public dynamic Posts { get; set; }
         public dynamic Tags { get; set; }
+        public dynamic Categories { get; set; }
     }
-
-    public record WordPressPage(string Slug, string Title, string Content);
-    public record WordPressPost(string Slug, string Title, string Content, List<WordPressTag> Tags);
-    public record WordPressTag(string Slug, string Name);
 }

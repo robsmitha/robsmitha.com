@@ -22,12 +22,14 @@ namespace Elysian.Infrastructure.Services
             var pages = await client.GetStringAsync(_configuration.GetSection("WordPressCmsUri").Get<string>() + "/wp/v2/pages");
             var posts = await client.GetStringAsync(_configuration.GetSection("WordPressCmsUri").Get<string>() + "/wp/v2/posts");
             var tags = await client.GetStringAsync(_configuration.GetSection("WordPressCmsUri").Get<string>() + "/wp/v2/tags?per_page=100");
+            var categories = await client.GetStringAsync(_configuration.GetSection("WordPressCmsUri").Get<string>() + "/wp/v2/categories?per_page=100");
 
             return new WordPressContent
             {
                 Pages = JsonConvert.DeserializeObject<dynamic>(pages),
                 Posts = JsonConvert.DeserializeObject<dynamic>(posts),
                 Tags = JsonConvert.DeserializeObject<dynamic>(tags),
+                Categories = JsonConvert.DeserializeObject<dynamic>(categories),
             };
         }
 
