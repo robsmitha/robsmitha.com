@@ -7,7 +7,6 @@ using Elysian.Domain.Constants;
 using Elysian.Domain.Data;
 using Elysian.Domain.Security;
 using Elysian.Infrastructure.Context;
-using Elysian.Infrastructure.Identity;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.EntityFrameworkCore;
@@ -50,22 +49,16 @@ namespace Elysian
         [Function("GitHubSearch")]
         public async Task<HttpResponseData> GitHubSearch([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
-            if (!_claimsPrincipalAccessor.IsAuthenticated)
-            {
-                return await req.WriteFailureResponseAsync(HttpStatusCode.Forbidden, "Authentication Failure.");
-            }
-
             var term = req.Query["term"];
 
             try
             {
-                var oAuthToken = await _context.OAuthTokens.SingleOrDefaultAsync(t => t.UserId == _claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
-                if (string.IsNullOrEmpty(oAuthToken?.AccessToken))
-                {
-                    return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Token Not Found.");
-                }
+                var accessToken = !_claimsPrincipalAccessor.IsAuthenticated
+                    ? _configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>()
+                    : await _context.OAuthTokens.Where(t => t.UserId == _claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub)
+                    .Select(t => t.AccessToken).SingleOrDefaultAsync();
 
-                var client = new GitHubClient(new ProductHeaderValue("robsmitha.com"), new InMemoryCredentialStore(new Credentials(oAuthToken.AccessToken)));
+                var client = new GitHubClient(new ProductHeaderValue("robsmitha.com"), new InMemoryCredentialStore(new Credentials(accessToken)));
                 var result = await client.Search.SearchCode(new SearchCodeRequest($"{term}")
                 {
                     Users = ["robsmitha"]
@@ -79,6 +72,11 @@ namespace Elysian
                 }));
 
                 return response;
+            }
+            catch (RateLimitExceededException ex)
+            {
+                _logger.LogError(ex, "Rate Limit Reached. [Term: {term}]", term);
+                return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
             }
             catch (Exception ex)
             {

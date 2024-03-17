@@ -23,7 +23,7 @@
     >
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home-roof" title="Home" value="home" to="/"></v-list-item>
-        <v-list-item prepend-icon="mdi-certificate-outline" title="CV" value="about" to="/about"></v-list-item>
+        <v-list-item prepend-icon="mdi-certificate-outline" title="Resume" value="about" to="/about"></v-list-item>
         <v-list-item prepend-icon="mdi-bug-outline" title="Code" value="code" to="/code"></v-list-item>
 
         <v-list-item subtitle="External Links"></v-list-item>

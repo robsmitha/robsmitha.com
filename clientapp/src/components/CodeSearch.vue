@@ -20,32 +20,28 @@
             <v-row>
                 <v-col cols="12">
                     <v-alert
-                        v-if="!store.signedIn"
+                        v-if="rateLimited"
                         border="start"
                         border-color="red-darken-3"
                         color="grey-darken-4"
                         class="mb-2"
                         variant="outlined"
                     >
-                        Please sign in with <a class="text-black" :href="gitHubLoginUrl">GitHub</a> or <a class="text-black" :href="microsoftLoginUrl">Microsoft</a> to access search.
-                    </v-alert>
-
-                    <v-alert
-                        v-else-if="!store.hasValidAccessToken"
-                        border="start"
-                        border-color="red-darken-3"
-                        color="grey-darken-4"
-                        class="mb-2"
-                        variant="outlined"
-                    >
-                        Authorize the GitHub OAuth App to access the GitHub REST API.
-                        <v-btn size="small" variant="text" color="outlined" small @click="authorizeGitHubApp">
-                            <v-icon size="small">mdi-github</v-icon> Authorize
-                        </v-btn>
+                        <span class="d-block font-weight-bold">Too many requests. Please try again shortly.</span>
+                        <template v-if="!store.signedIn">
+                            Sign in with <a class="text-black" href="/.auth/login/github">GitHub</a> 
+                            or <a class="text-black" href="/.auth/login/aad">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
+                        </template>
+                        <template v-else-if="!store.hasValidAccessToken">
+                            Authorize robsmitha.com on GitHub to access a higher rate limit.
+                            <v-btn size="small" variant="text" color="outlined" small @click="authorizeGitHubApp">
+                                <v-icon size="small">mdi-github</v-icon> Authorize
+                            </v-btn>
+                        </template>
                     </v-alert>
 
                     <v-text-field
-                        v-else
+                        v-if="!rateLimited"
                         v-model="search"
                         append-inner-icon="mdi-magnify"
                         clearable
@@ -70,7 +66,7 @@
                 </v-col>
             </v-row>
             
-            <v-row v-if="items?.length > 0 || loading">
+            <v-row v-if="items?.length > 0 || (loading && !rateLimited)">
                 <v-col>
                     <v-data-table
                         :items="items"
@@ -80,6 +76,9 @@
                         :no-data-text="`Enter a term to search code at github.com/robsmitha`"
                         :items-per-page="100"
                     >
+                        <template v-slot:loading>
+                            <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
+                        </template>
                         <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
                             <tr>
                                 <td style="white-space: nowrap;">
@@ -128,7 +127,18 @@
             </v-row>
 
             <v-row v-else>
-                <v-col cols="12" v-for="parentCategory in store.parentCategories" :key="parentCategory.id">
+                <v-col v-if="store.parentCategories.size === 0">
+                    <template v-for="i in 3" :key="i">
+                        <v-skeleton-loader type="subtitle" color="transparent" width="200px"></v-skeleton-loader>
+                        <v-skeleton-loader type="text" color="transparent" width="300px" class="mt-n5"></v-skeleton-loader>
+                        <v-row>
+                            <v-col md="3" sm="4" cols="12" v-for="j in Math.floor(Math.random() * (4 - 1 + 1)) + 1" :key="j">
+                                <v-skeleton-loader type="paragraph"></v-skeleton-loader>
+                            </v-col>
+                        </v-row>
+                    </template>
+                </v-col>
+                <v-col v-for="parentCategory in store.parentCategories" :key="parentCategory.id" cols="12">
                     <span class="text-h6 d-block">{{ parentCategory.name }}</span>
                     <span class="text-caption text-grey-darken-1 d-block mb-2">{{ parentCategory.description }}</span>
                     <v-row>
@@ -136,8 +146,8 @@
                             <v-card 
                                 :title="subCategory.name" 
                                 height="100%"
-                                :disabled="!store.hasValidAccessToken"
-                                @click="search = subCategory.description"
+                                :disabled="rateLimited"
+                                @click="onSubCategoryClick(subCategory)"
                             >
                                 <v-card-text>
                                     <v-chip v-for="w in getWords(subCategory.description)" :key="w" color="primary" class="mr-1 mb-1" size="small" label>{{ w }}</v-chip>
@@ -164,12 +174,18 @@ export type SearchItem = {
 }
 
 import { useAppStore } from '@/store/app'
+import { WpCategory } from '@/store/types';
 import { ref, watch } from 'vue'
 import type { VDataTable } from 'vuetify/components'
 
+const store = useAppStore()
+
+// Search
 const loading = ref(false)
 const search = ref('')
-const store = useAppStore()
+const rateLimited = ref(false)
+
+// DataTable
 const items = ref<SearchItem[]>([])
 const groupBy = [
     {
@@ -182,11 +198,8 @@ const headers = [
     { title: 'File', key: 'name' },
     { title: 'Path', key: 'path' },
     { title: '' },
-]
-const gitHubLoginUrl = `/.auth/login/github?post_login_redirect_uri=${encodeURIComponent(document.referrer)}`
-const microsoftLoginUrl = `/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(document.referrer)}`
+] as VDataTable['$props']['headers']
 
-// TODO: get Sample Terms from WP. ex. Stripe, Congress, Stocks, Plaid, Google, etc.
 watch(search, async (newSearch: string) => {
     if(!newSearch || newSearch.length === 0){
         items.value = []
@@ -206,26 +219,28 @@ async function authorizeGitHubApp(): Promise<void> {
 
 async function searchGitHub(): Promise<void> {
     loading.value = true;
-    const response = await fetch(`/api/githubSearch?term=${encodeURIComponent(search.value)}`)
-    if (!response.ok){
-        throw new Error();
+
+    const response = await fetch(`/api/githubSearch?term=${encodeURIComponent(search.value)}`);
+
+    if (!response.ok) {
+        rateLimited.value = response.status === 429
+    } else {
+        const data = await response.json()
+        const searchItems = data.result.Items.map((i: any) => ({
+                sha: i.Sha,
+                name: i.Name,
+                path: i.Path,
+                html_url: i.HtmlUrl,
+                repo_name: i.Repository.Name,
+                repo_description: i.Repository.Description,
+                language_icon: getDevicon(i.Name)
+            }))
+        items.value = searchItems
     }
-
-
-    const data = await response.json()
-    const searchItems = data.result.Items.map((i: any) => ({
-            sha: i.Sha,
-            name: i.Name,
-            path: i.Path,
-            html_url: i.HtmlUrl,
-            repo_name: i.Repository.Name,
-            repo_description: i.Repository.Description,
-            language_icon: getDevicon(i.Name)
-        }))
-    items.value = searchItems
     
-    loading.value = false;
+    loading.value = false
 }
+
 
 function getWords(str: string){
     // Extracting words using regular expression
@@ -234,6 +249,11 @@ function getWords(str: string){
     // Removing "language:" and "extension:" tokens and their values
     words = words.map(word => word.replace(/(language|extension):/, '').replace(/\s+.+$/, ''));
     return words;
+}
+
+async function onSubCategoryClick(subCategory: WpCategory) {
+    search.value = subCategory.description
+    await searchGitHub()
 }
 
 function getDevicon(fileName: string){
