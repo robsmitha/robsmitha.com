@@ -6,5 +6,7 @@ namespace Elysian.Application.Interfaces
     {
         Task<GitHubOAuthUrl> GetGitHubOAuthUrlAsync(string state);
         Task<GitHubAccessTokenResponse> GetGitHubAccessTokenAsync(GitHubAccessTokenRequest requestAccessToken);
+        Task<GitHubCodeSearchResponse> GetGitHubCodeSearchResultsAsync(GitHubCodeSearchRequest requestCodeSearch);
+        Task<string> GetRepositoryContentsAsHtmlAsync(GitHubRepositoryContentsRequest requestRepoContents);
     }
 }

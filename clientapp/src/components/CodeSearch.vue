@@ -67,7 +67,7 @@
             </v-row>
             
             <v-row v-if="items?.length > 0 || (loading && !rateLimited)">
-                <v-col>
+                <v-col cols="12">
                     <v-data-table
                         :items="items"
                         :headers="headers"
@@ -116,8 +116,7 @@
                                     {{ item.path }}
                                 </td>
                                 <td>
-                                    <v-btn :href="item.html_url" target="_blank" icon flat size="small">
-                                        <v-icon>mdi-github</v-icon>
+                                    <v-btn flat size="small" icon="mdi-code-tags" @click="getRepoContents(item)">
                                     </v-btn>
                                 </td>
                             </tr>
@@ -159,6 +158,42 @@
             </v-row>
         </v-container>
     </v-sheet>
+    <v-dialog
+      v-model="dialog"
+      width="auto"
+      scrollable
+    >
+      <v-card>
+        <v-card-title class="d-flex justify-space-between align-center">
+            <div class="text-h5">
+                {{ selectedItem?.name }}
+            </div>
+            <v-btn
+                icon="mdi-close"
+                variant="text"
+                size="small"
+                @click="dialog = false"
+            ></v-btn>
+        </v-card-title>
+
+        <v-card-subtitle>{{ selectedItem?.path }}</v-card-subtitle>
+
+        <v-divider class="mt-2" />
+
+        <v-card-text ><div v-html="dialogContents"></div></v-card-text>
+
+        <v-divider></v-divider>
+        <v-card-actions class="my-2 d-flex justify-end">
+            
+          <v-btn
+            :href="selectedItem?.html_url" 
+            target="_blank"
+            text="GitHub"
+            color="black"
+          ></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -171,6 +206,20 @@ export type SearchItem = {
     repo_name: string;
     repo_description: string | null;
     language_icon: string | null;
+    text_matches: TextMatch[];
+}
+
+export type TextMatch = {
+    fragment: string
+    object_url: string
+    object_type: string
+    property: string
+    matches: Match[]
+}
+
+export type Match = {
+    indices: number[]
+    text: string
 }
 
 import { useAppStore } from '@/store/app'
@@ -184,6 +233,9 @@ const store = useAppStore()
 const loading = ref(false)
 const search = ref('')
 const rateLimited = ref(false)
+const dialog = ref(false)
+const dialogContents = ref('')
+const selectedItem = ref<SearchItem | undefined>()
 
 // DataTable
 const items = ref<SearchItem[]>([])
@@ -226,21 +278,31 @@ async function searchGitHub(): Promise<void> {
         rateLimited.value = response.status === 429
     } else {
         const data = await response.json()
-        const searchItems = data.result.Items.map((i: any) => ({
-                sha: i.Sha,
-                name: i.Name,
-                path: i.Path,
-                html_url: i.HtmlUrl,
-                repo_name: i.Repository.Name,
-                repo_description: i.Repository.Description,
-                language_icon: getDevicon(i.Name)
+        
+        const searchItems = data.result.items.map((i: any) => ({
+                sha: i.sha,
+                name: i.name,
+                path: i.path,
+                html_url: i.html_url,
+                repo_name: i.repository.name,
+                repo_description: i.repository.description,
+                language_icon: getDevicon(i.name),
+                text_matches: i.text_matches
             }))
+            
         items.value = searchItems
     }
     
     loading.value = false
 }
 
+async function getRepoContents(item: SearchItem){
+    const response = await fetch(`/api/GitHubRepoContents?repo=${encodeURIComponent(item.repo_name)}&path=${encodeURIComponent(item.path)}`)
+    const html = await response.text()
+    selectedItem.value = item
+    dialogContents.value = html
+    dialog.value = true
+}
 
 function getWords(str: string){
     // Extracting words using regular expression

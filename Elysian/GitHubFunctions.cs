@@ -1,5 +1,4 @@
 using System.Net;
-using System.Text;
 using Elysian.Application.Extensions;
 using Elysian.Application.Interfaces;
 using Elysian.Application.Models;
@@ -13,8 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Octokit;
-using Octokit.Internal;
 
 namespace Elysian
 {
@@ -53,15 +50,16 @@ namespace Elysian
 
             try
             {
-                var accessToken = !_claimsPrincipalAccessor.IsAuthenticated
-                    ? _configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>()
-                    : await _context.OAuthTokens.Where(t => t.UserId == _claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub)
-                    .Select(t => t.AccessToken).SingleOrDefaultAsync();
+                var userGitHubTokenQuery = _context.OAuthTokens.Where(t => t.UserId == _claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
 
-                var client = new GitHubClient(new ProductHeaderValue("robsmitha.com"), new InMemoryCredentialStore(new Credentials(accessToken)));
-                var result = await client.Search.SearchCode(new SearchCodeRequest($"{term}")
+                var accessToken = _claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
+                    ? await userGitHubTokenQuery.Select(t => t.AccessToken).SingleOrDefaultAsync()
+                    : _configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>();
+
+                var result = await _gitHubService.GetGitHubCodeSearchResultsAsync(new GitHubCodeSearchRequest
                 {
-                    Users = ["robsmitha"]
+                    Term = term,
+                    AccessToken = accessToken
                 });
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
@@ -82,6 +80,41 @@ namespace Elysian
             {
                 _logger.LogError(ex, "An unhandled exception sending the Search Code request.[Term: {term}]", term);
                 return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Failed to send Search Code request.");
+            }
+        }
+
+
+        [Function("GitHubRepoContents")]
+        public async Task<HttpResponseData> GitHubRepoContents([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+        {
+            var path = req.Query["path"];
+            var repo = req.Query["repo"];
+
+            try
+            {
+                var userGitHubTokenQuery = _context.OAuthTokens.Where(t => t.UserId == _claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
+
+                var accessToken = _claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
+                    ? await userGitHubTokenQuery.Select(t => t.AccessToken).SingleOrDefaultAsync()
+                    : _configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>();
+
+                var result = await _gitHubService.GetRepositoryContentsAsHtmlAsync(new GitHubRepositoryContentsRequest("robsmitha", repo, path, accessToken));
+
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Headers.Add("Content-Type", "text/html; charset=utf-8");
+                await response.WriteStringAsync(result);
+
+                return response;
+            }
+            catch (RateLimitExceededException ex)
+            {
+                _logger.LogError(ex, "Rate Limit Reached. [Repo: {repo}, Path: {term}]", repo, path);
+                return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unhandled exception sending the Repository Contents request. [Repo: {repo}, Path: {term}]", repo, path);
+                return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Failed to send Repository Contents request.");
             }
         }
 
