@@ -71,11 +71,11 @@ namespace Elysian
 
                 return response;
             }
-            catch (RateLimitExceededException ex)
-            {
-                _logger.LogError(ex, "Rate Limit Reached. [Term: {term}]", term);
-                return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
-            }
+            //catch (RateLimitExceededException ex)
+            //{
+            //    _logger.LogError(ex, "Rate Limit Reached. [Term: {term}]", term);
+            //    return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
+            //}
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unhandled exception sending the Search Code request.[Term: {term}]", term);
@@ -106,11 +106,11 @@ namespace Elysian
 
                 return response;
             }
-            catch (RateLimitExceededException ex)
-            {
-                _logger.LogError(ex, "Rate Limit Reached. [Repo: {repo}, Path: {term}]", repo, path);
-                return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
-            }
+            //catch (RateLimitExceededException ex)
+            //{
+            //    _logger.LogError(ex, "Rate Limit Reached. [Repo: {repo}, Path: {term}]", repo, path);
+            //    return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
+            //}
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unhandled exception sending the Repository Contents request. [Repo: {repo}, Path: {term}]", repo, path);
