@@ -71,7 +71,7 @@
                     <template v-if="loading">
                         <v-skeleton-loader type="list-item" v-for="i in 8" :key="i"></v-skeleton-loader>
                     </template>
-                    <v-expansion-panels v-else variant="accordion">
+                    <v-expansion-panels v-else>
                         <v-expansion-panel
                             v-for="repo in repos.keys()"
                             :key="repo"
@@ -114,7 +114,7 @@
                                             <v-icon size="small">mdi-github</v-icon>
                                         </template>
                                         <v-list-item-subtitle>
-                                            View all repo files on GitHub
+                                            View {{ repo }} on GitHub
                                         </v-list-item-subtitle>
                                     </v-list-item>
                                 </v-list>
@@ -164,7 +164,6 @@
       fullscreen
     >
       <v-card>
-        
         <v-toolbar color="white">
             <v-btn
                 icon="mdi-close"
@@ -173,25 +172,36 @@
             <v-toolbar-title>
                 <span class="font-weight-bold">{{ selectedItem?.name }}</span>
             </v-toolbar-title>
-
-          <v-spacer></v-spacer>
-
-          <v-toolbar-items>
-            <v-btn
-              variant="text"
-              :href="selectedItem?.html_url" 
-              target="_blank"
-            >
-                <v-icon>mdi-github</v-icon>&nbsp;GitHub
-            </v-btn>
-          </v-toolbar-items>
+            <template v-if="!$vuetify.display.mobile">
+                <v-spacer />
+                <v-toolbar-items>
+                    <v-chip label class="mt-3 mr-3">{{ selectedItem?.repo_name }}</v-chip>
+                </v-toolbar-items>
+            </template>
         </v-toolbar>
-        <v-card-text class="bg-grey-lighten-4">
-            <div v-html="dialogContents"></div>
+        <v-card-text class="bg-grey-lighten-4 pa-0">
+            <template v-if="dialogLoading">
+                <v-skeleton-loader color="grey-lighten-4 pa-0" v-for="i in 7" :key="i" type="paragraph">
+                </v-skeleton-loader>
+            </template>
+            <highlightjs
+                v-else
+                autodetect
+                :code="dialogContents"
+            />
         </v-card-text>
-        <v-card-actions>
-            <span class="grey-lighten-4 font-italic">{{ selectedItem?.repo_name }}/{{ selectedItem?.path }}</span>
-        </v-card-actions>
+        <v-card-subtitle class="pa-0">
+            <v-list density="compact" class="my-0">
+                <v-list-item :href="selectedItem?.html_url" target="_blank">
+                    <template v-slot:prepend>
+                        <v-icon size="small">mdi-github</v-icon>
+                    </template>
+                    <v-list-item-subtitle>
+                        View on GitHub
+                    </v-list-item-subtitle>
+                </v-list-item>
+            </v-list>
+        </v-card-subtitle>
       </v-card>
     </v-dialog>
 </template>
@@ -242,6 +252,7 @@ const repos = ref<Map<string, SearchItem[]>>(new Map<string, SearchItem[]>())
 
 // Dialog
 const dialog = ref(false)
+const dialogLoading = ref(false)
 const dialogContents = ref('')
 const selectedItem = ref<SearchItem | undefined>()
 
@@ -297,11 +308,20 @@ async function searchGitHub(): Promise<void> {
 }
 
 async function getRepoContents(item: SearchItem){
-    const response = await fetch(`/api/GitHubRepoContents?repo=${encodeURIComponent(item.repo_name)}&path=${encodeURIComponent(item.path)}`)
-    const html = await response.text()
-    selectedItem.value = item
-    dialogContents.value = html
+    dialogLoading.value = true;
     dialog.value = true
+
+    const response = await fetch(`/api/GitHubRepoContents?repo=${encodeURIComponent(item.repo_name)}&path=${encodeURIComponent(item.path)}`)
+    let html = await response.text()
+    selectedItem.value = item
+
+    // Remove github markup
+    const startPattern = '^<div id="file" class="cs" data-path="' + item.path.replace(/\//g, "\\/") + '"><div class="plain"><pre style="white-space: pre-wrap">';
+    const endPattern = '</pre></div></div>$';
+    html = html.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(new RegExp(startPattern, 'g'), '').replace(new RegExp(endPattern, 'g'), '')
+
+    dialogContents.value = `// ${item.repo_name}/${item.path}\n` + html
+    dialogLoading.value = false;
 }
 
 function getWords(str: string){

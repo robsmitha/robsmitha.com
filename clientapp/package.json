@@ -8,8 +8,10 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@highlightjs/vue-plugin": "^2.1.0",
     "@mdi/font": "7.0.96",
     "core-js": "^3.34.0",
+    "highlight.js": "^11.9.0",
     "roboto-fontface": "*",
     "vue": "^3.3.0",
     "vuetify": "^3.0.0"
