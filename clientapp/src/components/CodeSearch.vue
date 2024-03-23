@@ -66,62 +66,61 @@
                 </v-col>
             </v-row>
             
-            <v-row v-if="items?.length > 0 || (loading && !rateLimited)">
+            <v-row v-if="repos?.size > 0 || (loading && !rateLimited)">
                 <v-col cols="12">
-                    <v-data-table
-                        :items="items"
-                        :headers="headers"
-                        :group-by="groupBy"
-                        :loading="loading"
-                        :no-data-text="`Enter a term to search code at github.com/robsmitha`"
-                        :items-per-page="100"
-                    >
-                        <template v-slot:loading>
-                            <v-skeleton-loader type="table-row@5"></v-skeleton-loader>
-                        </template>
-                        <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
-                            <tr>
-                                <td style="white-space: nowrap;">
-                                    <v-btn
-                                        :icon="isGroupOpen(item) ? '$expand' : '$next'"
-                                        size="small"
-                                        variant="text"
-                                        @click="toggleGroup(item)"
-                                    ></v-btn>
-                                    <span class="font-weight-bold">{{ item.value }}</span>
-                                </td>
-                                <td>
-                                    <v-badge class="text-right" color="primary" inline :content="`${items.filter(i => i.repo_name === item.value ).length} Files`">
+                    <template v-if="loading">
+                        <v-skeleton-loader type="list-item" v-for="i in 8" :key="i"></v-skeleton-loader>
+                    </template>
+                    <v-expansion-panels v-else variant="accordion">
+                        <v-expansion-panel
+                            v-for="repo in repos.keys()"
+                            :key="repo"
+                        >
+                            <v-expansion-panel-title>
+                                <template v-slot:default="{ expanded }">
+                                    <span :class="{
+                                        'font-weight-bold': expanded,
+                                        'font-weight-medium': !expanded
+                                    }">{{ repo }}</span>
+                                </template>
+                                <template v-slot:actions="{ expanded }">
+                                    <v-badge class="text-right" :color="expanded ? 'primary' : 'grey-lighten-2'" inline :content="`${repos?.get(repo)?.length} Files`">
                                     </v-badge>
-                                </td>
-                                <td v-if="!$vuetify.display.mobile">
-                                    robsmitha/{{ item.value }}
-                                </td>
-                                <td>
-                                    <v-btn :href="`https://robsmitha.github.io/#/repo/${item.value}`" target="_blank" icon flat size="small">
-                                        <v-icon>mdi-open-in-new</v-icon>
-                                    </v-btn>
-                                </td>
-                            </tr>
-                        </template>
-                        <template v-slot:item="{ item }">
-                            <tr>
-                                <td>
-                                    <v-img :aspect-ratio="1" :width="25" :src="getDevicon(item.name)" />
-                                </td>
-                                <td v-if="!$vuetify.display.mobile">
-                                    {{ item.name }}
-                                </td>
-                                <td>
-                                    {{ item.path }}
-                                </td>
-                                <td>
-                                    <v-btn flat size="small" icon="mdi-code-tags" @click="getRepoContents(item)">
-                                    </v-btn>
-                                </td>
-                            </tr>
-                        </template>
-                    </v-data-table>
+                                </template>
+                            </v-expansion-panel-title>
+                            
+                            <v-expansion-panel-text>
+                                <v-list>
+                                    <v-list-item v-for="item in repos.get(repo)" :key="item.sha" :title="item.name" :subtitle="item.path" @click="getRepoContents(item)">
+                                        
+                                        <template v-slot:prepend>
+                                            <v-avatar tile>
+                                                <v-img :src="getDevicon(item.name)" />
+                                            </v-avatar>
+                                        </template>
+
+                                        <template v-slot:append>
+                                            <v-badge
+                                            color="grey-lighten-3"
+                                            :content="item.text_matches.reduce((total: number, textMatch: TextMatch) => {
+                                                return total + textMatch.matches.length
+                                            }, 0)"
+                                            inline
+                                            ></v-badge>
+                                        </template>
+                                    </v-list-item>
+                                    <v-list-item density="compact" :href="`https://github.com/robsmitha/${repo}`" target="_blank">
+                                        <template v-slot:append>
+                                            <v-icon size="small">mdi-github</v-icon>
+                                        </template>
+                                        <v-list-item-subtitle>
+                                            View all repo files on GitHub
+                                        </v-list-item-subtitle>
+                                    </v-list-item>
+                                </v-list>
+                            </v-expansion-panel-text>
+                        </v-expansion-panel>
+                    </v-expansion-panels>
                 </v-col>
             </v-row>
 
@@ -160,41 +159,48 @@
     </v-sheet>
     <v-dialog
       v-model="dialog"
-      width="auto"
       scrollable
+      transition="dialog-bottom-transition"
+      fullscreen
     >
       <v-card>
-        <v-card-title class="d-flex justify-space-between align-center">
-            <div class="text-h5">
-                {{ selectedItem?.name }}
-            </div>
+        
+        <v-toolbar color="white">
             <v-btn
                 icon="mdi-close"
-                variant="text"
-                size="small"
                 @click="dialog = false"
             ></v-btn>
-        </v-card-title>
+            <v-toolbar-title>
+                <span class="font-weight-bold">{{ selectedItem?.name }}</span>
+            </v-toolbar-title>
 
-        <v-card-subtitle>{{ selectedItem?.path }}</v-card-subtitle>
+          <v-spacer></v-spacer>
 
-        <v-divider class="mt-2" />
-
-        <v-card-text ><div v-html="dialogContents"></div></v-card-text>
-
-        <v-divider></v-divider>
-        <v-card-actions class="my-2 d-flex justify-end">
-            
-          <v-btn
-            :href="selectedItem?.html_url" 
-            target="_blank"
-            text="GitHub"
-            color="black"
-          ></v-btn>
+          <v-toolbar-items>
+            <v-btn
+              variant="text"
+              :href="selectedItem?.html_url" 
+              target="_blank"
+            >
+                <v-icon>mdi-github</v-icon>&nbsp;GitHub
+            </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-card-text class="bg-grey-lighten-4">
+            <div v-html="dialogContents"></div>
+        </v-card-text>
+        <v-card-actions>
+            <span class="grey-lighten-4 font-italic">{{ selectedItem?.repo_name }}/{{ selectedItem?.path }}</span>
         </v-card-actions>
       </v-card>
     </v-dialog>
 </template>
+
+<style scoped>
+:deep(.v-expansion-panel-text__wrapper) {
+    padding: 0px;
+}
+</style>
 
 <script setup lang="ts">
 
@@ -225,7 +231,6 @@ export type Match = {
 import { useAppStore } from '@/store/app'
 import { WpCategory } from '@/store/types';
 import { ref, watch } from 'vue'
-import type { VDataTable } from 'vuetify/components'
 
 const store = useAppStore()
 
@@ -233,28 +238,17 @@ const store = useAppStore()
 const loading = ref(false)
 const search = ref('')
 const rateLimited = ref(false)
+const repos = ref<Map<string, SearchItem[]>>(new Map<string, SearchItem[]>())
+
+// Dialog
 const dialog = ref(false)
 const dialogContents = ref('')
 const selectedItem = ref<SearchItem | undefined>()
 
-// DataTable
-const items = ref<SearchItem[]>([])
-const groupBy = [
-    {
-        key: 'repo_name',
-        order: 'asc',
-    },
-] as VDataTable['$props']['groupBy']
-const headers = [
-    { title: 'Repo', key: 'data-table-group' },
-    { title: 'File', key: 'name' },
-    { title: 'Path', key: 'path' },
-    { title: '' },
-] as VDataTable['$props']['headers']
-
 watch(search, async (newSearch: string) => {
     if(!newSearch || newSearch.length === 0){
-        items.value = []
+        repos.value = new Map<string, SearchItem[]>()
+        selectedItem.value = undefined
     }
 })
 
@@ -271,15 +265,14 @@ async function authorizeGitHubApp(): Promise<void> {
 
 async function searchGitHub(): Promise<void> {
     loading.value = true;
-
     const response = await fetch(`/api/githubSearch?term=${encodeURIComponent(search.value)}`);
-
     if (!response.ok) {
         rateLimited.value = response.status === 429
     } else {
         const data = await response.json()
-        
-        const searchItems = data.result.items.map((i: any) => ({
+
+        repos.value = data.result.items.reduce((map: Map<string, SearchItem[]>, i: any) => {
+            const searchItem: SearchItem = {
                 sha: i.sha,
                 name: i.name,
                 path: i.path,
@@ -288,9 +281,16 @@ async function searchGitHub(): Promise<void> {
                 repo_description: i.repository.description,
                 language_icon: getDevicon(i.name),
                 text_matches: i.text_matches
-            }))
-            
-        items.value = searchItems
+            }
+
+            if (!map.has(searchItem.repo_name)) {
+                map.set(searchItem.repo_name, [searchItem])
+            } else {
+                map.get(searchItem.repo_name)?.push(searchItem)
+            }
+
+            return map
+        }, new Map<string, SearchItem[]>())
     }
     
     loading.value = false
