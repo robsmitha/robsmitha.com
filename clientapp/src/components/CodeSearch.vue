@@ -308,19 +308,21 @@ async function searchGitHub(): Promise<void> {
 }
 
 async function getRepoContents(item: SearchItem){
+    selectedItem.value = item
     dialogLoading.value = true;
     dialog.value = true
 
     const response = await fetch(`/api/GitHubRepoContents?repo=${encodeURIComponent(item.repo_name)}&path=${encodeURIComponent(item.path)}`)
     let html = await response.text()
-    selectedItem.value = item
 
     // Remove github markup
-    const startPattern = '^<div id="file" class="cs" data-path="' + item.path.replace(/\//g, "\\/") + '"><div class="plain"><pre style="white-space: pre-wrap">';
-    const endPattern = '</pre></div></div>$';
+    const startPattern = '^<div id="file" class="[^"]*" data-path="' + item.path.replace(/\//g, "\\/") + '"><div class="plain"><pre style="white-space: pre-wrap">'
+    const endPattern = '</pre></div></div>$'
     html = html.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(new RegExp(startPattern, 'g'), '').replace(new RegExp(endPattern, 'g'), '')
 
-    dialogContents.value = `// ${item.repo_name}/${item.path}\n` + html
+    html = `// ${item.repo_name}/${item.path}\n` + html
+
+    dialogContents.value = html
     dialogLoading.value = false;
 }
 
