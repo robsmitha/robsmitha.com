@@ -89,7 +89,7 @@ const emit = defineEmits(['file-selected'])
 
 const repos = computed(() => {
     return props.items.reduce((map: Map<string, SearchItem[]>, searchItem: SearchItem) => {
-        searchItem.devicon = getDevicon(searchItem.name)
+        searchItem.language_icon = getDevicon(searchItem.name)
         if (!map.has(searchItem.repo_name)) {
             map.set(searchItem.repo_name, [searchItem])
         } else {
