@@ -9,6 +9,10 @@ declare module 'vue' {
   export interface GlobalComponents {
     AboutMe: typeof import('./src/components/AboutMe.vue')['default']
     CodeSearch: typeof import('./src/components/CodeSearch.vue')['default']
+    CodeSearchCategories: typeof import('./src/components/CodeSearchCategories.vue')['default']
+    CodeSearchField: typeof import('./src/components/CodeSearchField.vue')['default']
+    CodeSearchRepos: typeof import('./src/components/CodeSearchRepos.vue')['default']
+    FileContentDialog: typeof import('./src/components/FileContentDialog.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     MyResume: typeof import('./src/components/MyResume.vue')['default']
     OAuthCallback: typeof import('./src/components/OAuthCallback.vue')['default']
