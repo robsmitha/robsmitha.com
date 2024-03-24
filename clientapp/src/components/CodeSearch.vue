@@ -79,8 +79,7 @@
                             <v-expansion-panel-title>
                                 <template v-slot:default="{ expanded }">
                                     <span :class="{
-                                        'font-weight-bold': expanded,
-                                        'font-weight-medium': !expanded
+                                        'font-weight-medium': expanded
                                     }">{{ repo }}</span>
                                 </template>
                                 <template v-slot:actions="{ expanded }">
@@ -90,7 +89,9 @@
                             </v-expansion-panel-title>
                             
                             <v-expansion-panel-text>
-                                <v-list>
+                                <v-list class="py-0">
+                                    <v-divider />
+                                    <v-list-subheader>Source Code</v-list-subheader>
                                     <v-list-item v-for="item in repos.get(repo)" :key="item.sha" :title="item.name" :subtitle="item.path" @click="getRepoContents(item)">
                                         
                                         <template v-slot:prepend>
@@ -109,13 +110,38 @@
                                             ></v-badge>
                                         </template>
                                     </v-list-item>
+
+                                    <v-divider class="mt-3" />
+                                    <v-list-subheader>External Links</v-list-subheader>
                                     <v-list-item density="compact" :href="`https://github.com/robsmitha/${repo}`" target="_blank">
-                                        <template v-slot:append>
-                                            <v-icon size="small">mdi-github</v-icon>
+                                        <template v-slot:prepend>
+                                            <v-avatar color="black"><v-icon size="small">mdi-github</v-icon></v-avatar>
                                         </template>
+                                        <v-list-item-title>
+                                            GitHub
+                                        </v-list-item-title>
                                         <v-list-item-subtitle>
-                                            View {{ repo }} on GitHub
+                                            See <span class="font-weight-medium">{{ repo }}</span> repository on GitHub
                                         </v-list-item-subtitle>
+                                        <template v-slot:append>
+                                            <v-icon size="small" class="mr-1">mdi-open-in-new</v-icon>
+                                        </template>
+                                    </v-list-item>
+                                    <v-list-item density="compact" :href="`https://robsmitha.github.io/#/repo/${repo}`" target="_blank">
+                                        <template v-slot:prepend>
+                                            <v-avatar color="primary">
+                                                <v-icon size="small">mdi-desktop-classic</v-icon>
+                                            </v-avatar>
+                                        </template>
+                                        <v-list-item-title>
+                                            robsmitha.github.io
+                                        </v-list-item-title>
+                                        <v-list-item-subtitle>
+                                            See <span class="font-weight-medium">{{ repo }}</span> project on robsmitha.github.io
+                                        </v-list-item-subtitle>
+                                        <template v-slot:append>
+                                            <v-icon size="small" class="mr-1">mdi-open-in-new</v-icon>
+                                        </template>
                                     </v-list-item>
                                 </v-list>
                             </v-expansion-panel-text>
@@ -170,7 +196,7 @@
                 @click="dialog = false"
             ></v-btn>
             <v-toolbar-title>
-                <span class="font-weight-bold">{{ selectedItem?.name }}</span>
+                <span class="font-weight-medium">{{ selectedItem?.name }}</span>
             </v-toolbar-title>
             <template v-if="!$vuetify.display.mobile">
                 <v-spacer />
@@ -327,7 +353,29 @@ async function getRepoContents(item: SearchItem){
             .replace(new RegExp(startPattern, 'g'), '')
             .replace(new RegExp(endPattern, 'g'), '')
 
-    html = `// ${item.repo_name}/${item.path}\n` + html
+    let commentPrefix = ''
+    let commentSuffix = ''
+    const extension = item.name.split('.').pop() || ''
+    switch(extension.toLowerCase()){
+        case 'py':
+            commentPrefix = '#'
+            break
+        case 'sql':
+            commentPrefix = '--'
+            break
+        case 'html':
+            commentPrefix = '<!--'
+            commentSuffix = '-->'
+        break
+        case 'css':
+            commentPrefix = '/*'
+            commentSuffix = '*/'
+            break
+        default:
+            commentPrefix = '//'
+            break
+    }
+    html = `${commentPrefix} ${item.repo_name}/${item.path} ${commentSuffix}\n` + html
 
     dialogContents.value = html
     dialogLoading.value = false;

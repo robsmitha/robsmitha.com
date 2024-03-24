@@ -11,7 +11,7 @@ import router from '../router'
 
 import 'highlight.js/styles/stackoverflow-light.css'
 import 'highlight.js/lib/common';
-import hljsVuePlugin from "@highlightjs/vue-plugin"
+import hljsVuePlugin from '@highlightjs/vue-plugin'
 
 // Types
 import type { App } from 'vue'

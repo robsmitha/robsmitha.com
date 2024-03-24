@@ -14,7 +14,7 @@
                             {{ new Date().getFullYear() }}
                         </div>
                     </v-col>
-                    <v-col md="3" cols="12">
+                    <v-col v-if="!$vuetify.display.mobile" md="3" cols="12">
                         <v-list density="compact">
                             <v-list-subheader>{{ store.signedIn ? 'Account' : 'Sign in' }}</v-list-subheader>
                             <v-list-item v-if="!store.signedIn" title="GitHub" href=".auth/login/github"></v-list-item>
@@ -22,7 +22,7 @@
                             <v-list-item v-if="store.signedIn" title="Sign out" href=".auth/logout"></v-list-item>
                         </v-list>
                     </v-col>
-                    <v-col md="3" cols="12">
+                    <v-col v-if="!$vuetify.display.mobile" md="3" cols="12">
                         <v-list density="compact">
                             <v-list-subheader>Pages</v-list-subheader>
                             <v-list-item :active="false" title="Home" value="home" to="/"></v-list-item>
@@ -30,7 +30,7 @@
                             <v-list-item :active="false" title="Code" value="code" to="/code"></v-list-item>
                         </v-list>
                     </v-col>
-                    <v-col md="3" cols="12">
+                    <v-col v-if="!$vuetify.display.mobile" md="3" cols="12">
                         <v-list density="compact">
                             <v-list-subheader>External Links</v-list-subheader>
                             <v-list-item title="GitHub" href="https://github.com/robsmitha" target="_blank"></v-list-item>

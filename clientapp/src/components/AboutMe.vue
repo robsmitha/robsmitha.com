@@ -27,7 +27,7 @@
             :width="300"
             aspect-ratio="4/3"
             cover
-            src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_fatherhood_-7-i19.svg">
+            src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_barbecue_3x93.svg">
           </v-img>
         </v-col>
       </v-row>
