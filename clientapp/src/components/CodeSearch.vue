@@ -175,7 +175,9 @@
             <template v-if="!$vuetify.display.mobile">
                 <v-spacer />
                 <v-toolbar-items>
-                    <v-chip label class="mt-3 mr-3">{{ selectedItem?.repo_name }}</v-chip>
+                    <v-chip label class="mt-3 mr-3 font-weight-medium" :href="`https://github.com/robsmitha/${selectedItem?.repo_name}`" target="_blank">
+                        <v-icon small>mdi-github</v-icon>&nbsp;{{ selectedItem?.repo_name }}
+                    </v-chip>
                 </v-toolbar-items>
             </template>
         </v-toolbar>
@@ -190,18 +192,18 @@
                 :code="dialogContents"
             />
         </v-card-text>
-        <v-card-subtitle class="pa-0">
-            <v-list density="compact" class="my-0">
+        <v-card-title class="pa-0">
+            <v-list density="compact" class="py-0">
                 <v-list-item :href="selectedItem?.html_url" target="_blank">
-                    <template v-slot:prepend>
+                    <v-list-item-subtitle>
+                        See {{ selectedItem?.name }} on GitHub
+                    </v-list-item-subtitle>
+                    <template v-slot:append>
                         <v-icon size="small">mdi-github</v-icon>
                     </template>
-                    <v-list-item-subtitle>
-                        View on GitHub
-                    </v-list-item-subtitle>
                 </v-list-item>
             </v-list>
-        </v-card-subtitle>
+        </v-card-title>
       </v-card>
     </v-dialog>
 </template>
@@ -318,7 +320,12 @@ async function getRepoContents(item: SearchItem){
     // Remove github markup
     const startPattern = '^<div id="file" class="[^"]*" data-path="' + item.path.replace(/\//g, "\\/") + '"><div class="plain"><pre style="white-space: pre-wrap">'
     const endPattern = '</pre></div></div>$'
-    html = html.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(new RegExp(startPattern, 'g'), '').replace(new RegExp(endPattern, 'g'), '')
+    html = html
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/&amp;/g, "&")
+            .replace(new RegExp(startPattern, 'g'), '')
+            .replace(new RegExp(endPattern, 'g'), '')
 
     html = `// ${item.repo_name}/${item.path}\n` + html
 
@@ -389,6 +396,9 @@ function getDevicon(fileName: string){
             break;
         case 'vue':
             path = 'vuejs/vuejs-original';
+            break;
+        case 'py':
+            path = 'python/python-original';
             break;
     }
     return `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${path}.svg`
