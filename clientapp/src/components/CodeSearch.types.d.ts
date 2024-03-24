@@ -6,7 +6,6 @@ export type SearchItem = {
     html_url: string;
     repo_name: string;
     repo_description: string | null;
-    language_icon: string | null;
     text_matches: TextMatch[];
 }
 

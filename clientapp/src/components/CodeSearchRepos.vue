@@ -11,11 +11,17 @@
                 <template v-slot:default="{ expanded }">
                     <span :class="{
                         'font-weight-medium': expanded
-                    }">{{ repo }}</span>
+                    }">
+                        {{ repo }}
+                    </span>
                 </template>
                 <template v-slot:actions="{ expanded }">
-                    <v-badge class="text-right" :color="expanded ? 'primary' : 'grey-lighten-2'" inline :content="`${repos?.get(repo)?.length} Files`">
-                    </v-badge>
+                    <v-badge 
+                        class="text-right"
+                        inline
+                        :color="expanded ? 'primary' : 'grey-lighten-2'"
+                        :content="`${repos?.get(repo)?.length} Files`"
+                    ></v-badge>
                 </template>
             </v-expansion-panel-title>
             
@@ -23,12 +29,11 @@
                 <v-list class="py-0">
                     <v-divider />
                     <v-list-subheader>Source Code</v-list-subheader>
+
                     <v-list-item v-for="item in repos.get(repo)" :key="item.sha" :title="item.name" :subtitle="item.path" @click="emit('file-selected', item)">
                         
                         <template v-slot:prepend>
-                            <v-avatar tile>
-                                <v-img :src="getDevicon(item.name)" />
-                            </v-avatar>
+                            <Devicon :file-name="item.name" />
                         </template>
 
                         <template v-slot:append>
@@ -44,32 +49,32 @@
 
                     <v-divider class="mt-3" />
                     <v-list-subheader>External Links</v-list-subheader>
-                    <v-list-item density="compact" :href="`https://github.com/robsmitha/${repo}`" target="_blank">
+
+                    <v-list-item 
+                        density="compact" 
+                        :href="`https://github.com/robsmitha/${repo}`" 
+                        target="_blank"
+                        title="github.com"
+                        :subtitle="`See ${repo} repository on GitHub`">
                         <template v-slot:prepend>
                             <v-avatar color="black"><v-icon size="small">mdi-github</v-icon></v-avatar>
                         </template>
-                        <v-list-item-title>
-                            GitHub
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                            See <span class="font-weight-medium">{{ repo }}</span> repository on GitHub
-                        </v-list-item-subtitle>
                         <template v-slot:append>
                             <v-icon size="small" class="mr-1">mdi-open-in-new</v-icon>
                         </template>
                     </v-list-item>
-                    <v-list-item density="compact" :href="`https://robsmitha.github.io/#/repo/${repo}`" target="_blank">
+
+                    <v-list-item 
+                        density="compact"
+                        :href="`https://robsmitha.github.io/#/repo/${repo}`"
+                        target="_blank"
+                        title="robsmitha.github.io"
+                        :subtitle="`See ${repo} project on robsmitha.github.io`">
                         <template v-slot:prepend>
                             <v-avatar color="primary">
                                 <v-icon size="small">mdi-desktop-classic</v-icon>
                             </v-avatar>
                         </template>
-                        <v-list-item-title>
-                            robsmitha.github.io
-                        </v-list-item-title>
-                        <v-list-item-subtitle>
-                            See <span class="font-weight-medium">{{ repo }}</span> project on robsmitha.github.io
-                        </v-list-item-subtitle>
                         <template v-slot:append>
                             <v-icon size="small" class="mr-1">mdi-open-in-new</v-icon>
                         </template>
@@ -89,7 +94,7 @@ const emit = defineEmits(['file-selected'])
 
 const repos = computed(() => {
     return props.items.reduce((map: Map<string, SearchItem[]>, searchItem: SearchItem) => {
-        searchItem.language_icon = getDevicon(searchItem.name)
+
         if (!map.has(searchItem.repo_name)) {
             map.set(searchItem.repo_name, [searchItem])
         } else {
@@ -99,62 +104,4 @@ const repos = computed(() => {
         return map
     }, new Map<string, SearchItem[]>())
 })
-
-// TODO: use devicon vue component or create?
-function getDevicon(fileName: string){
-    const extension = fileName.split('.').pop() || ''
-    let path = 'devicon/devicon-original'
-    switch(extension.toLowerCase()){
-        case "cs":
-        case "csproj":
-            path = 'dotnetcore/dotnetcore-original'
-            break;  
-        case "css":
-            path = 'css3/css3-original'
-            break;  
-        case 'php':
-            path = 'php/php-original';
-            break;
-        case 'java':
-            path = 'java/java-original';
-            break;
-        case 'cshtml':
-            path = 'dot-net/dot-net-original-wordmark';
-            break;
-        case 'less':
-            path = 'less/less-plain-wordmark';
-            break;
-        case 'scss':
-            path = 'sass/sass-original';
-            break;
-        case 'html':
-            path = 'html5/html5-original';
-            break;
-        case 'js':
-            path = 'javascript/javascript-original';
-            break;
-        case 'sh':
-            path = 'linux/linux-original';
-            break;
-        case 'sql':
-            path = 'azuresqldatabase/azuresqldatabase-original';
-            break;
-        case 'yaml':
-            path = 'yaml/yaml-original';
-            break;
-        case 'json':
-            path = 'json/json-original';
-            break;
-        case 'xml':
-            path = 'xml/xml-original';
-            break;
-        case 'vue':
-            path = 'vuejs/vuejs-original';
-            break;
-        case 'py':
-            path = 'python/python-original';
-            break;
-    }
-    return `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${path}.svg`
-}
 </script>
