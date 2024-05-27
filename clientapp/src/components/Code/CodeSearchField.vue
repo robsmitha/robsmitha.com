@@ -8,11 +8,11 @@
         variant="outlined"
     >
         <span class="d-block font-weight-bold">Too many requests. Please try again shortly.</span>
-        <template v-if="!store.signedIn">
+        <template v-if="!auth.signedIn">
             Sign in with <a class="text-black" href="/.auth/login/github">GitHub</a> 
             or <a class="text-black" href="/.auth/login/aad">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
         </template>
-        <template v-else-if="!store.hasValidAccessToken">
+        <template v-else-if="!auth.hasValidAccessToken">
             Authorize robsmitha.com on GitHub to access a higher rate limit.
             <v-btn size="small" variant="text" color="outlined" small @click="emit('authorize', search)">
                 <v-icon size="small">mdi-github</v-icon> Authorize
@@ -49,12 +49,13 @@
 <script setup lang="ts">
 
 import { watch, computed } from 'vue'
-import { useAppStore } from '@/store/app'
+import { useAuthStore } from "@/store/auth"
+
 
 const props = defineProps(['rateLimited', 'loading', 'term'])
 const emit = defineEmits(['input', 'search', 'authorize', 'clear'])
 
-const store = useAppStore()
+const auth = useAuthStore()
 
 const search = computed({
   get() {

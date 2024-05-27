@@ -46,6 +46,6 @@
 </template>
 
 <script setup lang="ts">
-import { useAppStore } from "@/store/app"
-const store = useAppStore()
+import { useAuthStore } from "@/store/auth"
+const store = useAuthStore()
 </script>

@@ -15,23 +15,17 @@ using Newtonsoft.Json;
 
 namespace Elysian
 {
-    public class GitHubFunctions(ILoggerFactory loggerFactory, IConfiguration configuration, IGitHubService gitHubService,
+    public class GitHubFunctions(ILogger<GitHubFunctions> logger, IConfiguration configuration, IGitHubService gitHubService,
         IClaimsPrincipalAccessor claimsPrincipalAccessor, ElysianContext context)
     {
-        private readonly ILogger _logger = loggerFactory.CreateLogger<GitHubFunctions>();
-        private readonly IConfiguration _configuration = configuration;
-        private readonly IGitHubService _gitHubService = gitHubService;
-        private readonly IClaimsPrincipalAccessor _claimsPrincipalAccessor = claimsPrincipalAccessor;
-        private readonly ElysianContext _context = context;
-
         // TODO: Protect endpoints with AuthorizationLevel.User
         // AuthorizationLevel settings do not work in development but after publishing to Azure, the authLevel setting is enforced.
 
         [Function("GitHubAuthMe")]
         public async Task<HttpResponseData> GitHubAuthMe([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
-            var oAuthToken = _claimsPrincipalAccessor.IsAuthenticated
-                ? await _context.OAuthTokens.SingleOrDefaultAsync(t => t.UserId == _claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub)
+            var oAuthToken = claimsPrincipalAccessor.IsAuthenticated
+                ? await context.OAuthTokens.SingleOrDefaultAsync(t => t.UserId == claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub)
                 : null;
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "text/json; charset=utf-8");
@@ -50,13 +44,13 @@ namespace Elysian
 
             try
             {
-                var userGitHubTokenQuery = _context.OAuthTokens.Where(t => t.UserId == _claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
+                var userGitHubTokenQuery = context.OAuthTokens.Where(t => t.UserId == claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
 
-                var accessToken = _claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
+                var accessToken = claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
                     ? await userGitHubTokenQuery.Select(t => t.AccessToken).SingleOrDefaultAsync()
-                    : _configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>();
+                    : configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>();
 
-                var result = await _gitHubService.GetGitHubCodeSearchResultsAsync(new GitHubCodeSearchRequest
+                var result = await gitHubService.GetGitHubCodeSearchResultsAsync(new GitHubCodeSearchRequest
                 {
                     Term = term,
                     AccessToken = accessToken
@@ -73,12 +67,12 @@ namespace Elysian
             }
             //catch (RateLimitExceededException ex)
             //{
-            //    _logger.LogError(ex, "Rate Limit Reached. [Term: {term}]", term);
+            //    logger.LogError(ex, "Rate Limit Reached. [Term: {term}]", term);
             //    return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
             //}
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception sending the Search Code request.[Term: {term}]", term);
+                logger.LogError(ex, "An unhandled exception sending the Search Code request.[Term: {term}]", term);
                 return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Failed to send Search Code request.");
             }
         }
@@ -92,13 +86,13 @@ namespace Elysian
 
             try
             {
-                var userGitHubTokenQuery = _context.OAuthTokens.Where(t => t.UserId == _claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
+                var userGitHubTokenQuery = context.OAuthTokens.Where(t => t.UserId == claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
 
-                var accessToken = _claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
+                var accessToken = claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
                     ? await userGitHubTokenQuery.Select(t => t.AccessToken).SingleOrDefaultAsync()
-                    : _configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>();
+                    : configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>();
 
-                var result = await _gitHubService.GetRepositoryContentsAsHtmlAsync(new GitHubRepositoryContentsRequest("robsmitha", repo, path, accessToken));
+                var result = await gitHubService.GetRepositoryContentsAsHtmlAsync(new GitHubRepositoryContentsRequest("robsmitha", repo, path, accessToken));
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/html; charset=utf-8");
@@ -108,12 +102,12 @@ namespace Elysian
             }
             //catch (RateLimitExceededException ex)
             //{
-            //    _logger.LogError(ex, "Rate Limit Reached. [Repo: {repo}, Path: {term}]", repo, path);
+            //    logger.LogError(ex, "Rate Limit Reached. [Repo: {repo}, Path: {term}]", repo, path);
             //    return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
             //}
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception sending the Repository Contents request. [Repo: {repo}, Path: {term}]", repo, path);
+                logger.LogError(ex, "An unhandled exception sending the Repository Contents request. [Repo: {repo}, Path: {term}]", repo, path);
                 return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Failed to send Repository Contents request.");
             }
         }
@@ -121,7 +115,7 @@ namespace Elysian
         [Function("GitHubOAuthUrl")]
         public async Task<HttpResponseData> GetGitHubOAuthUrl([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
-            if (!_claimsPrincipalAccessor.IsAuthenticated)
+            if (!claimsPrincipalAccessor.IsAuthenticated)
             {
                 return await req.WriteFailureResponseAsync(HttpStatusCode.Forbidden, "Authentication Failure.");
             }
@@ -132,14 +126,14 @@ namespace Elysian
                 {
                     State = Guid.NewGuid().ToString(),
                     OAuthProvider = OAuthProviders.GitHub,
-                    UserId = _claimsPrincipalAccessor.UserId,
+                    UserId = claimsPrincipalAccessor.UserId,
                     CreatedAt = DateTime.UtcNow
                 };
 
-                await _context.AddAsync(oAuthState);
-                await _context.SaveChangesAsync();
+                await context.AddAsync(oAuthState);
+                await context.SaveChangesAsync();
 
-                var oAuthUrl = await _gitHubService.GetGitHubOAuthUrlAsync(oAuthState.State);
+                var oAuthUrl = await gitHubService.GetGitHubOAuthUrlAsync(oAuthState.State);
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/json; charset=utf-8");
@@ -152,7 +146,7 @@ namespace Elysian
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception occurred getting GitHub OAuth Url.");
+                logger.LogError(ex, "An unhandled exception occurred getting GitHub OAuth Url.");
                 return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Failed to get GitHub OAuth Url.");
             }
         }
@@ -160,7 +154,7 @@ namespace Elysian
         [Function("GitHubOAuthCallback")]
         public async Task<HttpResponseData> GitHubOAuthCallback([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
         {
-            if (!_claimsPrincipalAccessor.IsAuthenticated)
+            if (!claimsPrincipalAccessor.IsAuthenticated)
             {
                 return await req.WriteFailureResponseAsync(HttpStatusCode.Forbidden, "Authentication Failure.");
             }
@@ -173,38 +167,38 @@ namespace Elysian
                     return await req.WriteFailureResponseAsync(HttpStatusCode.BadRequest, "Code and State Required.");
                 }
 
-                var oAuthState = await _context.OAuthStates.OrderByDescending(s => s.CreatedAt)
-                    .FirstOrDefaultAsync(s => s.UserId == _claimsPrincipalAccessor.UserId && s.OAuthProvider == OAuthProviders.GitHub);
+                var oAuthState = await context.OAuthStates.OrderByDescending(s => s.CreatedAt)
+                    .FirstOrDefaultAsync(s => s.UserId == claimsPrincipalAccessor.UserId && s.OAuthProvider == OAuthProviders.GitHub);
 
                 if (string.IsNullOrWhiteSpace(oAuthState?.State))
                 {
                     return await req.WriteFailureResponseAsync(HttpStatusCode.BadRequest, "OAuth State Not Found.");
                 }
 
-                if (!OAuthStateEncryptor.Validate(_configuration.GetValue<string>("SecretKey"), oAuthState.State, accessTokenRequest.state))
+                if (!OAuthStateEncryptor.Validate(configuration.GetValue<string>("SecretKey"), oAuthState.State, accessTokenRequest.state))
                 {
                     return await req.WriteFailureResponseAsync(HttpStatusCode.BadRequest, "Invalid State.");
                 }
 
-                var accessToken = await _gitHubService.GetGitHubAccessTokenAsync(accessTokenRequest);
+                var accessToken = await gitHubService.GetGitHubAccessTokenAsync(accessTokenRequest);
 
-                var existingOAuthToken = await _context.OAuthTokens.SingleOrDefaultAsync(t => t.UserId == _claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
+                var existingOAuthToken = await context.OAuthTokens.SingleOrDefaultAsync(t => t.UserId == claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
                 var oAuthToken = new OAuthToken
                 {
                     AccessToken = accessToken.access_token,
                     OAuthProvider = "github",
                     TokenType = accessToken.token_type,
                     Scope = accessToken.scope,
-                    UserId = _claimsPrincipalAccessor.UserId
+                    UserId = claimsPrincipalAccessor.UserId
                 };
 
                 if (existingOAuthToken != null)
                 {
-                    _context.Remove(existingOAuthToken);
+                    context.Remove(existingOAuthToken);
                 }
-                _context.Remove(oAuthState);
-                await _context.AddAsync(oAuthToken);
-                await _context.SaveChangesAsync();
+                context.Remove(oAuthState);
+                await context.AddAsync(oAuthToken);
+                await context.SaveChangesAsync();
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/json; charset=utf-8");
@@ -216,7 +210,7 @@ namespace Elysian
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception occurred getting GitHub Access Token.");
+                logger.LogError(ex, "An unhandled exception occurred getting GitHub Access Token.");
                 return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Failed to get GitHub Access Token.");
             }
         }

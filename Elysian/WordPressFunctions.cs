@@ -10,15 +10,12 @@ namespace Elysian
 {
     public class WordPressFunctions(ILogger<WordPressFunctions> logger, IWordPressService wordPressService)
     {
-        private readonly ILogger<WordPressFunctions> _logger = logger;
-        private readonly IWordPressService _wordPressService = wordPressService;
-
         [Function("WordPressContent")]
-        public async Task<HttpResponseData> GitHubAuthMe([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+        public async Task<HttpResponseData> WordPressContent([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
             try
             {
-                var content = await _wordPressService.GetWordPressContentAsync();
+                var content = await wordPressService.GetWordPressContentAsync();
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/json; charset=utf-8");
                 await response.WriteStringAsync(JsonConvert.SerializeObject(content));
@@ -27,8 +24,8 @@ namespace Elysian
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception occurred getting WordPress page content.");
-                return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Failed to send Search Code request.");
+                logger.LogError(ex, "An unhandled exception occurred getting WordPress page content.");
+                return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Failed to send headless CMS content request.");
             }
         }
     }

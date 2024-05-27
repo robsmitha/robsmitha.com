@@ -1,5 +1,5 @@
 <template>
-    <v-sheet color="grey-lighten-4" class="mb-5">
+    <v-sheet color="grey-lighten-4">
         <v-container>
             <v-row>
                 <v-col>
@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { WpCategory } from '@/store/types'
 import { ref } from 'vue'
-import { SearchItem } from '@/components/CodeSearch.types'
+import { SearchItem } from '@/components/Code/CodeSearch.types'
 
 // Search
 const loading = ref(false)
@@ -173,4 +173,4 @@ async function onCategorySelected(subCategory: WpCategory) {
     term.value = subCategory.description
     await searchGitHub()
 }
-</script>
+</script>@/components/Code/CodeSearch.types

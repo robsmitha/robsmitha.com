@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { SearchItem, TextMatch } from '@/components/CodeSearch.types'
+import { SearchItem, TextMatch } from '@/components/Code/CodeSearch.types'
 
 const props = defineProps(['rateLimited', 'loading', 'term', 'items'])
 const emit = defineEmits(['file-selected'])

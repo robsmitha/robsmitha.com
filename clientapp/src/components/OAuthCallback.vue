@@ -16,9 +16,9 @@
 <script lang="ts" setup>
 import { ref, watch} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useAppStore } from "@/store/app"
+import { useAuthStore } from "@/store/auth"
 
-const store = useAppStore()
+const auth = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 
@@ -28,7 +28,7 @@ const loading = ref(true)
 const code = route.query['code']?.toString()
 const state = route.query['state']?.toString()
 if (code && state) {
-    store.requestGitHubAccessToken(code, state)
+    auth.requestGitHubAccessToken(code, state)
         .then(_ => {
             router.push('/code')
             message.value = "Successfully retreived GitHub Access Token!"
