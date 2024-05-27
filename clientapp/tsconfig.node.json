@@ -3,7 +3,7 @@
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["vite.config.mts"]
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"]
+  }
 }
