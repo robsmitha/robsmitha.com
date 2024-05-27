@@ -24,14 +24,12 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-          source-url: ${{ env.NUGET_URL }}
-        env:
-          NUGET_AUTH_TOKEN: ${{ secrets.READ_REPO_TOKEN }}
 
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: pwsh
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet nuget add source --username USERNAME --password ${{ secrets.READ_REPO_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/robsmitha/index.json"
           dotnet build --configuration Release --output ./output
           popd
 
