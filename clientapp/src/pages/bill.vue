@@ -1,6 +1,6 @@
 <template>
     <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
-    <BillView
+    <BillDetails
         :congress="props.congress"
         :bill-type="props.billType"
         :bill-number="props.billNumber"
@@ -15,6 +15,7 @@ const props = defineProps({
   billNumber: { type: String }
 })
 
+const fullBillNumber = props?.billType && props?.billNumber ? props?.billType + props?.billNumber : ''
 const breadcrumbs = [
   {
     title: 'Bills',
@@ -22,7 +23,7 @@ const breadcrumbs = [
     to: '/bills',
   },
   {
-    title: props.billType + props.billNumber,
+    title: fullBillNumber,
     disabled: true
   }
 ]

@@ -17,12 +17,12 @@
                         <template v-slot:item="{ item }">
                             <tr>
                                 <td v-for="header in headers" :key="header.key">
-                                <template v-if="header.key === 'billName'">
-                                    <v-btn variant="text" :to="`bill/${item.congress}/${item.type}/${item.number}`">{{ `${item.type}${item.number}` }}</v-btn>
-                                </template>
-                                <template v-else>
-                                    {{ getNestedValue(item, header.key) }}
-                                </template>
+                                    <template v-if="header.key === 'billName'">
+                                        <v-btn variant="text" :to="`bill/${item.congress}/${item.type}/${item.number}`">{{ `${item.type}${item.number}` }}</v-btn>
+                                    </template>
+                                    <template v-else>
+                                        {{ getNestedValue(item, header.key) }}
+                                    </template>
                                 </td>
                             </tr>
                         </template>
@@ -35,6 +35,14 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { Bill } from '@/components/Congress/BillList.types'
+import { VDataTable } from 'vuetify/components';
+
+interface UpdateOptions {
+  page: number,
+  itemsPerPage: number,
+  sortBy: VDataTable['sortBy']
+}
 
 const headers = [
     {
@@ -57,13 +65,14 @@ const itemsPerPageOptions = [
     {value: 100, title: '100'}
 ]
 
-const serverItems = ref([])
+const serverItems = ref<Bill[]>([])
 const loading = ref(false)
 const selectedItemsPerPage = ref(10)
 const totalItems = ref(0)
 const search = ref('')
 
-async function loadItems ({ page, itemsPerPage, sortBy }) {
+async function loadItems (options: UpdateOptions) {
+    const { page, itemsPerPage, sortBy } = options
     loading.value = true
     try {
         const sort =  sortBy.length > 0 ? sortBy[0].key : 'updateDate'
@@ -75,7 +84,6 @@ async function loadItems ({ page, itemsPerPage, sortBy }) {
             return
         }
         const data = await response.json()
-        console.log("CongressGetBills", data)
         serverItems.value = data.bills
         totalItems.value = data.pagination.count
     } catch (e) {

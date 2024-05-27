@@ -173,4 +173,4 @@ async function onCategorySelected(subCategory: WpCategory) {
     term.value = subCategory.description
     await searchGitHub()
 }
-</script>@/components/Code/CodeSearch.types
+</script>
