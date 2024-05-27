@@ -27,7 +27,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Add GitHub package source to NuGet
-        run: dotnet nuget add source --username robsmitha --password ${{ secrets.READ_REPO_TOKEN }} --store-password-in-clear-text --name github ${{ env.NUGET_URL }}
+        run: dotnet nuget add source --username robsmitha --password ${{ secrets.READ_REPO_TOKEN }} --store-password-in-clear-text --name github ${{ secrets.NUGET_URL }}
 
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: pwsh
