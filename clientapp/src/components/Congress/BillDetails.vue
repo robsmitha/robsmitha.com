@@ -34,18 +34,20 @@
                             {{ bill.latestAction.text }}
                         </v-card-text>
 
-                        <v-card-title class="text-body-1">CBO Cost Estimates</v-card-title>
-                        <v-list v-if="bill.cboCostEstimates" density="compact" class="py-0">
-                            <v-list-item v-for="c in bill.cboCostEstimates" :key="c.url">
-                                <v-list-item-text class="text-body-2">
-                                    {{ c.description }}
-                                </v-list-item-text>
-                                <template v-slot:append>
-                                    <v-btn :href="c.url" target="_blank" variant="text" color="grey-lighten-1" icon="mdi-open-in-new">
-                                    </v-btn>
-                                </template>
-                            </v-list-item>
-                        </v-list>
+                        <template v-if="bill.cboCostEstimates">
+                            <v-card-title class="text-body-1">CBO Cost Estimates</v-card-title>
+                            <v-list density="compact" class="py-0">
+                                <v-list-item v-for="c in bill.cboCostEstimates" :key="c.url">
+                                    <v-list-item-text class="text-body-2">
+                                        {{ c.description }}
+                                    </v-list-item-text>
+                                    <template v-slot:append>
+                                        <v-btn :href="c.url" target="_blank" variant="text" color="grey-lighten-1" icon="mdi-open-in-new">
+                                        </v-btn>
+                                    </template>
+                                </v-list-item>
+                            </v-list>
+                        </template>
                     </v-card-item>
                 </v-card>
             </template>
@@ -62,6 +64,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, defineProps } from 'vue'
+import { Bill } from '@/components/Congress/BillDetailsResponse.types'
 
 const props = defineProps({
   congress: { type: String },
@@ -70,7 +73,7 @@ const props = defineProps({
 })
 
 const loading = ref(false)
-const bill = ref()
+const bill = ref<Bill>()
 
 onMounted(() => {
     getBill()

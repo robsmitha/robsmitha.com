@@ -28,6 +28,7 @@
                             <v-list-item :active="false" title="Home" value="home" to="/"></v-list-item>
                             <v-list-item :active="false" title="Career" value="about" to="/about"></v-list-item>
                             <v-list-item :active="false" title="Code" value="code" to="/code"></v-list-item>
+                            <v-list-item :active="false" title="Bills" value="bills" to="/bills"></v-list-item>
                         </v-list>
                     </v-col>
                     <v-col v-if="!$vuetify.display.mobile" md="3" cols="12">
