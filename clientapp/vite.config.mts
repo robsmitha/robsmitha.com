@@ -71,5 +71,4 @@ export default defineConfig({
     //   passphrase: 'password'
     // }
   },
-  base: "./dist"
 })
