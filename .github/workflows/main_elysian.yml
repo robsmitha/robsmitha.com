@@ -24,9 +24,9 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-          source-url: 'https://nuget.pkg.github.com/robsmitha/index.json'
+          source-url: ${{ env.NUGET_URL }}
         env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUGET_AUTH_TOKEN: ${{ secrets.READ_REPO_TOKEN }}
 
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: pwsh
