@@ -14,6 +14,9 @@
                         :items-per-page-options="itemsPerPageOptions"
                         @update:options="loadItems"
                     >
+                        <template v-slot:loading>
+                            <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                        </template>
                         <template v-slot:item="{ item }">
                             <tr>
                                 <td v-for="header in headers" :key="header.key">

@@ -23,9 +23,10 @@
     >
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home-roof" title="Home" value="home" to="/"></v-list-item>
+        <v-list-item prepend-icon="mdi-magnify" title="Search Code" value="code" to="/code"></v-list-item>
+        <v-list-item prepend-icon="mdi-rocket-launch-outline" title="Generate Code" value="generate-code" to="/generate-code"></v-list-item>
+        <v-list-item prepend-icon="mdi-radar" title="Bill Tracker" value="bills" to="/bills"></v-list-item>
         <v-list-item prepend-icon="mdi-certificate-outline" title="Resume" value="about" to="/about"></v-list-item>
-        <v-list-item prepend-icon="mdi-bug-outline" title="Code" value="code" to="/code"></v-list-item>
-        <v-list-item prepend-icon="mdi-town-hall" title="Bills" value="bills" to="/bills"></v-list-item>
 
         <v-list-item subtitle="External Links"></v-list-item>
         <v-list-item prepend-icon="mdi-github" title="GitHub" href="https://github.com/robsmitha" target="_blank"></v-list-item>

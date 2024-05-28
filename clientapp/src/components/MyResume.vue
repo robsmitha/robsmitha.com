@@ -1,5 +1,5 @@
 <template>
-  <v-sheet color="grey-lighten-4" class="mb-5">
+  <v-sheet color="grey-lighten-4" class="pb-5">
     <v-container>
       <v-row>
         <v-col offset-lg="1" lg="10">

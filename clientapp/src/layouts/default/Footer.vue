@@ -1,20 +1,23 @@
 <template>
-    <v-sheet>
+    <v-sheet color="grey-lighten-4">
         <v-container>
-            <v-footer>
-                <v-row class="mb-3">
-                    <v-col md="3" cols="12">
+            <v-footer color="grey-lighten-4">
+                <v-row>
+                    <v-col>
                         <v-img
                             alt="Logo with Code Lines"
                             src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_code.svg"
                             :height="30"
                             :width="30"
+                            class="text-center"
                         ></v-img>
-                        <div class="mt-2">
+                    </v-col>
+                    <v-col>
+                        <div class="text-right">
                             {{ new Date().getFullYear() }}
                         </div>
                     </v-col>
-                    <v-col v-if="!$vuetify.display.mobile" md="3" cols="12">
+                    <!-- <v-col v-if="!$vuetify.display.mobile" md="3" cols="12">
                         <v-list density="compact">
                             <v-list-subheader>{{ store.signedIn ? 'Account' : 'Sign in' }}</v-list-subheader>
                             <v-list-item v-if="!store.signedIn" title="GitHub" href=".auth/login/github"></v-list-item>
@@ -28,6 +31,7 @@
                             <v-list-item :active="false" title="Home" value="home" to="/"></v-list-item>
                             <v-list-item :active="false" title="Career" value="about" to="/about"></v-list-item>
                             <v-list-item :active="false" title="Code" value="code" to="/code"></v-list-item>
+                            <v-list-item :active="false" title="DTO Generator" value="code-generation" to="/code-generation"></v-list-item>
                             <v-list-item :active="false" title="Bills" value="bills" to="/bills"></v-list-item>
                         </v-list>
                     </v-col>
@@ -39,7 +43,7 @@
                             <v-list-item title="Résumé" href="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/files/Rob+Smitha+Resume.pdf" target="_blank"></v-list-item>
                             <v-list-item title="Projects" href="https://robsmitha.github.io/" target="_blank"></v-list-item>
                         </v-list>
-                    </v-col>
+                    </v-col> -->
                 </v-row>
             </v-footer>
         </v-container>
