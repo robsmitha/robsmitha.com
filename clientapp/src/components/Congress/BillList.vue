@@ -15,7 +15,7 @@
                         @update:options="loadItems"
                     >
                         <template v-slot:loading>
-                            <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                            <v-skeleton-loader type="table-row@12"></v-skeleton-loader>
                         </template>
                         <template v-slot:item="{ item }">
                             <tr>

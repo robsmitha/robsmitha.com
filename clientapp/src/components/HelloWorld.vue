@@ -9,7 +9,7 @@
               <span class="text-h3 d-flex">{{ props.text }}</span>
               <br />
               <div class="text-center">
-                <v-btn v-for="b in actions" :key="b.text" variant="text" :to="b.to" :href="b.href" :target="b.href ? '_blank': ''">{{ b.text }}</v-btn>
+                <v-btn v-for="b in actions" :key="b.text" variant="text" :to="b.to" :href="b.href" :target="b.href ? '_blank': ''" :prepend-icon="b.icon">{{ b.text }}</v-btn>
               </div>
           </div>
       </v-overlay>
@@ -20,7 +20,8 @@
 type HeroAction = {
   text: string,
   to: string | undefined,
-  href: string | undefined
+  href: string | undefined,
+  icon: string | undefined
 }
 
 let display = true

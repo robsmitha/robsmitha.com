@@ -18,6 +18,11 @@ const props = defineProps({
 const fullBillNumber = props?.billType && props?.billNumber ? props?.billType + props?.billNumber : ''
 const breadcrumbs = [
   {
+    title: 'Home',
+    disabled: false,
+    to: '/',
+  },
+  {
     title: 'Bills',
     disabled: false,
     to: '/bills',

@@ -1,11 +1,11 @@
 <template>
   <HelloWorld text="Hello World" :actions="actions" />
+  <Features />
   <AboutMe />
 </template>
 
 <script lang="ts" setup>
   const actions = [
-    { text: 'Career', to: '/about'},
-    { text: 'Code', to: '/code'}
+    { icon: 'mdi-certificate-outline', text: 'Resume', to: '/about'}
   ]
 </script>

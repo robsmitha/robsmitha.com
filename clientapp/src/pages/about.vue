@@ -1,14 +1,19 @@
 <template>
-  <!-- <HelloWorld 
-    text="Curriculum Vitae"
-    :actions="actions"
-    src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/work-3.jpg"
-  /> -->
+  <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
   <MyResume />
 </template>
 
 <script lang="ts" setup>
-const actions = [
-  { text: 'Download', href: 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/files/Rob+Smitha+Resume.pdf' }
+
+const breadcrumbs = [
+    {
+    title: 'Home',
+    disabled: false,
+    to: '/',
+  },
+  {
+    title: 'Resume',
+    disabled: true
+  }
 ]
 </script>
