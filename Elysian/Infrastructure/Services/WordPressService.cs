@@ -1,28 +1,17 @@
 ﻿using Elysian.Application.Interfaces;
 using Elysian.Application.Models;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Elysian.Infrastructure.Services
 {
-    public class WordPressService(IHttpClientFactory httpClientFactory, IConfiguration configuration) : IWordPressService
+    public class WordPressService(HttpClient httpClient) : IWordPressService
     {
-        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-        private readonly IConfiguration _configuration = configuration;
-
         public async Task<WordPressContent> GetWordPressContentAsync()
         {
-            var client = _httpClientFactory.CreateClient();
-
-            var pages = await client.GetStringAsync(_configuration.GetSection("WordPressCmsUri").Get<string>() + "/wp/v2/pages");
-            var posts = await client.GetStringAsync(_configuration.GetSection("WordPressCmsUri").Get<string>() + "/wp/v2/posts");
-            var tags = await client.GetStringAsync(_configuration.GetSection("WordPressCmsUri").Get<string>() + "/wp/v2/tags?per_page=100");
-            var categories = await client.GetStringAsync(_configuration.GetSection("WordPressCmsUri").Get<string>() + "/wp/v2/categories?per_page=100");
+            var pages = await httpClient.GetStringAsync("/wp-json/wp/v2/pages");
+            var posts = await httpClient.GetStringAsync("/wp-json/wp/v2/posts");
+            var tags = await httpClient.GetStringAsync("/wp-json/wp/v2/tags?per_page=100");
+            var categories = await httpClient.GetStringAsync("/wp-json/wp/v2/categories?per_page=100");
 
             return new WordPressContent
             {

@@ -1,6 +1,7 @@
-﻿using CapitolSharp.Congress.Enums;
+﻿using CapitolSharp.Congress;
+using CapitolSharp.Congress.Bills;
+using CapitolSharp.Congress.Enums;
 using Elysian.Application.Extensions;
-using Elysian.Application.Interfaces;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,7 @@ using System.Net;
 
 namespace Elysian
 {
-    public class CongressFunctions(ILogger<CongressFunctions> logger, ICongressService congressService)
+    public class CongressFunctions(ILogger<CongressFunctions> logger, CapitolSharpCongress congressClient)
     {
         [Function("CongressGetBills")]
         public async Task<HttpResponseData> GetBills([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
@@ -23,7 +24,15 @@ namespace Elysian
             
             try
             {
-                var bills = await congressService.GetBillsAsync(offset, limit, fromDateTime, toDateTime, sort, direction);
+                var bills = await congressClient.SendAsync(new BillListAllRequest
+                {
+                    Offset = offset,
+                    Limit = limit,
+                    FromDateTime = fromDateTime,
+                    ToDateTime = toDateTime,
+                    Sort = sort,
+                    Direction = direction
+                });
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/json; charset=utf-8");
                 await response.WriteStringAsync(JsonConvert.SerializeObject(bills));
@@ -46,7 +55,12 @@ namespace Elysian
 
             try
             {
-                var bill = await congressService.GetBillAsync(congress, billType, billNumber);
+                var bill = await congressClient.SendAsync(new BillDetailsRequest
+                {
+                    Congress = congress,
+                    BillType = billType,
+                    BillNumber = billNumber
+                });
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/json; charset=utf-8");
                 await response.WriteStringAsync(JsonConvert.SerializeObject(bill));

@@ -48,7 +48,7 @@ namespace Elysian
 
                 var accessToken = claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
                     ? await userGitHubTokenQuery.Select(t => t.AccessToken).SingleOrDefaultAsync()
-                    : configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>();
+                    : null;
 
                 var result = await gitHubService.GetGitHubCodeSearchResultsAsync(new GitHubCodeSearchRequest
                 {
@@ -90,7 +90,7 @@ namespace Elysian
 
                 var accessToken = claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
                     ? await userGitHubTokenQuery.Select(t => t.AccessToken).SingleOrDefaultAsync()
-                    : configuration.GetSection("DefaultAccessTokens:GitHub").Get<string>();
+                    : null;
 
                 var result = await gitHubService.GetRepositoryContentsAsHtmlAsync(new GitHubRepositoryContentsRequest("robsmitha", repo, path, accessToken));
 

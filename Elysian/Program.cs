@@ -1,4 +1,5 @@
 using Azure.Identity;
+using CapitolSharp.Congress;
 using Elysian.Application.Interfaces;
 using Elysian.Infrastructure.Context;
 using Elysian.Infrastructure.Identity;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration((context, config) =>
@@ -15,21 +17,44 @@ var host = new HostBuilder()
         {
             config.AddUserSecrets<Program>();
         }
-        else
-        {
-            // TODO: FunctionApp has access policy but cannot access keyvault
-            //var builtConfig = config.Build();
-            //var keyVaultUrl = builtConfig.GetValue<Uri>("KeyVaultUri");
-            //config.AddAzureKeyVault(keyVaultUrl, new DefaultAzureCredential());
-        }
     })
     .ConfigureServices((hostContext, services) =>
     {
-        services.AddHttpClient();
         services.AddSingleton<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
-        services.AddSingleton<IGitHubService, GitHubService>();
-        services.AddSingleton<IWordPressService, WordPressService>();
-        services.AddSingleton<ICongressService, CongressService>();
+
+        services.AddHttpClient<IWordPressService, WordPressService>(client =>
+        {
+            client.BaseAddress = hostContext.Configuration.GetValue<Uri>("WordPressCmsUri");
+        });
+
+        services.AddHttpClient("GitHubApi", (httpClient) =>
+        {
+            httpClient.BaseAddress = new Uri("https://api.github.com");
+
+            var accessToken = hostContext.Configuration.GetValue<string>("DefaultAccessTokens:GitHub");
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "robsmitha.com");
+            httpClient.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
+        });
+        services.AddHttpClient("GitHubOAuth", (httpClient) =>
+        {
+            httpClient.BaseAddress = new Uri("https://github.com");
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
+        services.AddTransient<IGitHubService, GitHubService>();
+
+
+        services.Configure<CongressApiSettings>(config =>
+        {
+            config.ApiKey = hostContext.Configuration.GetValue<string>("DefaultAccessTokens:CongressGov");
+        });
+        services.AddTransient<CapitolSharpCongress>(serviceProvider =>
+        {
+            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+            var congressApiSettings = serviceProvider.GetRequiredService<IOptions<CongressApiSettings>>();
+            return new(httpClientFactory.CreateClient(), congressApiSettings.Value);
+        });
+
         services.AddDbContext<ElysianContext>(options => options.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection")));
     })
     .ConfigureFunctionsWorkerDefaults(worker =>
