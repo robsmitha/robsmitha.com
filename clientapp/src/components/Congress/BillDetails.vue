@@ -96,7 +96,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, defineProps } from 'vue'
-import { Bill } from '@/components/Congress//types/BillDetailsResponse.types'
+import { Bill } from '@/components/Congress/types/BillDetailsResponse.types'
 import { Action } from '@/components/Congress/types/BillActionsResponse.types'
 import { Cosponsor } from '@/components/Congress/types/BillCosponsorsResponse.types'
 import { Amendment } from '@/components/Congress/types/BillAmendmentsResponse.types'
