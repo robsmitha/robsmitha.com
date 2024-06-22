@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { Bill } from '@/components/Congress/BillListAllResponse.types'
+import { Bill } from '@/components/Congress/types/BillListAllResponse.types'
 import { VDataTable } from 'vuetify/components';
 
 interface UpdateOptions {
@@ -99,4 +99,4 @@ async function loadItems (options: UpdateOptions) {
 function getNestedValue(obj: any, key: string) {
     return key.split('.').reduce((acc, part) => acc && acc[part], obj);
 }
-</script>@/components/Congress/BillListAllResponse.types
+</script>@/components/Congress/BillListAllResponse.types@/components/Congress/types/BillListAllResponse.types

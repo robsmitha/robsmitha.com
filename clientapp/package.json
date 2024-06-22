@@ -12,6 +12,7 @@
     "@mdi/font": "7.0.96",
     "core-js": "^3.34.0",
     "highlight.js": "^11.9.0",
+    "moment": "^2.30.1",
     "roboto-fontface": "*",
     "vue": "^3.3.0",
     "vuetify": "^3.0.0"

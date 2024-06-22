@@ -7,12 +7,12 @@
 
 const breadcrumbs = [
     {
-    title: 'Home',
+    title: 'HOME',
     disabled: false,
     to: '/',
   },
   {
-    title: 'Search Code',
+    title: 'SEARCH CODE',
     disabled: true
   }
 ]

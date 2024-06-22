@@ -1,6 +1,6 @@
 <template>
-  <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
-  <MyResume />
+    <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
+    <CongressFeed />
 </template>
 
 <script lang="ts" setup>
@@ -12,7 +12,7 @@ const breadcrumbs = [
     to: '/',
   },
   {
-    title: 'RESUME',
+    title: 'CONGRESS',
     disabled: true
   }
 ]

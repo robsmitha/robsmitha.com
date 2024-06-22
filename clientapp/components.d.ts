@@ -15,6 +15,7 @@ declare module 'vue' {
     CodeSearchCategories: typeof import('./src/components/Code/CodeSearchCategories.vue')['default']
     CodeSearchField: typeof import('./src/components/Code/CodeSearchField.vue')['default']
     CodeSearchRepos: typeof import('./src/components/Code/CodeSearchRepos.vue')['default']
+    CongressFeed: typeof import('./src/components/Congress/CongressFeed.vue')['default']
     Devicon: typeof import('./src/components/Code/Devicon.vue')['default']
     Features: typeof import('./src/components/Features.vue')['default']
     FileContentDialog: typeof import('./src/components/Code/FileContentDialog.vue')['default']
