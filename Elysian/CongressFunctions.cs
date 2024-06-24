@@ -1,22 +1,12 @@
 ﻿using CapitolSharp.Congress;
-using CapitolSharp.Congress.Amendments;
 using CapitolSharp.Congress.Bills;
-using CapitolSharp.Congress.CommitteeReports;
 using CapitolSharp.Congress.Congresses;
 using CapitolSharp.Congress.Enums;
-using CapitolSharp.Congress.Exceptions;
-using CapitolSharp.Congress.Hearings;
-using CapitolSharp.Congress.HouseCommunications;
-using CapitolSharp.Congress.SenateCommunications;
-using CapitolSharp.Congress.Summaries;
 using Elysian.Application.Extensions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 
 namespace Elysian
@@ -155,9 +145,10 @@ namespace Elysian
             }
         }
 
-        [Function("CongressMixer")]
+        [Function("CongressFeed")]
         public async Task<dynamic> CongressMixer([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
+            var offset = int.TryParse(req.Query["offset"], out var intOffset) ? intOffset : 0;
             var currentCongress = await congressClient.SendAsync(new CongressCurrentListRequest());
 
             if (currentCongress?.Congress?.Number.HasValue != true)
@@ -165,57 +156,17 @@ namespace Elysian
                 return await req.WriteFailureResponseAsync(HttpStatusCode.InternalServerError, "Failed to get current congress.");
             }
 
-            var bills = await congressClient.SendAsync(new BillListByCongressRequest
+            var billList = await congressClient.SendAsync(new BillListByCongressRequest
             {
                 Congress = currentCongress.Congress.Number.Value,
-                Limit = 10
+                Limit = 10,
+                Offset = offset
             });
-
-            var amendments = await congressClient.SendAsync(new AmendmentListByCongressRequest
-            {
-                Congress = currentCongress.Congress.Number.Value,
-                Limit = 10
-            });
-
-            var summaries = await congressClient.SendAsync(new BillSummariesByCongressRequest
-            {
-                Congress = currentCongress.Congress.Number.Value,
-                Limit = 10
-            });
-
-            var mixed = bills.Bills.Select(b => new
-            {
-                key = "Bills_" + b.Number,
-                title = $"{b.Type}{b.Number}",
-                subtitle = b.Title,
-                updated = b.UpdateDate,
-                color = "yellow-darken-3",
-                icon = "mdi-seal"
-            })
-            .Union(amendments.Amendments.Select(b => new
-            {
-                key = "Amendments_" + b.Number,
-                title = $"{b.Type}{b.Number}",
-                subtitle = !string.IsNullOrEmpty(b.Purpose) ? b.Purpose : b.LatestAction.Text,
-                updated = b.UpdateDate,
-                color = "blue-darken-2",
-                icon = "mdi-fountain-pen"
-            }))
-            .Union(summaries.Summaries.Select(b => new
-            {
-                key = "Summaries_" + Guid.NewGuid(),
-                title = b.ActionDesc,
-                subtitle = b.Text,
-                updated = b.UpdateDate,
-                color = "grey-darken-2",
-                icon = "mdi-text"
-            }))
-            .OrderByDescending(o => o.updated);
 
             return new 
             { 
                 congressDetails = currentCongress.Congress,
-                results = mixed
+                billList
             };
         }
 

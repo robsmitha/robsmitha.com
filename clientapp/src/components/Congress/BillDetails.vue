@@ -53,7 +53,7 @@
                         <v-card-title class="text-body-1">Timeline</v-card-title>
                         <template v-if="actions">
                             <v-timeline density="compact" side="end">
-                                <v-timeline-item v-for="(a, i) in actions" :key="`action_${i}`">
+                                <v-timeline-item v-for="(a, i) in actions" :key="`action_${i}`" size="small" dot-color="grey">
                                     <div>
                                         <div class="text-grey-darken-1 text-caption">{{ moment(a.actionDate).startOf('day').fromNow() }}</div>
                                         <!-- <div class="text-h6">{{ a.sourceSystem.name }}</div> -->

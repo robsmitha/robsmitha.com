@@ -23,9 +23,9 @@ const breadcrumbs = [
     to: '/',
   },
   {
-    title: 'BILLS',
+    title: 'CONGRESS',
     disabled: false,
-    to: '/bills',
+    to: '/congress',
   },
   {
     title: fullBillNumber,

@@ -50,7 +50,7 @@ const features = [
         text: 'A feed of the latest Congressional activity',
         to: '/congress',
         icon: 'mdi-rss',
-        enabled: false
+        enabled: true
     },
     {
         title: 'US Bill Tracker',
@@ -58,7 +58,7 @@ const features = [
         text: 'A pageable dataset of all recorded US Bills',
         to: '/bills',
         icon: 'mdi-radar',
-        enabled: true
+        enabled: false
     }
 ]
 </script>
