@@ -1,6 +1,6 @@
 <template>
     <v-app-bar 
-      :color="!drawer && transparency ? 'transparent' : 'white'" 
+      :color="!drawer && transparency ? 'transparent' : 'black'" 
       :class="{
         'text-white': !drawer && transparency
       }" 
