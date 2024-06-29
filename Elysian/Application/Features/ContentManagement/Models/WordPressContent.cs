@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Elysian.Application.Models
+namespace Elysian.Application.Features.ContentManagement.Models
 {
     public class WordPressContent
     {

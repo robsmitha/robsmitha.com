@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Elysian.Application.Models
+namespace Elysian.Domain.Responses.GitHub
 {
     public class GitHubCodeSearchRequest
     {

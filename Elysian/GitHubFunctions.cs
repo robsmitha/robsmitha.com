@@ -1,11 +1,15 @@
 using System.Net;
 using Elysian.Application.Extensions;
+using Elysian.Application.Features.Code.Commands;
+using Elysian.Application.Features.Code.Models;
+using Elysian.Application.Features.Code.Queries;
 using Elysian.Application.Interfaces;
-using Elysian.Application.Models;
 using Elysian.Domain.Constants;
 using Elysian.Domain.Data;
+using Elysian.Domain.Responses.GitHub;
 using Elysian.Domain.Security;
 using Elysian.Infrastructure.Context;
+using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +20,8 @@ using Newtonsoft.Json;
 namespace Elysian
 {
     public class GitHubFunctions(ILogger<GitHubFunctions> logger, IConfiguration configuration, IGitHubService gitHubService,
-        IClaimsPrincipalAccessor claimsPrincipalAccessor, ElysianContext context)
+        IClaimsPrincipalAccessor claimsPrincipalAccessor, ElysianContext context,
+        IMediator mediator)
     {
         // TODO: Protect endpoints with AuthorizationLevel.User
         // AuthorizationLevel settings do not work in development but after publishing to Azure, the authLevel setting is enforced.
@@ -24,9 +29,8 @@ namespace Elysian
         [Function("GitHubAuthMe")]
         public async Task<HttpResponseData> GitHubAuthMe([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
-            var oAuthToken = claimsPrincipalAccessor.IsAuthenticated
-                ? await context.OAuthTokens.SingleOrDefaultAsync(t => t.UserId == claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub)
-                : null;
+            var oAuthToken = await mediator.Send(new GetGitHubAccessTokenQuery());
+
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "text/json; charset=utf-8");
             await response.WriteStringAsync(JsonConvert.SerializeObject(new
@@ -44,17 +48,7 @@ namespace Elysian
 
             try
             {
-                var userGitHubTokenQuery = context.OAuthTokens.Where(t => t.UserId == claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
-
-                var accessToken = claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
-                    ? await userGitHubTokenQuery.Select(t => t.AccessToken).SingleOrDefaultAsync()
-                    : null;
-
-                var result = await gitHubService.GetGitHubCodeSearchResultsAsync(new GitHubCodeSearchRequest
-                {
-                    Term = term,
-                    AccessToken = accessToken
-                });
+                var result = await mediator.Send(new SearchCodeQuery(term));
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/json; charset=utf-8");
@@ -65,11 +59,6 @@ namespace Elysian
 
                 return response;
             }
-            //catch (RateLimitExceededException ex)
-            //{
-            //    logger.LogError(ex, "Rate Limit Reached. [Term: {term}]", term);
-            //    return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
-            //}
             catch (Exception ex)
             {
                 logger.LogError(ex, "An unhandled exception sending the Search Code request.[Term: {term}]", term);
@@ -86,25 +75,14 @@ namespace Elysian
 
             try
             {
-                var userGitHubTokenQuery = context.OAuthTokens.Where(t => t.UserId == claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
-
-                var accessToken = claimsPrincipalAccessor.IsAuthenticated && await userGitHubTokenQuery.AnyAsync()
-                    ? await userGitHubTokenQuery.Select(t => t.AccessToken).SingleOrDefaultAsync()
-                    : null;
-
-                var result = await gitHubService.GetRepositoryContentsAsHtmlAsync(new GitHubRepositoryContentsRequest("robsmitha", repo, path, accessToken));
+                var result = await mediator.Send(new GetFileContentQuery(repo, path));
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/html; charset=utf-8");
-                await response.WriteStringAsync(result);
+                await response.WriteStringAsync(result.Html);
 
                 return response;
             }
-            //catch (RateLimitExceededException ex)
-            //{
-            //    logger.LogError(ex, "Rate Limit Reached. [Repo: {repo}, Path: {term}]", repo, path);
-            //    return await req.WriteFailureResponseAsync(HttpStatusCode.TooManyRequests, "Too many requests.");
-            //}
             catch (Exception ex)
             {
                 logger.LogError(ex, "An unhandled exception sending the Repository Contents request. [Repo: {repo}, Path: {term}]", repo, path);
@@ -122,18 +100,7 @@ namespace Elysian
 
             try
             {
-                var oAuthState = new OAuthState
-                {
-                    State = Guid.NewGuid().ToString(),
-                    OAuthProvider = OAuthProviders.GitHub,
-                    UserId = claimsPrincipalAccessor.UserId,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                await context.AddAsync(oAuthState);
-                await context.SaveChangesAsync();
-
-                var oAuthUrl = await gitHubService.GetGitHubOAuthUrlAsync(oAuthState.State);
+                var oAuthUrl = await mediator.Send(new CreateGitHubOAuthUrlCommand());
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/json; charset=utf-8");
@@ -180,25 +147,7 @@ namespace Elysian
                     return await req.WriteFailureResponseAsync(HttpStatusCode.BadRequest, "Invalid State.");
                 }
 
-                var accessToken = await gitHubService.GetGitHubAccessTokenAsync(accessTokenRequest);
-
-                var existingOAuthToken = await context.OAuthTokens.SingleOrDefaultAsync(t => t.UserId == claimsPrincipalAccessor.UserId && t.OAuthProvider == OAuthProviders.GitHub);
-                var oAuthToken = new OAuthToken
-                {
-                    AccessToken = accessToken.access_token,
-                    OAuthProvider = "github",
-                    TokenType = accessToken.token_type,
-                    Scope = accessToken.scope,
-                    UserId = claimsPrincipalAccessor.UserId
-                };
-
-                if (existingOAuthToken != null)
-                {
-                    context.Remove(existingOAuthToken);
-                }
-                context.Remove(oAuthState);
-                await context.AddAsync(oAuthToken);
-                await context.SaveChangesAsync();
+                var oAuthToken = await mediator.Send(new CreateGitHubAccessTokenCommand(accessTokenRequest));
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/json; charset=utf-8");

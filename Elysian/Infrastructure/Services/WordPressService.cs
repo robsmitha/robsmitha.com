@@ -1,5 +1,5 @@
-﻿using Elysian.Application.Interfaces;
-using Elysian.Application.Models;
+﻿using Elysian.Application.Features.ContentManagement.Models;
+using Elysian.Application.Interfaces;
 using Newtonsoft.Json;
 
 namespace Elysian.Infrastructure.Services

@@ -84,48 +84,6 @@ namespace Elysian
                     BillNumber = billNumber
                 });
 
-                //var billCommittees = await congressClient.SendAsync(new BillCommitteesRequest
-                //{
-                //    Congress = congress,
-                //    BillType = billType,
-                //    BillNumber = billNumber
-                //});
-
-                //var billRelatedBills = await congressClient.SendAsync(new BillRelatedbillsRequest
-                //{
-                //    Congress = congress,
-                //    BillType = billType,
-                //    BillNumber = billNumber
-                //});
-
-                //var billSubjects = await congressClient.SendAsync(new BillSubjectsRequest
-                //{
-                //    Congress = congress,
-                //    BillType = billType,
-                //    BillNumber = billNumber
-                //});
-
-                //var billSummaries = await congressClient.SendAsync(new BillSummariesRequest
-                //{
-                //    Congress = congress,
-                //    BillType = billType,
-                //    BillNumber = billNumber
-                //});
-
-                //var billText = await congressClient.SendAsync(new BillTextRequest
-                //{
-                //    Congress = congress,
-                //    BillType = billType,
-                //    BillNumber = billNumber
-                //});
-
-                //var billTitles = await congressClient.SendAsync(new BillTitlesRequest
-                //{
-                //    Congress = congress,
-                //    BillType = billType,
-                //    BillNumber = billNumber
-                //});
-
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Headers.Add("Content-Type", "text/json; charset=utf-8");
                 await response.WriteStringAsync(JsonConvert.SerializeObject(new
@@ -146,7 +104,7 @@ namespace Elysian
         }
 
         [Function("CongressFeed")]
-        public async Task<dynamic> CongressMixer([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+        public async Task<dynamic> CongressFeed([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
             var offset = int.TryParse(req.Query["offset"], out var intOffset) ? intOffset : 0;
             var currentCongress = await congressClient.SendAsync(new CongressCurrentListRequest());

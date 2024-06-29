@@ -1,4 +1,5 @@
-﻿using Elysian.Application.Models;
+﻿using Elysian.Application.Features.Code.Models;
+using Elysian.Domain.Responses.GitHub;
 
 namespace Elysian.Application.Interfaces
 {

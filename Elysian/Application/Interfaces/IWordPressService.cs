@@ -1,4 +1,4 @@
-﻿using Elysian.Application.Models;
+﻿using Elysian.Application.Features.ContentManagement.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
