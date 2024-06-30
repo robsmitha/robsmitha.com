@@ -74,10 +74,10 @@ export const useAppStore = defineStore('app', {
         return
       }
       const data = await response.json()
-      this.pages = data.Pages
-      this.posts = data.Posts
-      this.tags = data.Tags
-      this.categories = data.Categories
+      this.pages = data.pages
+      this.posts = data.posts
+      this.tags = data.tags
+      this.categories = data.categories
     }
   }
 })

@@ -1,5 +1,6 @@
 ﻿using Elysian.Application.Features.ContentManagement.Models;
 using Elysian.Application.Interfaces;
+using Elysian.Domain.Responses.WordPress;
 using Newtonsoft.Json;
 
 namespace Elysian.Infrastructure.Services
@@ -15,10 +16,10 @@ namespace Elysian.Infrastructure.Services
 
             return new WordPressContent
             {
-                Pages = JsonConvert.DeserializeObject<dynamic>(pages),
-                Posts = JsonConvert.DeserializeObject<dynamic>(posts),
-                Tags = JsonConvert.DeserializeObject<dynamic>(tags),
-                Categories = JsonConvert.DeserializeObject<dynamic>(categories),
+                Pages = JsonConvert.DeserializeObject<List<WpPageResponse>>(pages),
+                Posts = JsonConvert.DeserializeObject<List<WpPostResponse>>(posts),
+                Tags = JsonConvert.DeserializeObject<List<WpTagResponse>>(tags),
+                Categories = JsonConvert.DeserializeObject<List<WpCategoryResponse>>(categories),
             };
         }
 

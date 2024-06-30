@@ -1,7 +1,7 @@
 using Elysian.Application;
 using Elysian.Infrastructure;
 using Elysian.Infrastructure.Context;
-using Elysian.Infrastructure.Identity;
+using Elysian.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,9 +20,10 @@ var host = new HostBuilder()
         services.AddInfrastructure(hostContext.Configuration);
         services.AddApplication();
     })
-    .ConfigureFunctionsWorkerDefaults(worker =>
+    .ConfigureFunctionsWebApplication(builder =>
     {
-        worker.UseMiddleware<ClaimsPrincipalMiddleware>();
+        builder.UseMiddleware<ClaimsPrincipalMiddleware>();
+        builder.UseMiddleware<ExceptionHandlingMiddleware>();
     })
     .Build();
 

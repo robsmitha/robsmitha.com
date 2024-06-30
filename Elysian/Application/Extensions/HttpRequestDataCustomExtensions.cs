@@ -28,5 +28,10 @@ namespace Elysian.Application.Extensions
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             return JsonConvert.DeserializeObject<T>(body);
         }
+
+        public static bool TryGetEnumValue<T>(this HttpRequestData req, string name, out T result) where T : struct
+        {
+            return Enum.TryParse(req.Query[name], true, out result);
+        }
     }
 }

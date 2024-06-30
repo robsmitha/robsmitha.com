@@ -104,14 +104,14 @@ async function searchGitHub(): Promise<void> {
     } else {
         const data = await response.json()
         
-        items.value = data.result.items.map((i: any) => ({
+        items.value = data.items.map((i: any) => ({
             sha: i.sha,
             name: i.name,
             path: i.path,
             html_url: i.html_url,
             repo_name: i.repository.name,
             repo_description: i.repository.description,
-            text_matches: i.text_matches
+            text_matches: i.textMatches
         }) as SearchItem)
     }
     

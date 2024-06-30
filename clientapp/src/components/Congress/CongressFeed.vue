@@ -3,25 +3,25 @@
         <v-container>
             <v-card>
                 <v-list lines="three">
-                    <v-list-subheader v-if="congress">{{ congress.Name }} ({{ congress.StartYear }} - {{ congress.EndYear }})</v-list-subheader>
+                    <v-list-subheader v-if="congress">{{ congress.name }} ({{ congress.startYear }} - {{ congress.endYear }})</v-list-subheader>
                     <v-skeleton-loader v-else type="subtitle"></v-skeleton-loader>
                     <v-infinite-scroll
                             v-if="items"
                         :mode="items.length > 20 ? 'manual' : 'intersect'"
                         @load="load"
                     >
-                        <template v-for="i in items" :key="i.Number">
-                            <v-list-item :title="`${i.Type}${i.Number}`" :subtitle="i.Title" :to="`bill/${congress.Number}/${i.Type}/${i.Number}`">
+                        <template v-for="i in items" :key="i.number">
+                            <v-list-item :title="`${i.type}${i.number}`" :subtitle="i.title" :to="`bill/${congress.number}/${i.type}/${i.number}`">
                                 <template v-slot:append>
                                     <span class="text-grey-darken-1 text-caption">
-                                        {{ moment(i.UpdateDate).startOf('day').fromNow() }}
+                                        {{ moment(i.updateDate).startOf('day').fromNow() }}
                                     </span>
                                 </template>
                                 <template v-slot:subtitle="{ subtitle }">
                                     <div v-html="subtitle"></div>
                                 </template>
                                 <template v-slot:default>
-                                    <div class="text-caption font-italic mt-2" v-html="isMobile && i.LatestAction.Text.length > 125 ? i.LatestAction.Text.slice(0, 125) + '...' : i.LatestAction.Text"></div>
+                                    <div class="text-caption font-italic mt-2" v-html="isMobile && i.latestAction.text.length > 125 ? i.latestAction.text.slice(0, 125) + '...' : i.latestAction.text"></div>
                                 </template>
                             </v-list-item>
                             <v-divider />
@@ -60,12 +60,12 @@ async function load({ done } : any) {
     }
     const data = await response.json()
     
-    if (data.billList.Bills.length === 0){
+    if (data.billList.bills.length === 0){
         done('empty')
     }
     else {
         congress.value = data.congressDetails
-        items.value.push(...data.billList.Bills)
+        items.value.push(...data.billList.bills)
         done('ok')
     }
     page.value++
