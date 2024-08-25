@@ -87,7 +87,12 @@ const selectedItem = ref<SearchItem | undefined>()
 
 async function authorizeGitHubApp(): Promise<void> {
     loading.value = true;
-    const response = await fetch(`/api/GitHubOAuthUrl`);
+    const response = await fetch(`/api/GitHubOAuthUrl`, {
+        method: 'get',
+        headers: {
+            '___tenant___': 'robsmitha'
+        }
+    });
     if (!response.ok){
         throw new Error();
     }
@@ -98,7 +103,12 @@ async function authorizeGitHubApp(): Promise<void> {
 
 async function searchGitHub(): Promise<void> {
     loading.value = true;
-    const response = await fetch(`/api/githubSearch?term=${encodeURIComponent(term.value)}`);
+    const response = await fetch(`/api/githubSearch?term=${encodeURIComponent(term.value)}`, {
+        method: 'get',
+        headers: {
+            '___tenant___': 'robsmitha'
+        }
+    });
     if (!response.ok) {
         rateLimited.value = response.status === 429
     } else {
@@ -128,7 +138,12 @@ async function onFileSelected(item: SearchItem){
     dialogLoading.value = true;
     dialog.value = true
 
-    const response = await fetch(`/api/GitHubRepoContents?repo=${encodeURIComponent(item.repo_name)}&path=${encodeURIComponent(item.path)}`)
+    const response = await fetch(`/api/GitHubRepoContents?repo=${encodeURIComponent(item.repo_name)}&path=${encodeURIComponent(item.path)}`, {
+        method: 'get',
+        headers: {
+            '___tenant___': 'robsmitha'
+        }
+    })
     let html = await response.text()
 
     // Remove github markup

@@ -132,7 +132,12 @@ onMounted(() => {
 
 async function getBill(){
     loading.value = true
-    const response = await fetch(`/api/CongressGetBill?congress=${props.congress}&billType=${props.billType}&billNumber=${props.billNumber}`)
+    const response = await fetch(`/api/CongressGetBill?congress=${props.congress}&billType=${props.billType}&billNumber=${props.billNumber}`, {
+        method: 'get',
+        headers: {
+            '___tenant___': 'robsmitha'
+        }
+    })
     if (!response.ok){
         console.error("Failed to get bill.")
         return

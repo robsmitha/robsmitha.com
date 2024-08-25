@@ -81,7 +81,12 @@ async function loadItems (options: UpdateOptions) {
         const sort =  sortBy.length > 0 ? sortBy[0].key : 'updateDate'
         const sortDirection = sortBy.length > 0 ? sortBy[0].order : 'desc'
         const offset = itemsPerPage !== selectedItemsPerPage.value ? 0 : (page - 1) * itemsPerPage 
-        const response = await fetch(`/api/CongressGetBills?offset=${offset}&limit=${itemsPerPage}&sort=${sort}&direction=${sortDirection}`)
+        const response = await fetch(`/api/CongressGetBills?offset=${offset}&limit=${itemsPerPage}&sort=${sort}&direction=${sortDirection}`, {
+            method: 'get',
+            headers: {
+                '___tenant___': 'robsmitha'
+            }
+        })
         if (!response.ok){
             console.error("Failed to get bills.")
             return

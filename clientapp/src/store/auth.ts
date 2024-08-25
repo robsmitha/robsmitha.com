@@ -29,7 +29,12 @@ export const useAuthStore = defineStore('auth', {
       if (identity?.clientPrincipal) {
         this.userDetails = identity.clientPrincipal.userDetails
         
-        const tokenResponse = await fetch('/api/GitHubAuthMe')
+        const tokenResponse = await fetch('/api/GitHubAuthMe', {
+            method: 'get',
+            headers: {
+                '___tenant___': 'robsmitha'
+            }
+        })
         if (tokenResponse.ok){
           const tokenData = await tokenResponse.json()
           this.hasGitHubAccessToken = tokenData.HasGitHubOAuthToken;
@@ -42,7 +47,8 @@ export const useAuthStore = defineStore('auth', {
       const response = await fetch('/api/GitHubOAuthCallback', {
           method: 'post',
           headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              '___tenant___': 'robsmitha'
           },
           body: JSON.stringify({ code, state })
       })

@@ -52,7 +52,12 @@ const itemsPerPage = ref(10)
 
 async function load({ done } : any) {
     const offset = (page.value - 1) * itemsPerPage.value
-    const response = await fetch(`/api/CongressFeed?offset=${offset}`)
+    const response = await fetch(`/api/CongressFeed?offset=${offset}`, {
+        method: 'get',
+        headers: {
+            '___tenant___': 'robsmitha'
+        }
+    })
     if (!response.ok){
         console.error("Failed to get feed.")
         done('error')

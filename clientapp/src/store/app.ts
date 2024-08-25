@@ -68,7 +68,12 @@ export const useAppStore = defineStore('app', {
   },
   actions: {
     async fetchContent(): Promise<void> {
-      const response = await fetch('/api/WordPressContent');
+      const response = await fetch('/api/WordPressContent', {
+          method: 'get',
+          headers: {
+              '___tenant___': 'robsmitha'
+          }
+      });
       if (!response.ok){
         console.error("Failed to get page content.")
         return

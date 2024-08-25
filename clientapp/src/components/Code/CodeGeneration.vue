@@ -158,18 +158,6 @@ namespace MyNamespace.MyResponse
 
         [Newtonsoft.Json.JsonProperty("age", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Age { get; set; }
-
-
-
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
-
-        [Newtonsoft.Json.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
-            set { _additionalProperties = value; }
-        }
-
     }
 }`
 
@@ -184,17 +172,18 @@ async function generateCode(){
     }
     
     const codeGenerationRequest = {
-        ResponseName: responseName.value,
-        Language: language.value,
-        Namespace: namespace.value,
-        SampleJson: sampleJson.value
+        responseName: responseName.value,
+        language: language.value,
+        namespace: namespace.value,
+        sampleJson: sampleJson.value
     }
 
     loading.value = true
     const response = await fetch('/api/CodeGeneration', {
         method: 'post',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            '___tenant___': 'robsmitha'
         },
         body: JSON.stringify(codeGenerationRequest)
     })
