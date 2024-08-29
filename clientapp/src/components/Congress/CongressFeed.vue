@@ -40,6 +40,7 @@
 import { ref, computed } from 'vue'
 import moment from 'moment'
 import { useDisplay } from 'vuetify'
+import apiClient from '@/api/elysianClient'
 
 const items = ref<any[]>([])
 const congress = ref<any>()
@@ -52,19 +53,14 @@ const itemsPerPage = ref(10)
 
 async function load({ done } : any) {
     const offset = (page.value - 1) * itemsPerPage.value
-    const response = await fetch(`/api/CongressFeed?offset=${offset}`, {
-        method: 'get',
-        headers: {
-            '___tenant___': 'robsmitha'
-        }
-    })
-    if (!response.ok){
+    
+    const response = await apiClient?.getData(`/api/CongressFeed?offset=${offset}`)
+    if (!response?.success){
         console.error("Failed to get feed.")
         done('error')
         return
     }
-    const data = await response.json()
-    
+    const data = response.data
     if (data.billList.bills.length === 0){
         done('empty')
     }

@@ -39,7 +39,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { Bill } from '@/components/Congress/types/BillListAllResponse.types'
-import { VDataTable } from 'vuetify/components';
+import { VDataTable } from 'vuetify/components'
+import apiClient from '@/api/elysianClient'
 
 interface UpdateOptions {
   page: number,
@@ -81,19 +82,15 @@ async function loadItems (options: UpdateOptions) {
         const sort =  sortBy.length > 0 ? sortBy[0].key : 'updateDate'
         const sortDirection = sortBy.length > 0 ? sortBy[0].order : 'desc'
         const offset = itemsPerPage !== selectedItemsPerPage.value ? 0 : (page - 1) * itemsPerPage 
-        const response = await fetch(`/api/CongressGetBills?offset=${offset}&limit=${itemsPerPage}&sort=${sort}&direction=${sortDirection}`, {
-            method: 'get',
-            headers: {
-                '___tenant___': 'robsmitha'
-            }
-        })
-        if (!response.ok){
+        
+        const response = await apiClient?.getData(`/api/CongressGetBills?offset=${offset}&limit=${itemsPerPage}&sort=${sort}&direction=${sortDirection}`)
+        if (!response?.success){
             console.error("Failed to get bills.")
             return
         }
-        const data = await response.json()
-        serverItems.value = data.bills
-        totalItems.value = data.pagination.count
+
+        serverItems.value = response.data.bills
+        totalItems.value = response.data.pagination.count
     } catch (e) {
         console.error(e);
     }

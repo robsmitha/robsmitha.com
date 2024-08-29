@@ -117,13 +117,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useDisplay } from 'vuetify';
+import { useDisplay } from 'vuetify'
+import apiClient from '@/api/elysianClient'
 
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
-
-
-
 
 const responseName = ref('MyResponse')
 const namespace = ref('MyNamespace')
@@ -179,26 +177,16 @@ async function generateCode(){
     }
 
     loading.value = true
-    const response = await fetch('/api/CodeGeneration', {
-        method: 'post',
-        headers: {
-            'Content-Type': 'application/json',
-            '___tenant___': 'robsmitha'
-        },
-        body: JSON.stringify(codeGenerationRequest)
-    })
+    const response = await apiClient?.postData('/api/CodeGeneration', codeGenerationRequest)
 
-    if(!response.ok){
+    if(!response?.success){
         loading.value = false
         snackbar.value = true
         snackbarText.value = `An error occurred generating code. Please review sample json for correctness.`
         return
     }
-
-    const data = await response.json()
-
     loading.value = false
-    generatedCode.value = data.code
+    generatedCode.value = response?.data.code
 }
 
 function copyCode(){

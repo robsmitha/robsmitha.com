@@ -72,6 +72,7 @@
 import { WpCategory } from '@/store/types'
 import { ref } from 'vue'
 import { SearchItem } from '@/components/Code/CodeSearch.types'
+import apiClient from '@/api/elysianClient'
 
 // Search
 const loading = ref(false)
@@ -86,35 +87,22 @@ const dialogContents = ref('')
 const selectedItem = ref<SearchItem | undefined>()
 
 async function authorizeGitHubApp(): Promise<void> {
-    loading.value = true;
-    const response = await fetch(`/api/GitHubOAuthUrl`, {
-        method: 'get',
-        headers: {
-            '___tenant___': 'robsmitha'
-        }
-    });
-    if (!response.ok){
+    loading.value = true
+    const response = await apiClient?.getData(`/api/GitHubOAuthUrl`);
+    if (!response?.success){
         throw new Error();
     }
-    const data = await response.json();
-    window.location = data.oAuthUrl
+    window.location = response.data.oAuthUrl
     loading.value = false;
 }
 
 async function searchGitHub(): Promise<void> {
-    loading.value = true;
-    const response = await fetch(`/api/githubSearch?term=${encodeURIComponent(term.value)}`, {
-        method: 'get',
-        headers: {
-            '___tenant___': 'robsmitha'
-        }
-    });
-    if (!response.ok) {
-        rateLimited.value = response.status === 429
+    loading.value = true
+    const response = await apiClient?.getData(`/api/githubSearch?term=${encodeURIComponent(term.value)}`)
+    if (!response?.success) {
+        rateLimited.value = response?.errors?.has('RATE_LIMIT') ?? false
     } else {
-        const data = await response.json()
-        
-        items.value = data.items.map((i: any) => ({
+        items.value = response.data.items.map((i: any) => ({
             sha: i.sha,
             name: i.name,
             path: i.path,
@@ -138,13 +126,8 @@ async function onFileSelected(item: SearchItem){
     dialogLoading.value = true;
     dialog.value = true
 
-    const response = await fetch(`/api/GitHubRepoContents?repo=${encodeURIComponent(item.repo_name)}&path=${encodeURIComponent(item.path)}`, {
-        method: 'get',
-        headers: {
-            '___tenant___': 'robsmitha'
-        }
-    })
-    let html = await response.text()
+    const response = await apiClient?.getData(`/api/GitHubRepoContents?repo=${encodeURIComponent(item.repo_name)}&path=${encodeURIComponent(item.path)}`)
+    let html = response?.data
 
     // Remove github markup
     const startPattern = '^<div id="file" class="[^"]*" data-path="' + item.path.replace(/\//g, "\\/") + '"><div class="plain"><pre style="white-space: pre-wrap">'

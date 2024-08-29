@@ -95,12 +95,13 @@
 
 
 <script lang="ts" setup>
-import { onMounted, ref, defineProps } from 'vue'
+import { onMounted, ref, defineProps, inject } from 'vue'
 import { Bill } from '@/components/Congress/types/BillDetailsResponse.types'
 import { Action } from '@/components/Congress/types/BillActionsResponse.types'
 import { Cosponsor } from '@/components/Congress/types/BillCosponsorsResponse.types'
 import { Amendment } from '@/components/Congress/types/BillAmendmentsResponse.types'
 import moment from 'moment'
+import apiClient from '@/api/elysianClient'
 
 const props = defineProps({
   congress: { type: String },
@@ -132,21 +133,16 @@ onMounted(() => {
 
 async function getBill(){
     loading.value = true
-    const response = await fetch(`/api/CongressGetBill?congress=${props.congress}&billType=${props.billType}&billNumber=${props.billNumber}`, {
-        method: 'get',
-        headers: {
-            '___tenant___': 'robsmitha'
-        }
-    })
-    if (!response.ok){
+    const response = await apiClient?.getData(`/api/CongressGetBill?congress=${props.congress}&billType=${props.billType}&billNumber=${props.billNumber}`)
+    if (!response?.success){
         console.error("Failed to get bill.")
         return
     }
-    const data = await response.json()
-    bill.value = data.billDetails.bill
-    actions.value = data.billActions.actions
-    cosponsors.value = data.billCosponsors.cosponsors
-    amendments.value = data.billAmendments.amendments
+    
+    bill.value = response.data.billDetails.bill
+    actions.value = response.data.billActions.actions
+    cosponsors.value = response.data.billCosponsors.cosponsors
+    amendments.value = response.data.billAmendments.amendments
     loading.value = false
 }
 

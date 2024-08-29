@@ -1,6 +1,7 @@
 // Utilities
 import { defineStore } from 'pinia'
 import { ClaimsIdentity } from './types'
+import apiClient from '@/api/elysianClient'
 
 type State = {
   userDetails: string | undefined,
@@ -19,47 +20,34 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async fetchAuth(): Promise<void> {
-      const response = await fetch('/.auth/me');
-      if (!response.ok){
+      const response = await apiClient?.getData('/.auth/me')
+
+      if (!response?.success){
         console.error("Failed to get auth me.")
         return
       }
 
-      const identity: ClaimsIdentity = await response.json()
+      const identity: ClaimsIdentity = response.data
       if (identity?.clientPrincipal) {
         this.userDetails = identity.clientPrincipal.userDetails
         
-        const tokenResponse = await fetch('/api/GitHubAuthMe', {
-            method: 'get',
-            headers: {
-                '___tenant___': 'robsmitha'
-            }
-        })
-        if (tokenResponse.ok){
-          const tokenData = await tokenResponse.json()
-          this.hasGitHubAccessToken = tokenData.HasGitHubOAuthToken;
+        const tokenResponse = await apiClient?.getData('/api/GitHubAuthMe')
+        if (tokenResponse?.success){
+          this.hasGitHubAccessToken = tokenResponse.data.HasGitHubOAuthToken
         } else{
           console.error("Failed to check GitHub OAuth token.")
         }
       }
     },
     async requestGitHubAccessToken(code: string, state: string | undefined): Promise<void> {
-      const response = await fetch('/api/GitHubOAuthCallback', {
-          method: 'post',
-          headers: {
-              'Content-Type': 'application/json',
-              '___tenant___': 'robsmitha'
-          },
-          body: JSON.stringify({ code, state })
-      })
+      const response = await apiClient?.postData('/api/GitHubOAuthCallback', { code, state })
 
-      if(!response.ok){
-        // TODO: deserialize json response for 400 errors
-        throw new Error("Could not get github access token")
+      if (!response?.success){
+        console.error("Could not get github access token")
+        this.hasGitHubAccessToken = undefined
       }
 
-      const data = await response.json()
-      this.hasGitHubAccessToken = data.HasGitHubOAuthToken
+      this.hasGitHubAccessToken = response?.data.HasGitHubOAuthToken
     }
   }
 })
