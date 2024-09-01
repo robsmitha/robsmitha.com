@@ -55,11 +55,6 @@ namespace ElysianFunctions
         [Function("GitHubOAuthUrl")]
         public async Task<HttpResponseData> GetGitHubOAuthUrl([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
-            if (!claimsPrincipalAccessor.IsAuthenticated)
-            {
-                throw new ForbiddenAccessException();
-            }
-
             var oAuthUrl = await mediator.Send(new CreateGitHubOAuthUrlCommand());
 
             return await req.WriteJsonResponseAsync(new
@@ -71,25 +66,7 @@ namespace ElysianFunctions
         [Function("GitHubOAuthCallback")]
         public async Task<HttpResponseData> GitHubOAuthCallback([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
         {
-            if (!claimsPrincipalAccessor.IsAuthenticated)
-            {
-                throw new ForbiddenAccessException();
-            }
-
             var accessTokenRequest = await req.DeserializeBodyAsync<GitHubAccessTokenRequest>();
-            if (string.IsNullOrWhiteSpace(accessTokenRequest?.code) || string.IsNullOrWhiteSpace(accessTokenRequest?.state))
-            {
-                throw new NotFoundException();
-            }
-
-            var oAuthState = await context.OAuthStates.OrderByDescending(s => s.CreatedAt)
-                .FirstOrDefaultAsync(s => s.UserId == claimsPrincipalAccessor.UserId && s.OAuthProvider == OAuthProviders.GitHub);
-
-            if (string.IsNullOrWhiteSpace(oAuthState?.State) || !OAuthStateEncryptor.Validate(configuration.GetValue<string>("SecretKey"), oAuthState.State, accessTokenRequest.state))
-            {
-                throw new NotFoundException();
-            }
-
             var oAuthToken = await mediator.Send(new CreateGitHubAccessTokenCommand(accessTokenRequest));
 
             return await req.WriteJsonResponseAsync(new
