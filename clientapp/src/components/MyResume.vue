@@ -1,9 +1,9 @@
 <template>
-  <v-sheet color="grey-lighten-4" class="pb-5">
+  <v-sheet class="pb-5">
     <v-container>
       <v-row>
         <v-col offset-lg="1" lg="10">
-          <v-card>
+          <v-card flat>
             <v-toolbar color="white">
               <v-toolbar-title class="text-title-1 font-weight-bold">{{ $vuetify.display.mobile ? "Summary" : "Full Stack Software Engineer" }}</v-toolbar-title>
               <v-spacer></v-spacer>

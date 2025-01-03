@@ -14,16 +14,18 @@
         <v-col v-for="parentCategory in store.parentCategories" :key="parentCategory.id" cols="12">
             <span class="text-h6 d-block">{{ parentCategory.name }}</span>
             <span class="text-caption text-grey-darken-1 d-block mb-2">{{ parentCategory.description }}</span>
+            <v-divider class="my-5" />
             <v-row>
                 <v-col md="3" sm="4" cols="12" v-for="subCategory in store.groupedCategories.get(parentCategory.id)" :key="subCategory.id">
                     <v-card 
                         :title="subCategory.name" 
                         height="100%"
+                        flat
                         :disabled="rateLimited"
                         @click="emit('category-selected', subCategory)"
                     >
                         <v-card-text>
-                            <v-chip v-for="w in getWords(subCategory.description)" :key="w" color="primary" class="mr-1 mb-1" size="small" label>{{ w }}</v-chip>
+                            <v-chip v-for="w in getWords(subCategory.description)" :key="w" color="grey-darken-4" class="mr-1 mb-1" size="small" label>{{ w }}</v-chip>
                         </v-card-text>
                     </v-card>
                 </v-col>

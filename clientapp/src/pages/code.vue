@@ -1,6 +1,6 @@
 <template>
-  <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
-    <CodeSearch />
+  <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
+  <CodeSearch />
 </template>
 
 <script lang="ts" setup>

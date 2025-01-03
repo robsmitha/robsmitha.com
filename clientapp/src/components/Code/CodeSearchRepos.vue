@@ -6,6 +6,7 @@
         <v-expansion-panel
             v-for="repo in repos.keys()"
             :key="repo"
+            :elevation="0"
         >
             <v-expansion-panel-title>
                 <template v-slot:default="{ expanded }">

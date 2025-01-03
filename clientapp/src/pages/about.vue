@@ -1,5 +1,5 @@
 <template>
-  <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
+  <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
   <MyResume />
 </template>
 

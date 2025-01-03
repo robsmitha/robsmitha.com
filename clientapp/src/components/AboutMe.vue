@@ -2,7 +2,7 @@
   <v-sheet color="grey-lighten-4" class="py-3">
     <v-container>
       <v-row>
-        <v-col md="8" cols="12">
+        <v-col cols="12">
           <template v-if="!page">
             <v-skeleton-loader
               type="article"
@@ -17,19 +17,23 @@
           </template>
           <template v-else>
             <v-card color="transparent" flat>
-              <v-card-title v-html="page.title.rendered"></v-card-title>
-              <v-card-text v-html="page.content.rendered"></v-card-text>
+              <v-card-title>
+                <span class="text-h4" v-html="page.title"></span>
+              </v-card-title>
+              <v-card-text>
+                <span v-html="page.content"></span>
+              </v-card-text>
             </v-card>
           </template>
         </v-col>
-        <v-col md="4" cols="12"  class="d-flex justify-center align-center">
+        <!-- <v-col md="4" cols="12"  class="d-flex justify-center align-center">
           <v-img 
             :width="300"
             aspect-ratio="4/3"
             cover
             src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_barbecue_3x93.svg">
           </v-img>
-        </v-col>
+        </v-col> -->
       </v-row>
     </v-container>
   </v-sheet>

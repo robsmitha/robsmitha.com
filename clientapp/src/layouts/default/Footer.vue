@@ -1,16 +1,17 @@
 <template>
-    <v-sheet color="grey-lighten-4">
+    <v-sheet color="grey-darken-4">
         <v-container>
-            <v-footer color="grey-lighten-4">
+            <v-footer color="grey-darken-4">
                 <v-row>
                     <v-col>
-                        <v-img
+                        <!-- <v-img
                             alt="Logo with Code Lines"
                             src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_code.svg"
                             :height="30"
                             :width="30"
                             class="text-center"
-                        ></v-img>
+                        ></v-img> -->
+                        <v-icon>mdi-screw-flat-top</v-icon>
                     </v-col>
                     <v-col>
                         <div class="text-right">

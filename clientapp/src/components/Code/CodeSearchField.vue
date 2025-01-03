@@ -9,8 +9,8 @@
     >
         <span class="d-block font-weight-bold">Too many requests. Please try again shortly.</span>
         <template v-if="!auth.signedIn">
-            Sign in with <a class="text-black" href="/.auth/login/github">GitHub</a> 
-            or <a class="text-black" href="/.auth/login/aad">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
+            Sign in with <a class="text-white" href="/.auth/login/github">GitHub</a> 
+            or <a class="text-white" href="/.auth/login/aad">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
         </template>
         <template v-else-if="!auth.hasValidAccessToken">
             Authorize robsmitha.com on GitHub to access a higher rate limit.
@@ -39,8 +39,8 @@
         </template>
         <template v-slot:details>
             <span class="ml-n4">
-                To learn more about the format of the query, see <a target="_blank" href="https://docs.github.com/rest/search/search#constructing-a-search-query">Constructing a search query</a>. 
-                See <a target="_blank" href="https://docs.github.com/search-github/searching-on-github/searching-code">Searching code</a> for a detailed list of qualifiers.
+                To learn more about the format of the query, see <a class="text-white" target="_blank" href="https://docs.github.com/rest/search/search#constructing-a-search-query">Constructing a search query</a>. 
+                See <a class="text-white" target="_blank" href="https://docs.github.com/search-github/searching-on-github/searching-code">Searching code</a> for a detailed list of qualifiers.
             </span>
         </template>
     </v-text-field>

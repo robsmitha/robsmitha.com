@@ -1,5 +1,5 @@
 <template>
-    <v-sheet color="grey-lighten-4">
+    <v-sheet color="grey-darken-4">
         <v-container>
             <v-row>
                 <v-col>
@@ -8,7 +8,7 @@
                     </div>
                     <span class="text-grey-darken-1">
                         Powered by GitHub
-                        <span v-if="!$vuetify.display.mobile">REST API <a href="https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-code" target="_blank">Search Code</a> endpoint</span>
+                        <span v-if="!$vuetify.display.mobile">REST API <a class="text-white" href="https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-code" target="_blank">Search Code</a> endpoint</span>
                     </span>
                 </v-col>
                 <v-col class="text-right">
@@ -29,7 +29,10 @@
                         @authorize="authorizeGitHubApp" />
                 </v-col>
             </v-row>
-            
+        </v-container>
+    </v-sheet>
+    <v-sheet class="py-5">
+        <v-container>
             <v-row>
                 <v-col cols="12">
                     <template  v-if="(items && items?.length > 0) || (loading && !rateLimited)">

@@ -1,12 +1,21 @@
 <template>
-    <v-sheet color="grey-lighten-4">
+    <v-sheet color="grey-darken-4">
         <v-container>
-            <v-card>
+            <v-row  v-if="congress">
+                <v-col cols="12">
+                    <span class="text-h4 font-weight-thin d-block">{{ congress.name }}</span>
+                    <span class="text-subtitle d-block">{{ congress.startYear }} - {{ congress.endYear }}</span>
+                </v-col>
+            </v-row>
+            <v-skeleton-loader v-else color="grey-darken-4" type="subtitle"></v-skeleton-loader>
+        </v-container>
+    </v-sheet>
+    <v-sheet class="py-5">
+        <v-container>
+            <v-card flat>
                 <v-list lines="three">
-                    <v-list-subheader v-if="congress">{{ congress.name }} ({{ congress.startYear }} - {{ congress.endYear }})</v-list-subheader>
-                    <v-skeleton-loader v-else type="subtitle"></v-skeleton-loader>
                     <v-infinite-scroll
-                            v-if="items"
+                        v-if="items"
                         :mode="items.length > 20 ? 'manual' : 'intersect'"
                         @load="load"
                     >

@@ -2,6 +2,7 @@
     <v-navigation-drawer
         location="left"
         permanent
+        color="grey-darken-4"
         :rail="collapsed"
       >
         <template v-slot:prepend>
@@ -81,8 +82,8 @@
         </template>
     </v-navigation-drawer>
 
-    <v-sheet color="grey-lighten-4" style="height: 85vh">
-        <div style="overflow: auto; max-height: 80vh">
+    <v-sheet>
+        <div style="overflow: auto;">
             <template v-if="loading">
                 <v-skeleton-loader color="grey-lighten-4 pa-0" v-for="i in 7" :key="i" type="paragraph">
                 </v-skeleton-loader>
@@ -126,7 +127,7 @@ const isMobile = computed(() => mobile.value);
 const responseName = ref('MyResponse')
 const namespace = ref('MyNamespace')
 const language = ref('C#')
-const sampleJson = ref(JSON.stringify({ name: 'John Smith', age: 99 }))
+const sampleJson = ref(JSON.stringify({ name: 'John Smith', age: 99, birthday: new Date(), email: 'name@email.com', phone: '(999)-999-9999' }))
 const generatedCode = ref('')
 const loading = ref(false)
 const snackbar = ref(false)
@@ -156,6 +157,12 @@ namespace MyNamespace.MyResponse
 
         [Newtonsoft.Json.JsonProperty("age", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Age { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("birthday", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public DateTime Birthday { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Email { get; set; }
     }
 }`
 

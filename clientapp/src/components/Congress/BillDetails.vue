@@ -1,91 +1,96 @@
 <template>
-    <v-sheet color="grey-lighten-4">
+    <v-sheet color="grey-darken-4">
+        <v-container>
+            <v-row  v-if="bill">
+                <v-col cols="12">
+                    <span class="text-h4 font-weight-thin d-block">{{ bill.type }}{{ bill.number }}</span>
+                    <span class="text-subtitle d-block">Introduced: {{ getDateDisplayText(bill.introducedDate) }}</span>
+                </v-col>
+            </v-row>
+            <v-skeleton-loader v-else color="grey-darken-4" type="subtitle"></v-skeleton-loader>
+        </v-container>
+    </v-sheet>
+    <v-sheet class="py-5">
         <v-container>
             <template v-if="bill">
-                <v-card>
-                    <v-card-item>
-                        <v-card-title>
-                            {{ bill.type }}{{ bill.number }}
-                        </v-card-title>
-                        <v-card-subtitle>
-                            <span class="me-1">Introduced: {{ getDateDisplayText(bill.introducedDate) }}</span>
-                        </v-card-subtitle>
-                        <v-card-text class="text-body-2">
-                            {{ bill.title }}
-                        </v-card-text>
+                <v-card flat>
+                    <v-card-text class="text-body-1">
+                        {{ bill.title }}
+                    </v-card-text>
 
-                        <v-card-title class="text-body-1">Sponsors</v-card-title>
-                        <v-list v-if="bill.sponsors && bill.sponsors.length > 0" density="compact" class="py-0">
-                            <v-list-item v-for="s in bill.sponsors" :key="s.bioguideId" class="text-body-2">
-                                <v-list-item-title>
-                                    {{ s.fullName }}
-                                </v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-                        <v-card-text v-else class="text-body-2">
-                            No sponsors to display
-                        </v-card-text>
+                    <v-card-title class="text-body-1">Sponsors</v-card-title>
+                    <v-list v-if="bill.sponsors && bill.sponsors.length > 0" density="compact" class="py-0">
+                        <v-list-item v-for="s in bill.sponsors" :key="s.bioguideId" class="text-body-2">
+                            <v-list-item-title>
+                                {{ s.fullName }}
+                            </v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                    <v-card-text v-else class="text-body-2">
+                        No sponsors to display
+                    </v-card-text>
 
-                        <v-card-title class="text-body-1">Cosponsors</v-card-title>
-                        <v-data-table 
-                            density="compact" 
-                            :headers="cosponsorHeaders"
-                            :items="cosponsors"
-                            :items-per-page="5"
-                            :items-per-page-options="itemsPerPageOptions"
-                        ></v-data-table>
+                    <v-card-title class="text-body-1">Cosponsors</v-card-title>
+                    <v-data-table 
+                        density="compact" 
+                        :headers="cosponsorHeaders"
+                        :items="cosponsors"
+                        :items-per-page="5"
+                        :items-per-page-options="itemsPerPageOptions"
+                    ></v-data-table>
 
-                        <template v-if="bill.cboCostEstimates">
-                            <v-card-title class="text-body-1">CBO Cost Estimates</v-card-title>
-                            <v-list density="compact" class="py-0">
-                                <v-list-item v-for="c in bill.cboCostEstimates" :key="c.url">
-                                    <v-list-item-subtitle class="text-body-2">
-                                        {{ c.description }}
-                                    </v-list-item-subtitle>
-                                    <template v-slot:append>
-                                        <v-btn :href="c.url" target="_blank" variant="text" color="grey-lighten-1" icon="mdi-open-in-new">
-                                        </v-btn>
-                                    </template>
-                                </v-list-item>
-                            </v-list>
-                        </template>
-
-                        <v-card-title class="text-body-1">Timeline</v-card-title>
-                        <template v-if="actions">
-                            <v-timeline density="compact" side="end">
-                                <v-timeline-item v-for="(a, i) in actions" :key="`action_${i}`" size="small" dot-color="grey">
-                                    <div>
-                                        <div class="text-grey-darken-1 text-caption">{{ moment(a.actionDate).startOf('day').fromNow() }}</div>
-                                        <!-- <div class="text-h6">{{ a.sourceSystem.name }}</div> -->
-                                        <p class="text-body-2">
-                                            {{ a.text }}
-                                        </p>
-                                    </div>
-                                </v-timeline-item>
-                            </v-timeline>
-                        </template>
-
-                        <v-card-title class="text-body-1">Amendments</v-card-title>
-                        <v-list v-if="amendments.length > 0" density="compact" class="py-0">
-                            <v-list-item v-for="a in amendments" :key="a.number">
+                    <template v-if="bill.cboCostEstimates">
+                        <v-card-title class="text-body-1">CBO Cost Estimates</v-card-title>
+                        <v-list density="compact" class="py-0">
+                            <v-list-item v-for="c in bill.cboCostEstimates" :key="c.url">
                                 <v-list-item-subtitle class="text-body-2">
-                                    {{ a.type }}
+                                    {{ c.description }}
                                 </v-list-item-subtitle>
+                                <template v-slot:append>
+                                    <v-btn :href="c.url" target="_blank" variant="text" color="grey-lighten-1" icon="mdi-open-in-new">
+                                    </v-btn>
+                                </template>
                             </v-list-item>
                         </v-list>
-                        <v-card-text v-else class="text-body-2">
-                            No amendments to display
-                        </v-card-text>
-                    </v-card-item>
+                    </template>
+
+                    <v-card-title class="text-body-1">Timeline</v-card-title>
+                    <template v-if="actions">
+                        <v-timeline density="compact" side="end">
+                            <v-timeline-item v-for="(a, i) in actions" :key="`action_${i}`" size="small" dot-color="grey">
+                                <div>
+                                    <div class="text-grey-darken-1 text-caption">{{ moment(a.actionDate).startOf('day').fromNow() }}</div>
+                                    <!-- <div class="text-h6">{{ a.sourceSystem.name }}</div> -->
+                                    <p class="text-body-2">
+                                        {{ a.text }}
+                                    </p>
+                                </div>
+                            </v-timeline-item>
+                        </v-timeline>
+                    </template>
+
+                    <v-card-title class="text-body-1">Amendments</v-card-title>
+                    <v-list v-if="amendments.length > 0" density="compact" class="py-0">
+                        <v-list-item v-for="a in amendments" :key="a.number">
+                            <v-list-item-subtitle class="text-body-2">
+                                {{ a.type }}
+                            </v-list-item-subtitle>
+                        </v-list-item>
+                    </v-list>
+                    <v-card-text v-else class="text-body-2">
+                        No amendments to display
+                    </v-card-text>
                 </v-card>
             </template>
             <template v-else>
                 <v-skeleton-loader
-                    class="mx-auto border"
+                    color="transparent"
+                    class="mx-auto border-0"
                     type="article, table-heading, table-thead, table-tbody, avatar, text"
                     ></v-skeleton-loader>
                 <v-skeleton-loader
-                    class="mx-auto border"
+                    color="transparent"
+                    class="mx-auto border-0"
                     type="avatar, text, article"
                     ></v-skeleton-loader>
             </template>

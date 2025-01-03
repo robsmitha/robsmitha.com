@@ -4,15 +4,21 @@ import { WpPage, WpPost, WpTag, WpCategory } from './types'
 import apiClient from '@/api/elysianClient'
 
 type State = {
-  pages: WpPage[],
+  pages: PageContent[],
   posts: WpPost[],
   tags: WpTag[],
   categories: WpCategory[]
 }
 
+type PageContent = {
+  title: string,
+  content: string,
+  slug: string
+}
+
 export const useAppStore = defineStore('app', {
   state: (): State => ({
-    pages: [],
+    pages: defaultState.pages,
     posts: [],
     tags: [],
     categories: []
@@ -70,10 +76,30 @@ export const useAppStore = defineStore('app', {
   actions: {
     async fetchContent(): Promise<void> {
       const response = await apiClient?.getData('/api/WordPressContent')
-      this.pages = response?.data.pages
+      this.pages = response.data.pages.map((p : WpPage) => {
+        return {
+          title: p.title.rendered,
+          content: p.content.rendered,
+          slug: p.slug
+        }
+      })
       this.posts = response?.data.posts
       this.tags = response?.data.tags
       this.categories = response?.data.categories
     }
   }
 })
+
+
+const defaultState: State = {
+  pages: [
+    {
+      title: 'About',
+      slug: 'home-page',
+      content: '\n<p>I was born and raised near Tampa, Florida and studied Computer Science at Florida State. During that time, I discovered a passion for creating websites, so I decided to pursue a path building on the web.</p>\n\n\n\n<div style="height:30px" aria-hidden="true" class="wp-block-spacer"></div>\n\n\n\n<p>I graduated from FSU in 2018 and met my wife in 2019. Together, we welcomed our son into the world alongside our beloved pets: Zeus, Athena, and our charming French bulldog, Hazel. When I&#8217;m not building software, I enjoy bothering the pets, working on house projects, grilling red meat, and occasionally catching some fish.</p>\n'
+    }
+  ],
+  tags: [],
+  categories: [],
+  posts: []
+}
