@@ -6,6 +6,6 @@
 
 <script lang="ts" setup>
   const actions = [
-    { text: 'Resume', to: '/about'}
+    { text: 'Resume', href: 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/files/Rob+Smitha+Resume.pdf'}
   ]
 </script>

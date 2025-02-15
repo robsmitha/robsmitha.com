@@ -23,8 +23,8 @@
     >
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home-roof" title="Home" value="home" to="/"></v-list-item>
-        <v-list-item prepend-icon="mdi-certificate-outline" title="Resume" value="about" to="/about"></v-list-item>
-        <v-list-item prepend-icon="mdi-magnify" title="Search Code" value="code" to="/code"></v-list-item>
+        <v-list-item prepend-icon="mdi-certificate-outline" title="Resume" value="about" href="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/files/Rob+Smitha+Resume.pdf"></v-list-item>
+        <v-list-item v-if="false" prepend-icon="mdi-magnify" title="Search Code" value="code" to="/code"></v-list-item>
         <v-list-item prepend-icon="mdi-rocket-launch-outline" title="Generate Code" value="generate-code" to="/generate-code"></v-list-item>
         <v-list-item prepend-icon="mdi-rss" title="Congress Feed" value="congress" to="/congress"></v-list-item>
 
