@@ -4,7 +4,6 @@
             <v-card
                 class="mx-auto pb-3 border-sm h-100 rounded-0"
                 variant="flat"
-                v-bind="props"
                 >
                 <v-list-item lines="three">
                     <template v-slot:default>
@@ -35,48 +34,16 @@
 </template>
 
 <script setup lang="ts">
-import githubClient from '@/api/githubClient'
-import { ref, onMounted } from 'vue'
 
-const props = defineProps({
-  name: { type: String }
+defineProps({
+    languages: { 
+        type: Object, 
+        default: () => ({
+            loading: true,
+            success: false,
+            data: null
+        }) 
+    }
 })
 
-const languages = ref<any>({
-    loading: true,
-    success: false,
-    data: null
-})
-
-onMounted(() => getLanguages())
-
-async function getLanguages(){
-    const data = await githubClient?.getLanguages(props.name as string)
-    const colors = new Map<string, string>([
-        ["C#", "deep-purple"],
-        ["TypeScript", "blue-darken-3"],
-        ["Vue", "teal-darken-2"],
-        ["HTML", "orange-darken-3"],
-        ["JavaScript", "yellow-darken-1"]
-    ]);
-    const cards: Array<any> = []
-    if (data) {
-        const keys = Object.keys(data)
-        const sum = keys.reduce((s, l) => s + data[l], 0)
-        keys.map(l => {
-            cards.push({
-                language: l,
-                lines: data[l],
-                percent: Math.round((data[l] / sum) * 100),
-                color: colors.get(l)
-            })
-        })
-    }
-
-    languages.value = {
-        loading: false,
-        success: data !== null,
-        data: cards
-    }
-}
 </script>

@@ -6,13 +6,15 @@
                     <v-row justify="space-between">
                         <v-col md="8" cols="12">
                             <v-responsive width="350">
+                                <p class="text-grey-darken-2 text-body-2 mt-3">
+                                    {{ f.subtitle }}
+                                </p> 
+
                                 <h2 class="text-h4">
                                 {{ f.title }}
                                 </h2>
 
-                                <p class="text-grey-darken-2 mt-3">
-                                {{ f.subtitle }}
-                                </p>
+                                <v-divider class="mt-5 mb-6" thickness="5px" length="50px" />
 
                                 <p class="mt-8">
                                 {{ f.text }}

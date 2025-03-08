@@ -22,7 +22,7 @@
         <template v-slot:header>
             <v-row class="mb-6">
                 <v-col>
-                    <h3 class="text-subtitle-1 text-uppercase">
+                    <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
                         GitHub
                     </h3>
                     <span class="text-h4 d-block">
@@ -51,7 +51,8 @@
                 v-for="repo in items"
                 :key="repo.raw.name"
                 cols="12"
-                xl="3"
+                xl="2"
+                lg="4"
                 md="4"
                 sm="6"
                 >
@@ -61,7 +62,7 @@
         </template>
 
         <template v-slot:footer="{ page, pageCount, prevPage, nextPage }">
-            <div class="d-flex align-center justify-center pa-4">
+            <div class="d-flex align-center justify-center pa-4 mt-4">
                 <v-btn
                     :disabled="page === 1"
                     density="comfortable"

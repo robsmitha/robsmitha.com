@@ -18,6 +18,7 @@ declare module 'vue' {
     Commits: typeof import('./src/components/Repo/Commits.vue')['default']
     CongressFeed: typeof import('./src/components/Congress/CongressFeed.vue')['default']
     Devicon: typeof import('./src/components/_helpers/Devicons/Devicon.vue')['default']
+    ErrorMessage: typeof import('./src/components/_helpers/ErrorMessage.vue')['default']
     Features: typeof import('./src/components/Features.vue')['default']
     FileContentDialog: typeof import('./src/components/Code/FileContentDialog.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
@@ -29,5 +30,6 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Starred: typeof import('./src/components/Home/Starred.vue')['default']
+    UnDraw: typeof import('./src/components/_helpers/UnDraw/UnDraw.vue')['default']
   }
 }

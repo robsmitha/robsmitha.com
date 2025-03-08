@@ -5,8 +5,8 @@
             type="card"
         ></v-skeleton-loader>
         <template v-else-if="repo.success">
-            <h3 class="text-subtitle-1 text-uppercase">
-                Repo
+            <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
+                Repository
             </h3>
             <span :class="{
                 'text-h4': !isMobile,
@@ -53,7 +53,7 @@
         </template>
       </v-container>
       <v-container class="py-7">
-        <h3 class="text-subtitle-1 text-uppercase">
+        <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
             Breakdown
         </h3>
         <span class="text-h4">
@@ -64,11 +64,11 @@
           type="list-item-avatar-three-line"
           width="300px"
         ></v-skeleton-loader>
-        <!-- <ErrorMessage  v-else-if="!languages.success" message="Could not load languages" /> -->
-        <Languages v-else :name="repo.data.name" />
+        <ErrorMessage  v-else-if="!languages.success" message="Could not load languages" />
+        <Languages v-else :languages="languages" />
       </v-container>
       <v-container class="pt-7 pb-16">
-            <h3 class="text-subtitle-1 text-uppercase">
+            <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
                 Activity
             </h3>
             <span class="text-h4">
@@ -79,8 +79,8 @@
             type="list-item-avatar-three-line"
             width="300px"
             ></v-skeleton-loader>
-            <!-- <ErrorMessage  v-else-if="!commits.success" message="Could not load commits" /> -->
-            <Commits v-else :name="repo.data.name" />
+            <ErrorMessage  v-else-if="!commits.success" message="Could not load commits" />
+            <Commits v-else :commits="commits" />
       </v-container>
 </template>
 
@@ -124,7 +124,23 @@ const repo = ref<any>({
     data: null
 })
 
-onMounted(() => getRepo())
+const languages = ref<any>({
+    loading: true,
+    success: false,
+    data: null
+})
+
+const commits = ref<any>({
+    loading: true,
+    success: false,
+    data: null
+})
+
+onMounted(() => {
+    getRepo()
+    getLanguages()
+    getCommits()
+})
 
 async function getRepo() {
     const data = await githubClient.getRepo(repoName)
@@ -135,4 +151,59 @@ async function getRepo() {
     };
 }
 
+async function getLanguages(){
+    const data = await githubClient?.getLanguages(repoName)
+    const colors = new Map<string, string>([
+        ["C#", "deep-purple"],
+        ["TypeScript", "blue-darken-3"],
+        ["Vue", "teal-darken-2"],
+        ["HTML", "orange-darken-3"],
+        ["JavaScript", "yellow-darken-1"]
+    ]);
+    const cards: Array<any> = []
+    if (data) {
+        const keys = Object.keys(data)
+        const sum = keys.reduce((s, l) => s + data[l], 0)
+        keys.map(l => {
+            cards.push({
+                language: l,
+                lines: data[l],
+                percent: Math.round((data[l] / sum) * 100),
+                color: colors.get(l)
+            })
+        })
+    }
+
+    languages.value = {
+        loading: false,
+        success: data !== null,
+        data: cards
+    }
+}
+
+async function getCommits(){
+    const data = await githubClient?.getCommits(repoName)
+    const dates = data !== null ? data.reduce((groups: any, group: any) => {
+        const date = group.commit.committer.date.split('T')[0];
+        if (!groups[date]) {
+            groups[date] = [];
+        }
+        groups[date].push(group);
+        return groups;
+    }, {}) 
+    : [];
+
+    const commitGroups = Object.keys(dates).map((date) => {
+        return {
+            date,
+            commits: dates[date]
+        };
+    });
+
+    commits.value = {
+        loading: false,
+        success: commitGroups !== null,
+        data: commitGroups
+    }
+}
 </script>

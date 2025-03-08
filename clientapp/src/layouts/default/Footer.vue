@@ -15,6 +15,7 @@
                     </v-col>
                     <v-col>
                         <div class="text-right">
+                            <v-icon size="small">mdi-copyright</v-icon>
                             {{ new Date().getFullYear() }}
                         </div>
                     </v-col>

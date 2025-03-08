@@ -34,44 +34,16 @@
 </template>
 
 <script setup lang="ts">
-import githubClient from '@/api/githubClient'
-import { ref, onMounted } from 'vue'
 
-const props = defineProps({
-  name: { type: String }
-})
-
-const commits = ref<any>({
-    loading: true,
-    success: false,
-    data: null
-})
-
-onMounted(() => getCommits())
-
-async function getCommits(){
-    const data = await githubClient?.getCommits(props.name as string)
-    const dates = data !== null ? data.reduce((groups: any, group: any) => {
-        const date = group.commit.committer.date.split('T')[0];
-        if (!groups[date]) {
-            groups[date] = [];
-        }
-        groups[date].push(group);
-        return groups;
-    }, {}) 
-    : [];
-
-    const commitGroups = Object.keys(dates).map((date) => {
-        return {
-            date,
-            commits: dates[date]
-        };
-    });
-
-    commits.value = {
-        loading: false,
-        success: commitGroups !== null,
-        data: commitGroups
+defineProps({
+    commits: { 
+        type: Object, 
+        default: () => ({
+            loading: true,
+            success: false,
+            data: null
+        }) 
     }
-}
+})
+
 </script>
