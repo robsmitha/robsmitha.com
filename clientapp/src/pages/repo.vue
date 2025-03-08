@@ -1,0 +1,138 @@
+<template>
+    <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
+    <v-container class="py-7">
+        <v-skeleton-loader v-if="repo.loading"
+            type="card"
+        ></v-skeleton-loader>
+        <template v-else-if="repo.success">
+            <h3 class="text-subtitle-1 text-uppercase">
+                Repo
+            </h3>
+            <span :class="{
+                'text-h4': !isMobile,
+                'text-h5': isMobile
+            }">
+                {{ repo.data.name }} 
+            </span>
+            <v-divider class="mt-5 mb-6" thickness="5px" length="50px" />
+            <p class="text-body-1">
+                {{repo.data.description}}
+            </p>
+            <v-list class="mb-3" density="compact">
+                <v-list-item>
+                    <v-list-item-title>Last Push</v-list-item-title>
+                    <v-list-item-subtitle>{{ formatter.format(new Date(repo.data.pushed_at)) }}</v-list-item-subtitle>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-title>Created on</v-list-item-title>
+                    <v-list-item-subtitle>{{ formatter.format(new Date(repo.data.created_at)) }}</v-list-item-subtitle>
+                </v-list-item>
+            </v-list>
+            <v-btn 
+            v-if="repo.data.homepage"
+            variant="outlined"
+            class="mr-2"
+            rounded
+            color="primary"
+            target="_blank"
+            rel="noopener noreferrer"
+            :href="repo.data.homepage"
+            >
+                <v-icon>mdi-open-in-new</v-icon>&nbsp;Website
+            </v-btn>
+            <v-btn 
+            variant="outlined"
+            rounded
+            color="black"
+            target="_blank"
+            rel="noopener noreferrer"
+            :href="repo.data.html_url"
+            >
+                <v-icon>mdi-github</v-icon>&nbsp;GitHub
+            </v-btn>
+        </template>
+      </v-container>
+      <v-container class="py-7">
+        <h3 class="text-subtitle-1 text-uppercase">
+            Breakdown
+        </h3>
+        <span class="text-h4">
+            Code 
+        </span>
+        <v-divider class="mt-5 mb-6" thickness="5px" length="50px" />
+        <v-skeleton-loader v-if="repo.loading"
+          type="list-item-avatar-three-line"
+          width="300px"
+        ></v-skeleton-loader>
+        <!-- <ErrorMessage  v-else-if="!languages.success" message="Could not load languages" /> -->
+        <Languages v-else :name="repo.data.name" />
+      </v-container>
+      <v-container class="pt-7 pb-16">
+            <h3 class="text-subtitle-1 text-uppercase">
+                Activity
+            </h3>
+            <span class="text-h4">
+                Commits 
+            </span>
+            <v-divider class="mt-5 mb-6" thickness="5px" length="50px" />
+            <v-skeleton-loader v-if="repo.loading"
+            type="list-item-avatar-three-line"
+            width="300px"
+            ></v-skeleton-loader>
+            <!-- <ErrorMessage  v-else-if="!commits.success" message="Could not load commits" /> -->
+            <Commits v-else :name="repo.data.name" />
+      </v-container>
+</template>
+
+<script setup lang="ts">
+import githubClient from '@/api/githubClient'
+import { ref, computed, onMounted } from 'vue'
+import { useDisplay } from 'vuetify'
+
+const { mobile } = useDisplay()
+const isMobile = computed(() => mobile.value)
+
+const props = defineProps({
+  name: { type: String }
+})
+
+const formatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit'
+});
+
+const repoName: string = props.name as string;
+const breadcrumbs = [
+  {
+    title: 'HOME',
+    disabled: false,
+    to: '/',
+  },
+  {
+    title: repoName,
+    disabled: true
+  }
+]
+
+const repo = ref<any>({
+    loading: true,
+    success: false,
+    data: null
+})
+
+onMounted(() => getRepo())
+
+async function getRepo() {
+    const data = await githubClient.getRepo(repoName)
+    repo.value =  {
+        loading: false,
+        success: data !== null,
+        data: data
+    };
+}
+
+</script>

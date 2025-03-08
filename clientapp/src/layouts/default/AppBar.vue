@@ -50,7 +50,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const store = useAppStore()
-store.fetchContent()
+//store.fetchContent()
 
 const auth = useAuthStore()
 auth.fetchAuth()

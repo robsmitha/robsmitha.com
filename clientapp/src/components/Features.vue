@@ -1,15 +1,4 @@
 <template>
-    <v-sheet color="grey-darken-4" class="py-5">
-        <v-container>
-            <v-row>
-                <v-col cols="12">
-                    <span :class="titleClass">
-                        Explore the features below
-                    </span>
-                </v-col>
-            </v-row>
-        </v-container>
-    </v-sheet>
     <v-sheet class="py-16">
         <template v-for="f in features" :key="f.title">
             <section v-if="f.enabled" id="filter">
@@ -30,10 +19,10 @@
                                 </p>
 
                                 <v-btn
-                                    class="my-3"
+                                    class="mt-8 mb-3"
                                     variant="outlined"
+                                    rounded
                                     :to="f.to"
-                                    rounded="0"
                                 >
                                  Explore
                                  <v-icon>mdi-arrow-right-thin</v-icon>
@@ -63,17 +52,8 @@
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
 
-
 const { mobile } = useDisplay()
 const isMobile = computed(() => mobile.value)
-
-const titleClass = computed(() => {
-    return {
-        'text-h4': !isMobile.value,
-        'text-h5': isMobile.value,
-        'font-weight-thin': true
-    }
-})
 
 const features = [
     {

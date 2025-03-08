@@ -9,7 +9,7 @@
           <v-col cols="12">
             <span :class="titleClass">{{ props.title }}</span>
             <span class="text-subtitle d-block mb-6" v-html="props.subtitle"></span>
-            <v-btn v-for="b in actions" :key="b.text" variant="outlined" rounded="0" :to="b.to" :href="b.href" :target="b.href ? '_blank': ''" :prepend-icon="b.icon">{{ b.text }}</v-btn>
+            <v-btn v-for="b in actions" :key="b.text" variant="outlined" rounded :to="b.to" :href="b.href" :target="b.href ? '_blank': ''" :prepend-icon="b.icon">{{ b.text }}</v-btn>
           </v-col>
         </v-row>
       </v-container>

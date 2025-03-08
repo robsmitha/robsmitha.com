@@ -47,6 +47,7 @@ declare module 'vue-router/auto/routes' {
     '/congress': RouteRecordInfo<'/congress', '/congress', Record<never, never>, Record<never, never>>,
     '/generate-code': RouteRecordInfo<'/generate-code', '/generate-code', Record<never, never>, Record<never, never>>,
     '/oauth': RouteRecordInfo<'/oauth', '/oauth', Record<never, never>, Record<never, never>>,
+    '/repo': RouteRecordInfo<'/repo', '/repo', Record<never, never>, Record<never, never>>,
   }
 }
 

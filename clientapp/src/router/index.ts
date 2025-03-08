@@ -8,12 +8,19 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import bill from '@/pages/bill.vue'
+import repo from '@/pages/repo.vue'
 import { RouteLocationNormalized } from 'vue-router';
 const routes = [
   {
     path: '/bill/:congress/:billType/:billNumber',
     name: 'bill',
     component: bill,
+    props: true
+  },
+  {
+    path: '/repo/:name',
+    name: 'repo',
+    component: repo,
     props: true
   }
 ];

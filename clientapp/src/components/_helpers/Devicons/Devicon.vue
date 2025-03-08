@@ -1,14 +1,46 @@
 <template>
     <v-avatar tile>
-        <v-img :src="getDevicon(fileName)" />
+        <v-img :src="src" />
     </v-avatar>
 </template>
 
 <script setup lang="ts">
-defineProps(['fileName'])
+import { computed } from 'vue'
+import { map, DeviconDeviconOriginalWordmark } from '@/components/_helpers/Devicons/Devicons'
+const props = defineProps(['fileName', 'icon'])
+
+
+const devicon = computed(() => {
+    if(map && props.icon) {
+        const key = props.icon.toLowerCase()
+        if(map.has(key)) {
+            return map.get(key)
+        }
+    }
+    
+    return '';
+})
+
+const src = computed(() => {
+    if(props.fileName){
+        return getDevicon(props.fileName)
+    }
+
+    const baseUrl = 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/vendor/devicons/'
+    switch(devicon.value){
+        case undefined:
+        case null: 
+        case '': 
+        return baseUrl + DeviconDeviconOriginalWordmark + ".svg"
+    }
+    return baseUrl + devicon.value + ".svg"
+})
+
+
+
 
 function getDevicon(fileName: string){
-    const extension = fileName.split('.').pop() || ''
+    const extension = fileName?.split('.')?.pop() || ''
     let path = 'devicon/devicon-original'
     switch(extension.toLowerCase()){
         case "cs":
