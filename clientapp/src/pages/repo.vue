@@ -4,7 +4,7 @@
         <v-skeleton-loader v-if="repo.loading"
             type="card"
         ></v-skeleton-loader>
-        <template v-else-if="repo.success">
+        <template v-else>
             <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
                 Repository
             </h3>
@@ -12,44 +12,47 @@
                 'text-h4': !isMobile,
                 'text-h5': isMobile
             }">
-                {{ repo.data.name }} 
+                {{ repo.success ? repo.data.name : "Failed to load repo." }} 
             </span>
             <v-divider class="mt-5 mb-6" thickness="5px" length="50px" />
-            <p class="text-body-1">
-                {{repo.data.description}}
-            </p>
-            <v-list class="mb-3" density="compact">
-                <v-list-item>
-                    <v-list-item-title>Last Push</v-list-item-title>
-                    <v-list-item-subtitle>{{ formatter.format(new Date(repo.data.pushed_at)) }}</v-list-item-subtitle>
-                </v-list-item>
-                <v-list-item>
-                    <v-list-item-title>Created on</v-list-item-title>
-                    <v-list-item-subtitle>{{ formatter.format(new Date(repo.data.created_at)) }}</v-list-item-subtitle>
-                </v-list-item>
-            </v-list>
-            <v-btn 
-            v-if="repo.data.homepage"
-            variant="outlined"
-            class="mr-2"
-            rounded
-            color="primary"
-            target="_blank"
-            rel="noopener noreferrer"
-            :href="repo.data.homepage"
-            >
-                <v-icon>mdi-open-in-new</v-icon>&nbsp;Website
-            </v-btn>
-            <v-btn 
-            variant="outlined"
-            rounded
-            color="black"
-            target="_blank"
-            rel="noopener noreferrer"
-            :href="repo.data.html_url"
-            >
-                <v-icon>mdi-github</v-icon>&nbsp;GitHub
-            </v-btn>
+            
+            <template v-if="repo.success">
+                <v-chip v-for="(t, i) in repo.data.topics" :key="t" size="small" color="primary" :class="{ 'ml-2': i > 0}">{{ t }}</v-chip>
+                <p class="text-body-1 my-4">
+                    {{repo.data.description}}
+                </p>
+                <v-list class="mb-3" density="compact">
+                    <v-list-item v-if="repo.data.homepage" target="_blank" rel="noopener noreferrer" :href="repo.data.homepage" rounded="xl">
+                        <template v-slot:prepend>
+                            <v-icon icon="mdi-open-in-new"></v-icon>
+                        </template>
+                        <v-list-item-subtitle>Website</v-list-item-subtitle>
+                        <v-list-item-title class="text-caption">{{ repo.data.homepage }}</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item target="_blank" rel="noopener noreferrer" :href="repo.data.html_url" rounded="xl">
+                        <template v-slot:prepend>
+                            <v-icon icon="mdi-github"></v-icon>
+                        </template>
+                        <v-list-item-subtitle>GitHub</v-list-item-subtitle>
+                        <v-list-item-title class="text-caption">robsmitha/{{ repo.data.name }}</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item>
+                        <template v-slot:prepend>
+                            <v-icon icon="mdi-rocket-launch-outline"></v-icon>
+                        </template>
+                        <v-list-item-subtitle>Last commit</v-list-item-subtitle>
+                        <v-list-item-title class="text-caption">{{ formatter.format(new Date(repo.data.pushed_at)) }}</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item>
+                        <template v-slot:prepend>
+                            <v-icon icon="mdi-rocket-outline"></v-icon>
+                        </template>
+                        <v-list-item-subtitle>First commit</v-list-item-subtitle>
+                        <v-list-item-title class="text-caption">{{ formatter.format(new Date(repo.data.created_at)) }}</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </template>
+            
         </template>
       </v-container>
       <v-container class="py-7">
@@ -102,7 +105,8 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   month: '2-digit',
   day: '2-digit',
   hour: '2-digit',
-  minute: '2-digit'
+  minute: '2-digit',
+  timeZoneName: 'short'
 });
 
 const repoName: string = props.name as string;

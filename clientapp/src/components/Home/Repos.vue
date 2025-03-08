@@ -15,90 +15,78 @@
             </v-col>
         </v-row>
         <v-data-iterator
-        :items="displayRepos"
-        :items-per-page="isMobile ? 2 : 6"
-        :search="search"
+            :items="displayRepos"
+            :items-per-page="isMobile ? 2 : 6"
+            :search="search"
         >
-        <template v-slot:header>
-            <v-row class="mb-6">
-                <v-col>
-                    <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
-                        GitHub
-                    </h3>
-                    <span class="text-h4 d-block">
-                        Repos
-                    </span>
-                    <v-divider class="mt-4" thickness="5px" length="50px" />
-                </v-col>
-                <v-col sm="3" cols="12">
-                    <v-text-field
-                        v-model="search"
+            <template v-slot:header>
+                <v-row class="mb-6">
+                    <v-col>
+                        <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
+                            GitHub
+                        </h3>
+                        <span class="text-h4 d-block">
+                            Repos
+                        </span>
+                        <v-divider class="mt-4" thickness="5px" length="50px" />
+                    </v-col>
+                    <v-col sm="3" cols="12">
+                        <v-text-field
+                            v-model="search"
+                            density="comfortable"
+                            placeholder="Filter"
+                            prepend-inner-icon="mdi-magnify"
+                            variant="outlined"
+                            rounded
+                            clearable
+                            hide-details
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+            </template>
+
+            <template v-slot:default="{ items }">
+                <v-row dense>
+                    <v-col
+                    v-for="repo in items"
+                    :key="repo.raw.name"
+                    cols="12"
+                    xl="2"
+                    lg="4"
+                    md="4"
+                    sm="6"
+                    >
+                        <RepoItem :repo="repo.raw" />
+                    </v-col>
+                </v-row>
+            </template>
+
+            <template v-slot:footer="{ page, pageCount, prevPage, nextPage }">
+                <div class="d-flex align-center justify-center pa-4 mt-4">
+                    <v-btn
+                        :disabled="page === 1"
                         density="comfortable"
-                        placeholder="Filter"
-                        prepend-inner-icon="mdi-magnify"
-                        variant="outlined"
+                        icon="mdi-arrow-left"
+                        variant="tonal"
                         rounded
-                        clearable
-                        hide-details
-                    ></v-text-field>
-                </v-col>
-            </v-row>
-        </template>
+                        @click="prevPage"
+                    ></v-btn>
 
-        <template v-slot:default="{ items }">
-            <v-row dense>
-                <v-col
-                v-for="repo in items"
-                :key="repo.raw.name"
-                cols="12"
-                xl="2"
-                lg="4"
-                md="4"
-                sm="6"
-                >
-                    <RepoItem :repo="repo.raw" />
-                </v-col>
-            </v-row>
-        </template>
+                    <div class="mx-2 text-caption">
+                        Page {{ page }} of {{ pageCount }}
+                    </div>
 
-        <template v-slot:footer="{ page, pageCount, prevPage, nextPage }">
-            <div class="d-flex align-center justify-center pa-4 mt-4">
-                <v-btn
-                    :disabled="page === 1"
-                    density="comfortable"
-                    icon="mdi-arrow-left"
-                    variant="tonal"
-                    rounded
-                    @click="prevPage"
-                ></v-btn>
-
-                <div class="mx-2 text-caption">
-                    Page {{ page }} of {{ pageCount }}
+                    <v-btn
+                        :disabled="page >= pageCount"
+                        density="comfortable"
+                        icon="mdi-arrow-right"
+                        variant="tonal"
+                        rounded
+                        @click="nextPage"
+                    ></v-btn>
                 </div>
-
-                <v-btn
-                    :disabled="page >= pageCount"
-                    density="comfortable"
-                    icon="mdi-arrow-right"
-                    variant="tonal"
-                    rounded
-                    @click="nextPage"
-                ></v-btn>
-            </div>
-        </template>
+            </template>
         </v-data-iterator>
-        <!-- <v-row v-else>
-            <v-col
-                v-for="repo in displayRepos"
-                :key="repo.name"
-                cols="12"
-                xl="3"
-                md="4"
-                sm="6"
-            >
-                <RepoItem :repo="repo" />
-            </v-col>
-        </v-row> -->
     </v-sheet>
 </template>
 

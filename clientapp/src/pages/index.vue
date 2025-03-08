@@ -10,7 +10,7 @@
                         Projects I've cooked on.
                       </span>
                       <span v-else>
-                        See some GitHub projects I've cooked up.
+                        See GitHub projects I've cooked on.
                       </span>
                       <v-icon>mdi-silverware-spoon</v-icon>
                   </span>
@@ -52,7 +52,7 @@ const titleClass = computed(() => {
     return {
         'text-h4': !isMobile.value,
         'text-h5': isMobile.value,
-        'font-weight-thin': true
+        'font-weight-light': true
     }
 })
 
