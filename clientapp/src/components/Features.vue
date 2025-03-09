@@ -65,7 +65,7 @@ const features = [
         to: '/code',
         icon: 'mdi-magnify',
         image: 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_read-notes_7itt.svg',
-        enabled: false
+        enabled: true
     },
     {
         title: 'Generate Code',
