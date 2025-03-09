@@ -10,7 +10,7 @@
                         Projects I've cooked on.
                       </span>
                       <span v-else>
-                        See GitHub projects I've cooked on.
+                        See GitHub projects I've cooked up.
                       </span>
                       <v-icon>mdi-silverware-spoon</v-icon>
                   </span>

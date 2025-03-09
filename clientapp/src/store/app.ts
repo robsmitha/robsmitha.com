@@ -21,7 +21,7 @@ export const useAppStore = defineStore('app', {
     pages: defaultState.pages,
     posts: [],
     tags: [],
-    categories: []
+    categories: defaultState.categories
   }),
   getters: {
     // pages
@@ -100,6 +100,43 @@ const defaultState: State = {
     }
   ],
   tags: [],
-  categories: [],
-  posts: []
+  posts: [],
+  categories: [
+    {
+      id: 1,
+      name: 'Design Patterns',
+      description: '',
+      parent: 0,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+    {
+      id: 2,
+      name: 'CQRS',
+      description: 'MediatR language:csharp',
+      parent: 1,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+    {
+      id: 2,
+      name: 'MultiTenant',
+      description: 'Finbuckle language:csharp',
+      parent: 1,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+  ]
 }

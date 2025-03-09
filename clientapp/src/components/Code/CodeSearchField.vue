@@ -28,19 +28,20 @@
         required
         persistent-hint
         variant="outlined"
+        rounded
         :readonly="loading"
         @click:append-inner="emit('search', search)"
         @keypress.enter="emit('search', search)"
     >
         <template v-slot:label>
             <span>
-                <v-icon icon="mdi-github"></v-icon>/robsmitha
+                <v-icon icon="mdi-github"></v-icon>&nbsp;{{ label }}
             </span>
         </template>
         <template v-slot:details>
-            <span class="ml-n4">
-                To learn more about the format of the query, see <a class="text-white" target="_blank" href="https://docs.github.com/rest/search/search#constructing-a-search-query">Constructing a search query</a>. 
-                See <a class="text-white" target="_blank" href="https://docs.github.com/search-github/searching-on-github/searching-code">Searching code</a> for a detailed list of qualifiers.
+            <span v-if="showDetails" class="ml-n4">
+                To learn more about the format of the query, see <a :class="{ 'text-white': dark }" target="_blank" href="https://docs.github.com/rest/search/search#constructing-a-search-query">Constructing a search query</a>. 
+                See <a :class="{ 'text-white': dark }" target="_blank" href="https://docs.github.com/search-github/searching-on-github/searching-code">Searching code</a> for a detailed list of qualifiers.
             </span>
         </template>
     </v-text-field>
@@ -52,7 +53,7 @@ import { watch, computed } from 'vue'
 import { useAuthStore } from "@/store/auth"
 
 
-const props = defineProps(['rateLimited', 'loading', 'term'])
+const props = defineProps(['rateLimited', 'loading', 'term', 'dark', 'label', 'showDetails'])
 const emit = defineEmits(['input', 'search', 'authorize', 'clear'])
 
 const auth = useAuthStore()

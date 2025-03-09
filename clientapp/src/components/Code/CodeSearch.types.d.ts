@@ -21,3 +21,15 @@ export type Match = {
     indices: number[]
     text: string
 }
+
+export interface TreeNode {
+    name: string;
+    path: string;
+    type: 'file' | 'directory';
+    children: TreeNode[] | null;
+    fileData: FileData | null;
+}
+
+export interface TreeMap {
+    [path: string]: TreeNode;
+}

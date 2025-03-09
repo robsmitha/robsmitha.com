@@ -109,15 +109,15 @@ export interface WpTagLinks {
 
 export interface WpCategory {
     id:          number;
-    count:       number;
+    count:       number | undefined;
     description: string;
-    link:        string;
+    link:        string | undefined;
     name:        string;
-    slug:        string;
-    taxonomy:    Taxonomy;
+    slug:        string | undefined;
+    taxonomy:    Taxonomy | undefined;
     parent:      number;
-    meta:        any[];
-    _links:      Links;
+    meta:        any[] | undefined;
+    _links:      WpCategoryLinks | undefined;
 }
 
 export interface WpCategoryLinks {

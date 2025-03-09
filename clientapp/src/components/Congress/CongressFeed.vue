@@ -31,6 +31,7 @@
                                 </template>
                                 <template v-slot:default>
                                     <div class="text-caption font-italic mt-2" v-html="isMobile && i.latestAction.text.length > 125 ? i.latestAction.text.slice(0, 125) + '...' : i.latestAction.text"></div>
+                                    <v-chip size="small" :color="i.originChamber === 'Senate' ? 'primary': 'black'" class="mt-2">{{ i.originChamber }}</v-chip>
                                 </template>
                             </v-list-item>
                             <v-divider />
