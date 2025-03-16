@@ -29,6 +29,7 @@ watch(() => props.path, (val) => val && loadFile(), { immediate: true, deep: tru
 
 async function loadFile(){
     loading.value = true;
+    code.value = ''
     
     try {
         const response = await apiClient?.getData(`/api/GitHubRepoContents?repo=${encodeURIComponent(props.repo)}&path=${encodeURIComponent(props.path)}`)
@@ -66,7 +67,7 @@ async function loadFile(){
                 commentPrefix = '//'
                 break
         }
-        html = `${commentPrefix} ${props.repo}/${props.path} ${commentSuffix}\n` + html
+        //html = `${commentPrefix} ${props.repo}/${props.path} ${commentSuffix}\n` + html
         
         code.value = html
     } catch(e) {

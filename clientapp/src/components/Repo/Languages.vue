@@ -4,7 +4,7 @@
             <v-card
                 class="mx-auto pb-3 border-sm h-100 rounded-0"
                 variant="flat"
-                >
+                @click="emit('language-selected', l.language)">
                 <v-list-item lines="three">
                     <template v-slot:default>
                         <div>
@@ -45,5 +45,7 @@ defineProps({
         }) 
     }
 })
+
+const emit = defineEmits(['language-selected'])
 
 </script>

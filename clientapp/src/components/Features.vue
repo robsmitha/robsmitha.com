@@ -59,12 +59,12 @@ const isMobile = computed(() => mobile.value)
 
 const features = [
     {
-        title: 'Search Code',
-        subtitle: 'GitHub Rest API',
-        text: 'Explore and search code hosted at github.com/robsmitha effortlessly using specific keywords and a flexible, customizable query syntax to refine your results.',
-        to: '/code',
-        icon: 'mdi-magnify',
-        image: 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_read-notes_7itt.svg',
+        title: 'Congress Activity',
+        subtitle: 'CapitolSharp.Congress',
+        text: 'Stay informed with a dynamic feed showcasing the latest updates, actions, and activities from Congress in real-time.',
+        to: '/congress',
+        icon: 'mdi-rss',
+        image: 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_text-files_tqjw.svg',
         enabled: true
     },
     {
@@ -77,15 +77,6 @@ const features = [
         enabled: true
     },
     {
-        title: 'Congress Activity',
-        subtitle: 'CapitolSharp.Congress',
-        text: 'Stay informed with a dynamic feed showcasing the latest updates, actions, and activities from Congress in real-time.',
-        to: '/congress',
-        icon: 'mdi-rss',
-        image: 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_text-files_tqjw.svg',
-        enabled: true
-    },
-    {
         title: 'US Bill Tracker',
         subtitle: 'CapitolSharp.Congress',
         text: 'Access a comprehensive, pageable dataset containing detailed records of all US bills, enabling easy navigation and in-depth research.',
@@ -93,6 +84,16 @@ const features = [
         icon: 'mdi-radar',
         image: 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_text-files_tqjw.svg',
         enabled: false
+    },
+    {
+        title: 'Search Code',
+        subtitle: 'GitHub Rest API',
+        text: 'Explore and search code hosted at github.com/robsmitha effortlessly using specific keywords and a flexible, customizable query syntax to refine your results.',
+        to: '/code',
+        icon: 'mdi-magnify',
+        image: 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/unDraw/undraw_read-notes_7itt.svg',
+        enabled: true
     }
+    // TODO: Budget Features
 ]
 </script>

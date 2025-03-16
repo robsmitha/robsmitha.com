@@ -102,8 +102,95 @@ const defaultState: State = {
   tags: [],
   posts: [],
   categories: [
+    // Frontend
     {
-      id: 1,
+      id: 100,
+      name: 'Frontend',
+      description: '',
+      parent: 0,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+    {
+      id: 101,
+      name: 'Vue JS',
+      description: 'language:vue',
+      parent: 100,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+    {
+      id: 102,
+      name: 'React',
+      description: 'React language:javascript',
+      parent: 100,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+    {
+      id: 103,
+      name: 'MVC',
+      description: 'extension:cshtml',
+      parent: 100,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+    // Backend
+    {
+      id: 200,
+      name: 'Backend',
+      description: '',
+      parent: 0,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+    {
+      id: 201,
+      name: 'REST APIs',
+      description: 'ApiController language:csharp',
+      parent: 200,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+    {
+      id: 202,
+      name: 'Function App',
+      description: 'functions language:csharp',
+      parent: 200,
+      count: undefined,
+      link: undefined,
+      slug: undefined,
+      taxonomy: undefined,
+      meta: undefined,
+      _links: undefined
+    },
+    // Design patterns
+    {
+      id: 301,
       name: 'Design Patterns',
       description: '',
       parent: 0,
@@ -115,10 +202,10 @@ const defaultState: State = {
       _links: undefined
     },
     {
-      id: 2,
+      id: 302,
       name: 'CQRS',
       description: 'MediatR language:csharp',
-      parent: 1,
+      parent: 301,
       count: undefined,
       link: undefined,
       slug: undefined,
@@ -127,10 +214,10 @@ const defaultState: State = {
       _links: undefined
     },
     {
-      id: 2,
+      id: 302,
       name: 'MultiTenant',
       description: 'Finbuckle language:csharp',
-      parent: 1,
+      parent: 301,
       count: undefined,
       link: undefined,
       slug: undefined,

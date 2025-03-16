@@ -7,7 +7,7 @@
               <v-col cols="12">
                   <span :class="titleClass">
                       <span v-if="isMobile">
-                        Projects I've cooked on.
+                        Projects I've cooked up.
                       </span>
                       <span v-else>
                         See GitHub projects I've cooked up.
@@ -37,6 +37,7 @@
 
   <Features />
 
+  <!-- TODO: Resume/design patterns section with mapping to search -->
 </template>
 
 <script lang="ts" setup>

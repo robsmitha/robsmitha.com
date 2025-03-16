@@ -1,92 +1,68 @@
 <template>
     <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
-    <v-container class="py-7">
-        <v-skeleton-loader v-if="repo.loading"
-            type="heading, article, list-item-avatar@3"
-            class="border-sm h-100 rounded-0"
-        ></v-skeleton-loader>
-        <template v-else>
+    
+    <v-sheet color="grey-darken-4">
+        <v-container v-if="repo.loading">
+            <v-skeleton-loader
+                type="heading, paragraph, heading"
+                color="grey-darken-4"
+            ></v-skeleton-loader>
+        </v-container>
+        <v-container v-else>
             <v-row>
                 <v-col>
-                    <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
-                        Repository
-                    </h3>
-                    <div :class="{
-                        'text-h4': !isMobile,
-                        'text-h5': isMobile
-                    }">
-                        {{ repo.success ? repo.data.name : "Failed to load repo." }} 
+                    <div class="d-flex">
+                        <span :class="{
+                            'text-h4': !isMobile,
+                            'text-h5': isMobile,
+                            'font-weight-bold': true
+                        }">
+                            {{ repo.success ? repo.data.name : "Failed to load repo." }} 
+                        </span>
+                        <v-spacer />
+                        <v-btn v-if="repo.data?.homepage" target="_blank" rel="noopener noreferrer" icon="mdi-web" variant="text" :href="repo.data.homepage"></v-btn>
+                        <v-btn target="_blank" rel="noopener noreferrer" icon="mdi-github" variant="text" :href="repo.data?.html_url"></v-btn>
                     </div>
-                    <v-divider class="mt-5 mb-0" thickness="5px" length="50px" />
+                    <v-divider class="mt-5 mb-2" thickness="5px" length="50px" />
+                    <p class="text-body-1 font-weight-light mt-4">
+                        {{ repo.data?.description}}
+                    </p>
                 </v-col>
-                <v-col md="3" cols="12">
+            </v-row>
+            <v-row>
+                <v-col cols="12">
                     <CodeSearchField 
                         v-if="repo.success"
                         :label="`Search`"
                         :term="term"
                         :rate-limited="rateLimited"
+                        :dark="true"
+                        :show-details="true"
                         :loading="loading"
-                        :dark="false"
                         @input="term = $event"
                         @search="searchGitHub"
                         @clear="clearSearch"
                         @authorize="authorizeGitHubApp" />
                 </v-col>
             </v-row>
-            <v-row v-if="!isMobile">
+            <v-row v-if="repo.success">
                 <v-col>
                     <v-chip 
                     v-for="(t, i) in repo.data.topics" 
                     :key="t"
-                    color="primary" 
-                    :class="{ 'ml-2': i > 0, 'mb-6': true }">
+                    color="white" 
+                    pill
+                    dark
+                    :class="{ 'ml-2': i > 0, 'mb-6': true }"
+                    @click="searchTopic(t)">
                     {{ t }}
                 </v-chip>
                 </v-col>
             </v-row>
-            <v-card v-if="repo.success" variant="flat" class="mx-auto pb-0 border-sm h-100 rounded-0">
-                <v-card-text>
-                    <p class="text-body-2 font-weight-light text-grey-darken-2">
-                        Description
-                    </p>
-                    <p class="text-body-1 my-4">
-                        {{repo.data.description}}
-                    </p>
-                </v-card-text>
-                <v-list class="pb-0" density="compact">
-                    <v-list-item>
-                        <template v-slot:prepend>
-                            <v-icon icon="mdi-rocket-launch-outline"></v-icon>
-                        </template>
-                        <v-list-item-subtitle>Created on</v-list-item-subtitle>
-                        <v-list-item-title class="text-caption">{{ formatter.format(new Date(repo.data.created_at)) }}</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item v-if="repo.data.homepage" target="_blank" rel="noopener noreferrer" :href="repo.data.homepage">
-                        <template v-slot:prepend>
-                            <v-icon icon="mdi-web"></v-icon>
-                        </template>
-                        <v-list-item-subtitle>Website</v-list-item-subtitle>
-                        <v-list-item-title class="text-caption">{{ repo.data.homepage }}</v-list-item-title>
-                        <template v-slot:append>
-                            <v-icon icon="mdi-open-in-new" size="small"></v-icon>
-                        </template>
-                    </v-list-item>
-                    <v-list-item target="_blank" rel="noopener noreferrer" :href="repo.data.html_url">
-                        <template v-slot:prepend>
-                            <v-icon icon="mdi-github"></v-icon>
-                        </template>
-                        <v-list-item-subtitle>GitHub</v-list-item-subtitle>
-                        <v-list-item-title class="text-caption">robsmitha/{{ repo.data.name }}</v-list-item-title>
-                        <template v-slot:append>
-                            <v-icon icon="mdi-open-in-new" size="small"></v-icon>
-                        </template>
-                    </v-list-item>
-                </v-list>
-            </v-card>
-            
-        </template>
-      </v-container>
-      <v-container class="py-7">
+        </v-container>
+    </v-sheet>
+    
+    <v-container class="py-7">
         <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
             Breakdown
         </h3>
@@ -102,63 +78,71 @@
             ></v-skeleton-loader>
         </template>
         <ErrorMessage  v-else-if="!languages.success" message="Could not load languages" />
-        <Languages v-else :languages="languages" />
-      </v-container>
-      <v-container class="pt-7 pb-16">
-            <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
-                Activity
-            </h3>
-            <span class="text-h4">
-                Commits 
-            </span>
-            <v-divider class="mt-5 mb-6" thickness="5px" length="50px" />
-            <v-skeleton-loader v-if="commits.loading"
-            type="list-item-avatar-three-line@5"
-            class="border-sm h-100 rounded-0"
-            width="300px"
-            ></v-skeleton-loader>
-            <ErrorMessage  v-else-if="!commits.success" message="Could not load commits" />
-            <Commits v-else :commits="commits" />
-      </v-container>
+        <Languages v-else :languages="languages" @language-selected="searchLanguage" />
+    </v-container>
 
-      <v-dialog v-model="dialog" persistent fullscreen>
-        <v-card>
-            <v-toolbar color="grey-darken-4">
-                <v-toolbar-title>
-                    <span class="font-weight-medium">Results for: "{{ term }}"</span>
-                </v-toolbar-title>
-                <v-spacer />
-                <v-btn
-                    icon="mdi-close"
-                    @click="dialog = false"
-                ></v-btn>
-            </v-toolbar>
-            <v-card-text>
-                <v-row>
-                    <v-col md="3" cols="12">
-                        <template v-if="loading">
-                            <v-skeleton-loader
-                            type="text"
-                            ></v-skeleton-loader>
+    <v-container class="pt-7 pb-16">
+        <h3 class="text-body-2 text-grey-darken-2 text-uppercase">
+            Activity
+        </h3>
+        <span class="text-h4">
+            Commits 
+        </span>
+        <v-divider class="mt-5 mb-6" thickness="5px" length="50px" />
+        <v-skeleton-loader v-if="commits.loading"
+        type="list-item-avatar-three-line@5"
+        class="border-sm h-100 rounded-0"
+        width="300px"
+        ></v-skeleton-loader>
+        <ErrorMessage  v-else-if="!commits.success" message="Could not load commits" />
+        <Commits v-else :commits="commits" />
+    </v-container>
+
+    <v-dialog v-model="dialog" max-width="700" persistent :fullscreen="isMobile">
+        <v-toolbar color="grey-lighten-4">
+            <v-btn
+                v-if="selectedItem"
+                icon="mdi-arrow-left"
+                @click="selectedItem = undefined"
+            ></v-btn>
+            <v-toolbar-title>
+                <span class="font-weight-medium">{{ selectedItem?.name ?? term }}</span>
+            </v-toolbar-title>
+            <v-spacer />
+            <v-btn
+                icon="mdi-close"
+                @click="closeDialog"
+            ></v-btn>
+        </v-toolbar>
+        <v-card rounded="0">
+            <v-list class="py-0">
+                <v-list-subheader>{{ selectedItem?.path ?? "Source Code" }}</v-list-subheader>
+                <v-skeleton-loader v-if="loading"  type="list-item-two-line@5"></v-skeleton-loader>
+                <FileContent v-else-if="selectedItem" :repo="repo.data.name" :path="selectedItem?.path" />
+                <template v-else-if="searchResults && searchResults.length > 0">
+                    <v-list-item v-for="item in searchResults" :key="item.sha" :title="item.name" :subtitle="item.path" @click="selectedItem = item">
+                        
+                        <template v-slot:prepend>
+                            <Devicon :file-name="item.name" />
                         </template>
-                        <p v-else-if="fileTree?.length === 0">
-                            No results found
-                        </p>
-                        <template v-else v-for="(item, index) in fileTree" :key="index">
-                            <FileItem 
-                                :item="item" 
-                                :indent="0" 
-                                @file-click="selectedItem = $event"
-                            />
+
+                        <template v-slot:append>
+                            <v-badge
+                            v-if="false"
+                            color="grey-lighten-3"
+                            :content="item.text_matches.reduce((total: number, textMatch: TextMatch) => {
+                                return total + textMatch.matches.length
+                            }, 0)"
+                            inline
+                            ></v-badge>
                         </template>
-                    </v-col>
-                    <v-col md="9" cols="12" class="pa-0">
-                        <FileContent :repo="repo.data.name" :path="selectedItem?.path" />
-                    </v-col>
-                </v-row>
-            </v-card-text>
+                    </v-list-item>
+                </template>
+                <v-list-item v-else title="No results found">
+                </v-list-item>
+            </v-list>
         </v-card>
-      </v-dialog>
+    </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -166,7 +150,7 @@ import githubClient from '@/api/githubClient'
 import elysianClient from '@/api/elysianClient'
 import { ref, computed, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
-import { SearchItem, TreeNode, TreeMap } from '@/components/Code/CodeSearch.types'
+import { SearchItem, TextMatch } from '@/components/Code/CodeSearch.types'
 
 const { mobile } = useDisplay()
 const isMobile = computed(() => mobile.value)
@@ -193,7 +177,7 @@ const breadcrumbs = [
     to: '/',
   },
   {
-    title: repoName,
+    title: 'REPO',
     disabled: true
   }
 ]
@@ -221,7 +205,7 @@ const commits = ref<any>({
 const loading = ref(false)
 const term = ref('')
 const rateLimited = ref(false)
-const fileTree = ref<TreeNode[]>()
+const searchResults = ref<SearchItem[]>()
 
 
 // File Dialog
@@ -317,7 +301,7 @@ async function searchGitHub(): Promise<void> {
     if (!response?.success) {
         rateLimited.value = response?.errors?.has('RATE_LIMIT') ?? false
     } else {
-        const files = response.data.items.map((i: any) => ({
+        const files = response.data.items?.map((i: any) => ({
             sha: i.sha,
             name: i.name,
             path: i.path,
@@ -326,65 +310,44 @@ async function searchGitHub(): Promise<void> {
             repo_description: i.repository.description,
             text_matches: i.textMatches
         }) as SearchItem);
-        fileTree.value = buildFileTree(files)
 
+        searchResults.value = files;
     }
     
     loading.value = false
 }
 
 function clearSearch(){
-    fileTree.value = []
+    searchResults.value = []
     selectedItem.value = undefined
 }
 
 async function searchTopic(topic: string) {
-    term.value = topic
+    const map = new Map<string, string>([
+        ["azure-functions", "HttpTrigger"],
+        ["api-wrapper", "HttpClient"],
+        ["dotnetcore", "language:csharp"],
+        ["dotnet-core", "language:csharp"],
+        ["dotnet", "language:csharp"],
+        ["cqrs", "MediatR language:csharp"],
+        ["reactjs", "React language:javascript"],
+        ["entity-framework-core", "EntityFrameworkCore language:csharp"]
+    ])
+    term.value = `${map.has(topic) ? map.get(topic) : topic}`
     await searchGitHub()
 }
 
-const buildFileTree = (files: SearchItem[]): TreeNode[] => {
-    const tree: TreeNode[] = [];
-    const map: TreeMap = {};
+async function searchLanguage(language: string) {
+    const map = new Map<string, string>([
+        ["C#", "csharp"]
+    ])
+    term.value = `language:${map.has(language) ? map.get(language) : language}`
+    await searchGitHub()
+}
 
-    // First pass: create folder structure
-    files.forEach(file => {
-        const pathParts: string[] = file.path.split('/');
-        let currentLevel: TreeNode[] = tree;
-        let currentPath: string = '';
-
-        // Process each part of the path
-        pathParts.forEach((part: string, index: number) => {
-            const isLastPart: boolean = index === pathParts.length - 1;
-            currentPath += (index > 0 ? '/' : '') + part;
-            
-            // Check if this path segment already exists
-            let existingNode: TreeNode | undefined = currentLevel.find(item => item.name === part);
-            
-            if (!existingNode) {
-                const newNode: TreeNode = {
-                    name: part,
-                    path: currentPath,
-                    type: isLastPart ? 'file' : 'directory',
-                    children: isLastPart ? null : [],
-                    fileData: isLastPart ? file : null
-                };
-                
-                currentLevel.push(newNode);
-                map[currentPath] = newNode;
-                existingNode = newNode;
-            } else if (isLastPart && existingNode.type === 'directory') {
-                // Edge case: if we have a directory and a file with the same name
-                existingNode.type = 'file';
-                existingNode.fileData = file;
-            }
-            
-            if (!isLastPart && existingNode.children) {
-                currentLevel = existingNode.children;
-            }
-        });
-    });
-
-    return tree;
+function closeDialog(){
+    dialog.value = false
+    selectedItem.value = undefined
+    searchResults.value = []
 }
 </script>
