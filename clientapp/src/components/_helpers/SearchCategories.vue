@@ -12,14 +12,14 @@
             </template>
         </v-col>
         <v-col v-for="parentCategory in store.parentCategories" :key="parentCategory.id" cols="12">
-            <span class="text-h6 d-block">{{ parentCategory.name }}</span>
+            <span class="text-caption text-grey-darken-3 d-block">{{ parentCategory.name }}</span>
             <span class="text-caption text-grey-darken-1 d-block mb-2">{{ parentCategory.description }}</span>
-            <v-divider class="my-5" />
-            <v-row>
+            <v-row class="mb-4">
                 <v-col md="3" sm="4" cols="12" v-for="subCategory in store.groupedCategories.get(parentCategory.id)" :key="subCategory.id">
                     <v-card 
                         :title="subCategory.name" 
                         height="100%"
+                        class="mx-auto pb-3 border-sm h-100 rounded-0 mt-1"
                         flat
                         :disabled="rateLimited"
                         @click="emit('category-selected', subCategory)"

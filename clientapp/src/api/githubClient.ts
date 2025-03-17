@@ -51,6 +51,36 @@ export interface GithubLanguages {
   [language: string]: number;
 }
 
+export class GitHubRepoMap<T> extends Map<GithubRepo, T> {
+  get(key: GithubRepo): T | undefined {
+    for (const [existingKey, value] of this.entries()) {
+      if (existingKey.name === key.name) {
+        return value;
+      }
+    }
+    return undefined;
+  }
+  
+  has(key: GithubRepo): boolean {
+    for (const existingKey of this.keys()) {
+      if (existingKey.name === key.name) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  set(key: GithubRepo, value: T): this {
+    for (const existingKey of this.keys()) {
+      if (existingKey.name === key.name) {
+        super.set(existingKey, value);
+        return this;
+      }
+    }
+    return super.set(key, value);
+  }
+}
+
 const endpoint = 'https://api.github.com';
 const login = 'robsmitha';
 

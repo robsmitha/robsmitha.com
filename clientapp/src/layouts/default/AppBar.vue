@@ -63,6 +63,9 @@ import { useAppStore } from "@/store/app"
 import { useAuthStore } from "@/store/auth"
 import { useRoute, useRouter } from 'vue-router'
 import { useGoTo } from 'vuetify'
+import { useGithubStore } from "@/store/github"
+
+
 
 const route = useRoute()
 const router = useRouter()
@@ -70,6 +73,9 @@ const goTo = useGoTo()
 
 const store = useAppStore()
 //store.fetchContent()
+
+const gitHubStore = useGithubStore()
+gitHubStore.fetchRepos()
 
 const auth = useAuthStore()
 auth.fetchAuth()

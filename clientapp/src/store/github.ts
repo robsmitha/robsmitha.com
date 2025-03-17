@@ -16,7 +16,15 @@ export const useGithubStore = defineStore('github', {
       starred: []
     }),
     getters: {
-      
+      repoLookup: (state: State) : Map<string, GithubRepo> => {
+        const repoLookup = new Map<string, GithubRepo>();
+        if(state.repos){
+          for (const repo of state.repos) {
+              repoLookup.set(repo.name, repo);
+          }
+        }
+        return repoLookup
+      },
     },
     actions: {
       async fetchUser(): Promise<void> {

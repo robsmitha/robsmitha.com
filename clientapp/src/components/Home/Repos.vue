@@ -56,7 +56,7 @@
                     md="4"
                     sm="6"
                     >
-                        <RepoItem :repo="repo.raw" />
+                        <RepoItem :repo="repo.raw" @repo-selected="repoSelected" />
                     </v-col>
                 </v-row>
             </template>
@@ -94,9 +94,11 @@
 import { ref, computed } from 'vue'
 import { useGithubStore } from "@/store/github"
 import { useDisplay } from 'vuetify'
+import { useRouter } from 'vue-router'
 
 const { mobile } = useDisplay()
 const isMobile = computed(() => mobile.value)
+const router = useRouter()
 
 const store = useGithubStore()
 store.fetchRepos()
@@ -113,4 +115,7 @@ const displayRepos = computed(() => {
   
   return sortedRepos.filter(r => r.description?.length > 0);
 });
+function repoSelected(name: string){
+    router.push(`repo/${name}`)
+}
 </script>

@@ -19,7 +19,7 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <CodeSearchField 
+                    <SearchField 
                         :term="term"
                         :rate-limited="rateLimited"
                         :loading="loading"
@@ -37,35 +37,95 @@
     <v-sheet class="py-5">
         <v-container>
             <v-row>
-                <v-col cols="12">
-                    <template  v-if="(items && items?.length > 0) || (loading && !rateLimited)">
-                        <CodeSearchRepos
-                            :rate-limited="rateLimited"
-                            :loading="loading"
-                            :term="term"
-                            :items="items"
-                            @file-selected="onFileSelected"
-                        />
-                    </template>
-                    <template v-else>
-                        <CodeSearchCategories 
-                            :rate-limited="rateLimited"
-                            :loading="loading"
-                            @category-selected="onCategorySelected"
-                        />
-                    </template>
+                <v-col>
+                    <span class="text-h6 d-block">Code Search</span>
+                    <v-skeleton-loader
+                        v-if="loading"
+                        ref="skeleton"
+                        :type="'list-item'"
+                        class="w-50"
+                    ></v-skeleton-loader>
+                    <span v-else-if="!items" class="text-caption text-grey-darken-1 d-block mb-2">
+                        Use the categories below to search code
+                    </span>
+                    <span v-else class="text-caption text-grey-darken-1 d-block mb-2">
+                        Found {{ items?.length }} results in {{ repoResults.size }} repositories
+                    </span>
+                    <v-divider class="my-4" thickness="5px" length="50px" />
                 </v-col>
             </v-row>
+            
+            <v-row v-if="loading">
+                <v-col v-for="i in 3" :key="i"
+                    cols="12"
+                    xl="3"
+                    md="4"
+                    sm="6"
+                >
+                    <v-skeleton-loader
+                        ref="skeleton"
+                        :type="'article'"
+                        class="mx-auto"
+                    ></v-skeleton-loader>
+                </v-col>
+            </v-row>
+                
+            <v-data-iterator
+                v-if="repoResults && repoResults.size > 0"
+                :items="[...repoResults.keys()]"
+                :items-per-page="3"
+            >
+                <template v-slot:default="{ items }">
+                    <v-row dense>
+                        <v-col
+                        v-for="repo in items"
+                        :key="repo.raw.name"
+                        cols="12"
+                        xl="2"
+                        lg="4"
+                        md="4"
+                        sm="6"
+                        >
+                            <RepoItem :repo="repo.raw" @repo-selected="repoSelected" />
+                        </v-col>
+                    </v-row>
+                </template>
+
+                <template v-slot:footer="{ page, pageCount, prevPage, nextPage }">
+                    <div class="d-flex align-center justify-center pa-4 mt-4">
+                        <v-btn
+                            :disabled="page === 1"
+                            density="comfortable"
+                            icon="mdi-arrow-left"
+                            variant="tonal"
+                            rounded
+                            @click="prevPage"
+                        ></v-btn>
+
+                        <div class="mx-2 text-caption">
+                            Page {{ page }} of {{ pageCount }}
+                        </div>
+
+                        <v-btn
+                            :disabled="page >= pageCount"
+                            density="comfortable"
+                            icon="mdi-arrow-right"
+                            variant="tonal"
+                            rounded
+                            @click="nextPage"
+                        ></v-btn>
+                    </div>
+                </template>
+            </v-data-iterator>
+            
+            <SearchCategories
+                :rate-limited="rateLimited"
+                :loading="loading"
+                @category-selected="onCategorySelected"
+            />
         </v-container>
     </v-sheet>
-    
-    <FileContentDialog
-        :open="dialog"
-        :loading="dialogLoading"
-        :item="selectedItem"
-        :dialogContents="dialogContents"
-        @close="dialog = false"
-    />
+    <SearchResultsDialog :open="dialog" :loading="loading" :repo="selectedRepo" :title="`${getWords(term)}`" :results="selectedResults" @close="dialog = false" />
 </template>
 
 <style scoped>
@@ -76,9 +136,12 @@
 
 <script setup lang="ts">
 import { WpCategory } from '@/store/types'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { SearchItem } from '@/components/Code/CodeSearch.types'
 import apiClient from '@/api/elysianClient'
+import { useGithubStore } from "@/store/github"
+import { GitHubRepoMap, GithubRepo } from '@/api/githubClient'
+const store = useGithubStore()
 
 // Search
 const loading = ref(false)
@@ -88,9 +151,43 @@ const items = ref<SearchItem[]>()
 
 // Dialog
 const dialog = ref(false)
-const dialogLoading = ref(false)
-const dialogContents = ref('')
-const selectedItem = ref<SearchItem | undefined>()
+const selectedRepo = ref<GithubRepo>()
+
+const repoResults = computed(() => {
+    if(!items.value || !store.repoLookup){
+        return new GitHubRepoMap<SearchItem[]>()
+    }
+    return items.value.reduce((map: GitHubRepoMap<SearchItem[]>, searchItem: SearchItem) => {
+        const repo = store.repoLookup.get(searchItem.repo_name)!
+        
+        if (!repo) {
+            console.warn(`Repo could not be found in global repo lookup [Name: ${searchItem.repo_name}]`)
+            return map;
+        }
+        
+        if (!map.has(repo)) {
+            map.set(repo, [searchItem]);
+        } else {
+            map.get(repo)?.push(searchItem);
+        }
+        
+        return map;
+    }, new GitHubRepoMap<SearchItem[]>())
+})
+
+const selectedResults = computed(() => {
+    if(!selectedRepo.value){
+        return [];
+    }
+    return repoResults.value.get(selectedRepo.value!)
+})
+
+
+function repoSelected(name: string){
+    const repo = store.repoLookup.get(name)!
+    selectedRepo.value = repo
+    dialog.value = true
+}
 
 async function authorizeGitHubApp(): Promise<void> {
     loading.value = true
@@ -104,11 +201,12 @@ async function authorizeGitHubApp(): Promise<void> {
 
 async function searchGitHub(): Promise<void> {
     loading.value = true
+    items.value = []
     const response = await apiClient?.getData(`/api/githubSearch?term=${encodeURIComponent(term.value)}`)
     if (!response?.success) {
         rateLimited.value = response?.errors?.has('RATE_LIMIT') ?? false
     } else {
-        items.value = response.data.items.map((i: any) => ({
+        const searchResults = response.data.items.map((i: any) => ({
             sha: i.sha,
             name: i.name,
             path: i.path,
@@ -117,64 +215,29 @@ async function searchGitHub(): Promise<void> {
             repo_description: i.repository.description,
             text_matches: i.textMatches
         }) as SearchItem)
+
+        items.value = searchResults
     }
     
     loading.value = false
 }
 
-function clearSearch(){
-    items.value = []
-    selectedItem.value = undefined
-}
-
-async function onFileSelected(item: SearchItem){
-    selectedItem.value = item
-    dialogLoading.value = true;
-    dialog.value = true
-
-    const response = await apiClient?.getData(`/api/GitHubRepoContents?repo=${encodeURIComponent(item.repo_name)}&path=${encodeURIComponent(item.path)}`)
-    let html = response?.data
-
-    // Remove github markup
-    const startPattern = '^<div id="file" class="[^"]*" data-path="' + item.path.replace(/\//g, "\\/") + '"><div class="plain"><pre style="white-space: pre-wrap">'
-    const endPattern = '</pre></div></div>$'
-    html = html
-            .replace(/&lt;/g, "<")
-            .replace(/&gt;/g, ">")
-            .replace(/&amp;/g, "&")
-            .replace(new RegExp(startPattern, 'g'), '')
-            .replace(new RegExp(endPattern, 'g'), '')
-
-    let commentPrefix = ''
-    let commentSuffix = ''
-    const extension = item.name.split('.').pop() || ''
-    switch(extension.toLowerCase()){
-        case 'py':
-            commentPrefix = '#'
-            break
-        case 'sql':
-            commentPrefix = '--'
-            break
-        case 'html':
-            commentPrefix = '<!--'
-            commentSuffix = '-->'
-        break
-        case 'css':
-            commentPrefix = '/*'
-            commentSuffix = '*/'
-            break
-        default:
-            commentPrefix = '//'
-            break
-    }
-    html = `${commentPrefix} ${item.repo_name}/${item.path} ${commentSuffix}\n` + html
-
-    dialogContents.value = html
-    dialogLoading.value = false;
-}
-
 async function onCategorySelected(subCategory: WpCategory) {
     term.value = subCategory.description
     await searchGitHub()
+}
+
+function clearSearch(){
+    items.value = []
+}
+
+function getWords(str: string){
+    if(!str) return ''
+    // Extracting words using regular expression
+    let words = str.split(/\s+OR\s+|(?=language:)|(?=extension:)/);
+
+    // Removing "language:" and "extension:" tokens and their values
+    words = words.map(word => word.replace(/(language|extension):/, '').replace(/\s+.+$/, ''));
+    return words;
 }
 </script>

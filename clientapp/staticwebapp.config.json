@@ -2,6 +2,22 @@
     "navigationFallback": {
         "rewrite": "/index.html"
     },
+    "routes": [
+        {
+            "route": "/dashboard",
+            "allowedRoles": ["authenticated"]
+        },
+        {
+            "route": "/budget/*",
+            "allowedRoles": ["authenticated"]
+        }
+    ],
+    "responseOverrides": {
+        "401": {
+            "statusCode": 302,
+            "redirect": "/.auth/login/aad"
+        }
+    },
     "platform": {
         "apiRuntime": "node:18"
     }

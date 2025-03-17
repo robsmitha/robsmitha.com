@@ -7,10 +7,7 @@
       :subtitle="`${formatter.format(new Date(props.repo.pushed_at))}`"
       :text="props.repo.description"
       :variant="props.variant"
-      :to="props.isExternalLink ? undefined : 'repo/'+props.repo.name"
-      :target="props.isExternalLink ? '_blank' : undefined" 
-      :rel="props.isExternalLink ? 'noopener noreferrer' : undefined"
-      :href="props.isExternalLink ? props.repo.html_url : undefined"
+      @click="emit('repo-selected', repo.name)"
     >
       <template v-slot:append>
         <v-avatar
@@ -40,6 +37,7 @@ const { mobile } = useDisplay()
 const props = withDefaults(defineProps<Props>(), {
   variant: 'flat'
 })
+const emit = defineEmits(['repo-selected'])
 const isMobile = computed(() => mobile.value)
 
 const icon = computed(() => {

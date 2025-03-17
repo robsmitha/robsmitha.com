@@ -9,6 +9,12 @@ import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import bill from '@/pages/bill.vue'
 import repo from '@/pages/repo.vue'
+import budget from '@/pages/budget.vue'
+import Transactions from '@/components/Financial/Transactions.vue'
+import EditBudget from '@/components/Financial/EditBudget.vue'
+import BudgetAccounts from '@/components/Financial/BudgetAccounts.vue'
+import Exemptions from '@/components/Financial/Exemptions.vue'
+
 import { RouteLocationNormalized } from 'vue-router';
 const routes = [
   {
@@ -22,6 +28,38 @@ const routes = [
     name: 'repo',
     component: repo,
     props: true
+  },
+  {
+    path: '/budget/:budgetId',
+    name: 'budget',
+    component: budget,
+    props: true,
+    children: [
+      {
+        path: 'edit',
+        name: 'edit',
+        component: EditBudget,
+        props: true,
+      },
+      {
+        path: 'transactions',
+        name: 'transactions',
+        component: Transactions,
+        props: true,
+      },
+      {
+        path: 'accounts',
+        name: 'accounts',
+        component: BudgetAccounts,
+        props: true,
+      },
+      {
+        path: 'exemptions',
+        name: 'exemptions',
+        component: Exemptions,
+        props: true,
+      }
+    ]
   }
 ];
 const router = createRouter({

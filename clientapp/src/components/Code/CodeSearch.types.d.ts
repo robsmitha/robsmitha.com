@@ -1,3 +1,4 @@
+import { GithubRepo } from "@/api/githubClient";
 
 export type SearchItem = {
     sha: string;
@@ -6,7 +7,8 @@ export type SearchItem = {
     html_url: string;
     repo_name: string;
     repo_description: string | null;
-    text_matches: TextMatch[];
+    text_matches: TextMatch[]
+    repo: GithubRepo | null;
 }
 
 export type TextMatch = {

@@ -31,9 +31,9 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <CodeSearchField 
+                    <SearchField 
                         v-if="repo.success"
-                        :label="`Search`"
+                        :label="`Search ${repo.data?.name}`"
                         :term="term"
                         :rate-limited="rateLimited"
                         :dark="true"
@@ -71,7 +71,7 @@
         </span>
         <v-divider class="mt-5 mb-6" thickness="5px" length="50px" />
         <template v-if="languages.loading">
-            <v-skeleton-loader v-for="i in 3" :key="i"
+            <v-skeleton-loader
             type="heading, list-item-avatar-three-line"
             class="border-sm h-100 rounded-0"
             width="300px"
@@ -98,51 +98,7 @@
         <Commits v-else :commits="commits" />
     </v-container>
 
-    <v-dialog v-model="dialog" max-width="700" persistent :fullscreen="isMobile">
-        <v-toolbar color="grey-lighten-4">
-            <v-btn
-                v-if="selectedItem"
-                icon="mdi-arrow-left"
-                @click="selectedItem = undefined"
-            ></v-btn>
-            <v-toolbar-title>
-                <span class="font-weight-medium">{{ selectedItem?.name ?? term }}</span>
-            </v-toolbar-title>
-            <v-spacer />
-            <v-btn
-                icon="mdi-close"
-                @click="closeDialog"
-            ></v-btn>
-        </v-toolbar>
-        <v-card rounded="0">
-            <v-list class="py-0">
-                <v-list-subheader>{{ selectedItem?.path ?? "Source Code" }}</v-list-subheader>
-                <v-skeleton-loader v-if="loading"  type="list-item-two-line@5"></v-skeleton-loader>
-                <FileContent v-else-if="selectedItem" :repo="repo.data.name" :path="selectedItem?.path" />
-                <template v-else-if="searchResults && searchResults.length > 0">
-                    <v-list-item v-for="item in searchResults" :key="item.sha" :title="item.name" :subtitle="item.path" @click="selectedItem = item">
-                        
-                        <template v-slot:prepend>
-                            <Devicon :file-name="item.name" />
-                        </template>
-
-                        <template v-slot:append>
-                            <v-badge
-                            v-if="false"
-                            color="grey-lighten-3"
-                            :content="item.text_matches.reduce((total: number, textMatch: TextMatch) => {
-                                return total + textMatch.matches.length
-                            }, 0)"
-                            inline
-                            ></v-badge>
-                        </template>
-                    </v-list-item>
-                </template>
-                <v-list-item v-else title="No results found">
-                </v-list-item>
-            </v-list>
-        </v-card>
-    </v-dialog>
+    <SearchResultsDialog :open="dialog" :loading="loading" :repo="repo.data" :title="`${getWords(term)}`" :results="searchResults" @close="closeDialog" />
 </template>
 
 <script setup lang="ts">
@@ -210,7 +166,6 @@ const searchResults = ref<SearchItem[]>()
 
 // File Dialog
 const dialog = ref(false)
-const selectedItem = ref<SearchItem | undefined>()
 
 onMounted(() => {
     getRepo()
@@ -317,11 +272,6 @@ async function searchGitHub(): Promise<void> {
     loading.value = false
 }
 
-function clearSearch(){
-    searchResults.value = []
-    selectedItem.value = undefined
-}
-
 async function searchTopic(topic: string) {
     const map = new Map<string, string>([
         ["azure-functions", "HttpTrigger"],
@@ -345,9 +295,22 @@ async function searchLanguage(language: string) {
     await searchGitHub()
 }
 
-function closeDialog(){
-    dialog.value = false
-    selectedItem.value = undefined
+function clearSearch(){
     searchResults.value = []
 }
+
+function closeDialog(){
+    dialog.value = false
+    clearSearch()
+}
+
+function getWords(str: string){
+    // Extracting words using regular expression
+    let words = str.split(/\s+OR\s+|(?=language:)|(?=extension:)/);
+
+    // Removing "language:" and "extension:" tokens and their values
+    words = words.map(word => word.replace(/(language|extension):/, '').replace(/\s+.+$/, ''));
+    return words;
+}
+
 </script>
