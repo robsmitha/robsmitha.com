@@ -5,7 +5,7 @@
       :hover="true"
       :title="props.repo.name"
       :subtitle="`${formatter.format(new Date(props.repo.pushed_at))}`"
-      :text="props.repo.description"
+      :text="hideDescription ? '' : props.repo.description"
       :variant="props.variant"
       @click="emit('repo-selected', repo.name)"
     >
@@ -26,6 +26,7 @@ interface Props {
   repo: GithubRepo;
   isExternalLink?: boolean;
   variant?: NonNullable<"flat" | "text" | "elevated" | "tonal" | "outlined" | "plain">;
+  hideDescription?: boolean;
 }
 
 import { GithubRepo } from '@/api/githubClient';

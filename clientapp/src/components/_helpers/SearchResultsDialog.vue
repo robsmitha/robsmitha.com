@@ -13,7 +13,7 @@
                 @click="selectedItem = undefined"
             ></v-btn>
             <v-toolbar-title>
-                <span class="font-weight-bold">{{ selectedItem?.name ?? title }}</span>
+                <span class="font-weight-bold">{{ selectedItem?.name ?? repo.name }}</span>
             </v-toolbar-title>
             <v-spacer />
             <v-btn
@@ -22,15 +22,12 @@
             ></v-btn>
         </v-toolbar>
         <v-card rounded="0">
-            <v-row>
-                <v-col>
-                    <RepoItem :repo="repo" variant="flat" elevation="0" @repo-selected="repoSelected" />
-                </v-col>
-            </v-row>
-            <v-list class="py-0">
-                <v-list-subheader>{{ selectedItem?.path ?? "Source Code" }}</v-list-subheader>
+            <v-list>
+                <v-list-subheader>{{ selectedItem?.path ?? `${title} files` }}</v-list-subheader>
                 <v-skeleton-loader v-if="loading"  type="list-item-two-line@5"></v-skeleton-loader>
-                <FileContent v-else-if="selectedItem" :repo="repo.name" :path="selectedItem?.path" />
+                <v-list-item class="px-0 pb-0" v-else-if="selectedItem">
+                    <FileContent :repo="repo.name" :path="selectedItem?.path" />
+                </v-list-item>
                 <template v-else-if="results && results.length > 0">
                     <v-list-item v-for="item in results" :key="item.sha" :title="item.name" :subtitle="item.path" @click="selectedItem = item">
                         

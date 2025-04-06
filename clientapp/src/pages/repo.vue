@@ -305,6 +305,10 @@ function closeDialog(){
 }
 
 function getWords(str: string){
+    if(!str) {
+        return '';
+    }
+
     // Extracting words using regular expression
     let words = str.split(/\s+OR\s+|(?=language:)|(?=extension:)/);
 

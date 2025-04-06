@@ -36,9 +36,25 @@
     </v-sheet>
     <v-sheet class="py-5">
         <v-container>
-            <v-row>
-                <v-col>
-                    <span class="text-h6 d-block">Code Search</span>
+            <v-card variant="flat" class="mb-3">
+                <v-card-title class="d-flex pb-0">
+                    <span class="text-h6">Code Search</span>
+                    <v-spacer />
+                    <v-tooltip text="Clear search" location="bottom">
+                        <template v-slot:activator="{ props }">
+                            <v-btn v-show="items?.length"
+                                v-bind="props"
+                                flat
+                                icon="mdi-cancel"
+                                small
+                                size="small"
+                                @click="clearSearch"
+                                ></v-btn>
+                        </template>
+                    </v-tooltip>
+                </v-card-title>
+                <v-card-text>
+
                     <v-skeleton-loader
                         v-if="loading"
                         ref="skeleton"
@@ -52,8 +68,8 @@
                         Found {{ items?.length }} results in {{ repoResults.size }} repositories
                     </span>
                     <v-divider class="my-4" thickness="5px" length="50px" />
-                </v-col>
-            </v-row>
+                </v-card-text>
+            </v-card>
             
             <v-row v-if="loading">
                 <v-col v-for="i in 3" :key="i"
@@ -71,9 +87,9 @@
             </v-row>
                 
             <v-data-iterator
-                v-if="repoResults && repoResults.size > 0"
+                v-else-if="repoResults && repoResults.size > 0"
                 :items="[...repoResults.keys()]"
-                :items-per-page="3"
+                :items-per-page="6"
             >
                 <template v-slot:default="{ items }">
                     <v-row dense>
@@ -119,6 +135,7 @@
             </v-data-iterator>
             
             <SearchCategories
+                v-else
                 :rate-limited="rateLimited"
                 :loading="loading"
                 @category-selected="onCategorySelected"
