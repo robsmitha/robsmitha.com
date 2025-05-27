@@ -72,6 +72,7 @@ namespace ElysianFunctions.Middleware
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, principal.UserId));
             identity.AddClaim(new Claim(ClaimTypes.Name, principal.UserDetails));
             identity.AddClaims(principal.UserRoles.Select(r => new Claim(ClaimTypes.Role, r)));
+            identity.AddClaim(new Claim("idp", principal.IdentityProvider));
 
             return new ClaimsPrincipal(identity);
         }

@@ -10,6 +10,7 @@
   "dependencies": {
     "@highlightjs/vue-plugin": "^2.1.0",
     "@mdi/font": "7.0.96",
+    "@azure/storage-blob": "^12.24.0",
     "@types/axios": "^0.14.0",
     "axios": "^1.7.5",
     "core-js": "^3.34.0",

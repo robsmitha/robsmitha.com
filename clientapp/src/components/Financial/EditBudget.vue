@@ -21,7 +21,14 @@
                 />
             </v-col>
             <v-col cols="auto" class="text-right">
-                <v-btn variant="tonal" color="green-darken-4" @click="saveBudgetDialog = true" :icon="$vuetify.display.mobile">
+                <v-btn
+                  class="text-none"
+                  color="primary"
+                  rounded="xl"
+                  variant="flat"
+                   :icon="$vuetify.display.mobile"
+                  @click="saveBudgetDialog = true"
+                >
                     <v-icon>mdi-pencil</v-icon> <span v-if="!$vuetify.display.mobile">Edit</span>
                 </v-btn>
             </v-col>

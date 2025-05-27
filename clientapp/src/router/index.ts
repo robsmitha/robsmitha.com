@@ -14,6 +14,7 @@ import Transactions from '@/components/Financial/Transactions.vue'
 import EditBudget from '@/components/Financial/EditBudget.vue'
 import BudgetAccounts from '@/components/Financial/BudgetAccounts.vue'
 import Exemptions from '@/components/Financial/Exemptions.vue'
+import search from '@/pages/search.vue'
 
 import { RouteLocationNormalized } from 'vue-router';
 const routes = [
@@ -60,6 +61,12 @@ const routes = [
         props: true,
       }
     ]
+  },
+  {
+    path: '/search/:serialNumber?',
+    name: 'search',
+    component: search,
+    props: true
   }
 ];
 const router = createRouter({

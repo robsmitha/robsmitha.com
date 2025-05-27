@@ -7,9 +7,14 @@
             </span>
         </v-col>
         <v-col class="text-right">
-            <v-btn variant="tonal" color="green-darken-4" @click="triggerPlaidLinkClick" :icon="$vuetify.display.mobile">
-                <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
-            </v-btn>
+            <v-btn
+                color="primary"
+                rounded="xl"
+                variant="flat"
+                @click="triggerPlaidLinkClick"
+            >
+            <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
+        </v-btn>
         </v-col>
     </v-row>
     

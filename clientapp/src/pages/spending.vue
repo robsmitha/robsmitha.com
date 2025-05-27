@@ -12,7 +12,7 @@ const breadcrumbs = [
     to: '/',
   },
   {
-    title: 'DASHBOARD',
+    title: 'SPENDING',
     disabled: true
   }
 ]

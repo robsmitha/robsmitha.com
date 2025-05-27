@@ -1,7 +1,7 @@
 <template>
-  <HelloWorld title="Hey, I'm Rob" :subtitle="store.user?.bio ?? 'Building things on the web since 2016.'" :actions="actions" />
+  <HelloWorld title="Code Fast. Dad Faster." :subtitle="store.user?.bio ?? 'Building things on the web since 2016.'" :actions="actions" />
 
-  <v-sheet color="grey-lighten-4" class="py-5">
+  <!-- <v-sheet color="grey-lighten-4" class="py-5">
       <v-container>
           <v-row>
               <v-col cols="12">
@@ -17,7 +17,7 @@
               </v-col>
           </v-row>
       </v-container>
-  </v-sheet>
+  </v-sheet> -->
   
   <v-container id="projects" class="py-7">
     <Repos />
@@ -28,7 +28,7 @@
           <v-row>
               <v-col cols="12">
                   <span :class="titleClass">
-                      Don't write code? Explore the demo features below.
+                      Don't write code? Explore some demo features I've cooked up.
                   </span>
               </v-col>
           </v-row>

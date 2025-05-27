@@ -47,10 +47,13 @@ declare module 'vue-router/auto/routes' {
     '/budget': RouteRecordInfo<'/budget', '/budget', Record<never, never>, Record<never, never>>,
     '/code': RouteRecordInfo<'/code', '/code', Record<never, never>, Record<never, never>>,
     '/congress': RouteRecordInfo<'/congress', '/congress', Record<never, never>, Record<never, never>>,
-    '/dashboard': RouteRecordInfo<'/dashboard', '/dashboard', Record<never, never>, Record<never, never>>,
     '/generate-code': RouteRecordInfo<'/generate-code', '/generate-code', Record<never, never>, Record<never, never>>,
     '/oauth': RouteRecordInfo<'/oauth', '/oauth', Record<never, never>, Record<never, never>>,
+    '/products': RouteRecordInfo<'/products', '/products', Record<never, never>, Record<never, never>>,
     '/repo': RouteRecordInfo<'/repo', '/repo', Record<never, never>, Record<never, never>>,
+    '/search': RouteRecordInfo<'/search', '/search', Record<never, never>, Record<never, never>>,
+    '/spending': RouteRecordInfo<'/spending', '/spending', Record<never, never>, Record<never, never>>,
+    '/users': RouteRecordInfo<'/users', '/users', Record<never, never>, Record<never, never>>,
   }
 }
 

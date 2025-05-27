@@ -5,6 +5,7 @@
         v-model="drawer"
         :rail="rail"
         permanent
+        color="grey-darken-4"
       >
         <template v-slot:prepend>
           <v-list-item
@@ -83,7 +84,6 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
-import budgetService from "@/services/budget.service"
 import { useDisplay } from 'vuetify'
 import { useBudgetStore } from "@/store/budget"
 
@@ -101,9 +101,9 @@ const breadcrumbs = computed(() => [
     to: '/',
   },
   {
-    title: 'DASHBOARD',
+    title: 'SPENDING',
     disabled: false,
-    to: '/dashboard',
+    to: '/spending',
   },
   {
     title: store.budget?.budgetName?.toUpperCase() ?? 'BUDGET',
