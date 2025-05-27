@@ -95,6 +95,29 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+    <v-dialog
+        v-model="snackbar"
+        :max-width="500"
+    >
+        <v-card>
+            <v-card-title class="d-flex justify-space-between align-center">
+                <div>
+                    <v-icon color="red-darken-3" size="small">mdi-alert</v-icon>
+                    <span class="ml-2">Request Failed</span>
+                </div>
+
+                <v-btn
+                  icon="mdi-close"
+                  variant="text"
+                  @click="snackbar = false"
+                ></v-btn>
+              </v-card-title>
+              <v-divider />
+              <v-card-text class="pt-2">
+                {{ errorMessage }}
+              </v-card-text>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -134,6 +157,8 @@ const loading = ref(false)
 const dialog = ref(false)
 const selectedUser = ref<User | null>(null)
 const search = ref('')
+const snackbar = ref(false)
+const errorMessage = ref('')
 
 onMounted(() => {
     getUsers()
@@ -179,11 +204,18 @@ function editUser(user: User) {
 async function getUsers(): Promise<void> {
     loading.value = true
     const response = await elysianClient?.getData(`/api/Users`);
-    if (!response?.success){
-        throw new Error();
+    if (!response.success) {
+        if(response.errorMessage){
+            errorMessage.value = response.errorMessage
+        } else {
+            errorMessage.value = 'An error occurred. Please try again later.'
+        }
+        snackbar.value = true
+    } else {
+        items.value = response.data;
     }
-    items.value = response.data;
     loading.value = false;
+    
 }
 
 async function saveAccessPolicy(): Promise<void> {
@@ -196,10 +228,17 @@ async function saveAccessPolicy(): Promise<void> {
     const response = await elysianClient?.postData(`/api/SaveAccessPolicy`, request);
 
     if (!response?.success){
-        throw new Error();
+        if(response.errorMessage){
+            errorMessage.value = response.errorMessage
+        } else {
+            errorMessage.value = 'An error occurred. Please try again later.'
+        }
+        snackbar.value = true
+    } else {
+        await getUsers()
     }
 
-    await getUsers()
+    
     loading.value = false
     dialog.value = false
     selectedUser.value = null

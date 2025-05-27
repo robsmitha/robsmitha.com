@@ -40,18 +40,13 @@
                 <v-card-title class="d-flex pb-0">
                     <span class="text-h6">Code Search</span>
                     <v-spacer />
-                    <v-tooltip text="Clear search" location="bottom">
-                        <template v-slot:activator="{ props }">
-                            <v-btn v-show="items?.length"
-                                v-bind="props"
-                                flat
-                                icon="mdi-cancel"
-                                small
-                                size="small"
-                                @click="clearSearch"
-                                ></v-btn>
-                        </template>
-                    </v-tooltip>
+                     <v-btn v-show="items?.length"
+                        flat
+                        icon="mdi-cancel"
+                        small
+                        size="small"
+                        @click="clearSearch"
+                        ></v-btn>
                 </v-card-title>
                 <v-card-text>
 

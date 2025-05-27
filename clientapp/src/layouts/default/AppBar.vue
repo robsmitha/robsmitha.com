@@ -13,13 +13,15 @@
           size="50"
           @click="onBrandClick"
           >
-          <v-img
+          <!-- <v-img
             v-if="isMobile"
             src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/robsmitha-avatar.png"
             alt="Rob Smitha"
             aspect-ratio="1"
-          ></v-img>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-white" role="img" viewBox="0 0 24 24"><title>Product</title><circle cx="12" cy="12" r="10"></circle><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"></path></svg>
+          ></v-img> -->
+          <v-btn icon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-white" role="img" viewBox="0 0 24 24"><title>Go Home</title><circle cx="12" cy="12" r="10"></circle><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"></path></svg>
+          </v-btn>
         </v-avatar>
       </template>
 
