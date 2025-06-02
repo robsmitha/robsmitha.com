@@ -1,4 +1,5 @@
 <template>
+    <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
     <ProductList
         :items="products"
         @view="viewProduct"
@@ -45,6 +46,18 @@ import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { BlobServiceClient } from '@azure/storage-blob'
 import apiClient from '@/api/elysianClient'
+
+const breadcrumbs = [
+    {
+    title: 'HOME',
+    disabled: false,
+    to: '/',
+  },
+  {
+    title: 'PRODUCTS',
+    disabled: true
+  }
+]
 
 const router = useRouter()
 const dialog = ref(false)

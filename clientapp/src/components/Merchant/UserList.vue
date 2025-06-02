@@ -1,5 +1,5 @@
 <template>
-    <v-sheet class="py-5">
+    <v-sheet color="grey-lighten-4" class="pt-5 pb-9">
         <v-container>
             <v-row>
                 <v-col>
@@ -23,25 +23,28 @@
                         persistent-hint
                         clearable
                         variant="outlined"
+                        rounded
                     >
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col>
-                    <v-data-table 
-                        :headers="headers" 
-                        :items="items"
-                        :custom-filter="filter"
-                        :search="search"
-                        item-value="userName"
-                    >
-                        <template v-slot:[`item.actions`]="{ item }">
-                            <v-btn size="small" color="primary" icon variant="text" @click="editUser(item)">
-                                <v-icon>mdi-key-variant</v-icon>
-                            </v-btn>
-                        </template>
-                    </v-data-table>
+                    <v-card>
+                        <v-data-table 
+                            :headers="headers" 
+                            :items="items"
+                            :custom-filter="filter"
+                            :search="search"
+                            item-value="userName"
+                        >
+                            <template v-slot:[`item.actions`]="{ item }">
+                                <v-btn size="small" color="primary" icon variant="text" @click="editUser(item)">
+                                    <v-icon>mdi-key-variant</v-icon>
+                                </v-btn>
+                            </template>
+                        </v-data-table>
+                        </v-card>
                 </v-col>
             </v-row>
         </v-container>
@@ -145,7 +148,7 @@ const items = ref<User[]>([])
 
 const headers = [
     { title: 'UserName', key: 'userName' },
-    { title: 'Login method', key: 'identityProvider' },
+    { title: 'Login', key: 'identityProvider' },
     { title: 'Roles', key: 'accessControl.roles' },
     { title: 'Permissions', key: 'accessControl.policies' },
     { title: '', sortable: false, key: 'actions' }

@@ -1,4 +1,6 @@
 <template>
+    <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
+
     <FindProduct 
         :term="term"
         :loading="loading"
@@ -6,6 +8,7 @@
         @search="searchBySerialNumber" 
         @clear="clear"
     />
+
     <ViewProduct
         :product="product" 
         :images="sasUris" 
@@ -54,6 +57,22 @@ const product = ref()
 const loading = ref(false)
 const snackbar = ref(false)
 const errorMessage = ref('')
+const breadcrumbs = [
+    {
+    title: 'HOME',
+    disabled: false,
+    to: '/',
+  },
+  {
+    title: 'PRODUCTS',
+    disabled: false,
+    to: '/products',
+  },
+  {
+    title: props.serialNumber!.toUpperCase(),
+    disabled: true
+  }
+]
 
 onMounted(async () => {
     if(props?.serialNumber != null && props.serialNumber.length > 0){
