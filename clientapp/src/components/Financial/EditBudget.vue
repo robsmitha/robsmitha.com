@@ -22,10 +22,10 @@
             </v-col>
             <v-col cols="auto" class="text-right">
                 <v-btn
-                  class="text-none"
                   color="primary"
                   rounded="xl"
                   variant="flat"
+                  size="large"
                    :icon="$vuetify.display.mobile"
                   @click="saveBudgetDialog = true"
                 >
@@ -33,7 +33,7 @@
                 </v-btn>
             </v-col>
         </v-row>
-        <v-row v-if="store.budget?.budgetCategoryData?.length > 0">
+        <v-row v-if="store.budget?.budgetCategoryData?.length > 0" class="mb-5">
             <v-col cols="12" class="d-flex justify-center align-center">
                 <span class="mr-2">{{ store.budget.transactionsTotal }}</span>
                 <v-progress-linear

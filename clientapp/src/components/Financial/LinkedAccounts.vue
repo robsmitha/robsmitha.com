@@ -1,24 +1,29 @@
 <template>
-    <v-row>
-        <v-col>
-            <span class="text-h5 font-weight-medium d-block">Accounts</span>
-            <span class="text-caption text-grey-darken-1 d-block">
-                Linked Institutions
-            </span>
-        </v-col>
-        <v-col class="text-right">
-            <v-btn
-                color="primary"
-                rounded="xl"
-                variant="flat"
-                @click="triggerPlaidLinkClick"
-            >
-            <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
-        </v-btn>
-        </v-col>
-    </v-row>
-    
-    <AccountList :access-items="store.accessItems" />
+    <v-sheet color="grey-lighten-4" class="pt-5 pb-9">
+        <v-container>
+            <v-row>
+                <v-col>
+                    <ContentHeader
+                        title="Accounts"
+                        subtitle="Linked Institutions"
+                    />
+                </v-col>
+                <v-col class="text-right">
+                    <v-btn
+                        color="primary"
+                        rounded="xl"
+                        variant="flat"
+                        size="large"
+                        @click="triggerPlaidLinkClick"
+                    >
+                        <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
+                    </v-btn>
+                </v-col>
+            </v-row>
+            <v-divider class="mt-3 mb-5" thickness="5px" length="50px" />
+            <AccountList :access-items="store.accessItems" />
+        </v-container>
+    </v-sheet>
 </template>
 
 <script setup lang="ts">
@@ -77,7 +82,7 @@ function initializePlaidLink(){
 function unloadPlaidScript() {
     const script = document.querySelector('script[src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"]')
     if (script) {
-    script.remove()
+        script.remove()
     }
 }
 

@@ -1,54 +1,57 @@
 <template>
-    <v-sheet color="grey-lighten-4" class="pt-5 pb-9">
-        <v-container>
-            <v-row>
-                <v-col>
-                    <ContentHeader
-                        title="Users"
-                    />
-                </v-col>
-                <!-- <v-col class="text-right">
-                    <v-btn rounded color="primary" @click="dialog = true" :icon="$vuetify.display.mobile">
-                        <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
-                    </v-btn>
-                </v-col> -->
-            </v-row>
-            <v-row>
-                <v-col>
-                    <v-text-field
-                        v-model="search"
-                        prepend-icon="mdi-filter"
-                        label="Filter"
-                        hint="Search all active products."
-                        persistent-hint
-                        clearable
-                        variant="outlined"
-                        rounded
+    <v-container>
+        <v-row class="mt-3">
+            <v-col>
+                <ContentHeader
+                    title="Users"
+                />
+            </v-col>
+            <v-col class="text-right">
+                <v-btn rounded color="primary" variant="flat" size="large" disabled @click="dialog = true" :icon="$vuetify.display.mobile">
+                    <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
+                </v-btn>
+            </v-col>
+        </v-row>
+        <v-divider class="mt-3 mb-8" thickness="5px" length="50px" />
+        <v-row>
+            <v-col>
+                <v-card>
+                    <v-data-table 
+                        :headers="headers" 
+                        :items="items"
+                        :custom-filter="filter"
+                        :search="search"
+                        item-value="userName"
                     >
-                    </v-text-field>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col>
-                    <v-card>
-                        <v-data-table 
-                            :headers="headers" 
-                            :items="items"
-                            :custom-filter="filter"
-                            :search="search"
-                            item-value="userName"
-                        >
-                            <template v-slot:[`item.actions`]="{ item }">
-                                <v-btn size="small" color="primary" icon variant="text" @click="editUser(item)">
-                                    <v-icon>mdi-key-variant</v-icon>
-                                </v-btn>
-                            </template>
-                        </v-data-table>
-                        </v-card>
-                </v-col>
-            </v-row>
-        </v-container>
-    </v-sheet>
+                        <template v-slot:top>
+                            <v-container>
+                                <v-row>
+                                    <v-col>
+                                        <v-text-field
+                                            v-model="search"
+                                            prepend-icon="mdi-filter"
+                                            label="Filter"
+                                            hint="Search all active products."
+                                            persistent-hint
+                                            clearable
+                                            variant="outlined"
+                                            rounded
+                                        >
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </template>
+                        <template v-slot:[`item.actions`]="{ item }">
+                            <v-btn size="small" color="primary" icon variant="text" @click="editUser(item)">
+                                <v-icon>mdi-key-variant</v-icon>
+                            </v-btn>
+                        </template>
+                    </v-data-table>
+                </v-card>
+            </v-col>
+        </v-row>
+    </v-container>
     <v-dialog v-model="dialog" persistent max-width="800">
         <v-card>
             <v-card-title class="d-flex justify-space-between align-center">
@@ -65,7 +68,7 @@
             <v-divider />
             <v-card-text>
                 <v-row>
-                    <v-col v-for="resource in resources" :key="resource" md="6" class="mb-2">
+                    <v-col v-for="resource in resources" :key="resource" md="6" cols="12" class="mb-2">
                         <p class="font-weight-bold">{{ resource[0].toUpperCase() + resource.slice(1) }}</p>
                         <v-switch
                             v-for="action in actions"

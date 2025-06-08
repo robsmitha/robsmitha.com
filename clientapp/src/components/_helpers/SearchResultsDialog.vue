@@ -3,29 +3,36 @@
         v-model="dialog"
         scrollable
         transition="dialog-bottom-transition"
-        :fullscreen="isMobile"
-        :max-width="700"
+        fullscreen
     >
-        <v-toolbar color="white" elevation="0">
+        <v-toolbar color="grey-darken-4" elevation="0">
             <v-btn
                 v-if="selectedItem"
                 icon="mdi-arrow-left"
                 @click="selectedItem = undefined"
             ></v-btn>
+            <v-btn
+                v-else
+                icon="mdi-close"
+                @click="closeDialog"
+            ></v-btn>
             <v-toolbar-title>
                 <span class="font-weight-bold">{{ selectedItem?.name ?? repo.name }}</span>
             </v-toolbar-title>
             <v-spacer />
-            <v-btn
-                icon="mdi-close"
-                @click="closeDialog"
-            ></v-btn>
+            <v-chip label dark class="mr-3 font-weight-medium" :href="`https://github.com/robsmitha/${repo.name}`" target="_blank">
+                <v-icon small>mdi-github</v-icon>&nbsp;{{ repo.name }}
+            </v-chip>
         </v-toolbar>
         <v-card rounded="0">
-            <v-list>
-                <v-list-subheader>{{ selectedItem?.path ?? `${title} files` }}</v-list-subheader>
+            <v-sheet color="grey-darken-4" v-if="selectedItem">
+                <a class="text-white pl-3 pb-2 d-block" :href="selectedItem.html_url" target="_blank">
+                    {{ selectedItem.path }}
+                </a> 
+            </v-sheet>
+            <v-list class="pt-0">
                 <v-skeleton-loader v-if="loading"  type="list-item-two-line@5"></v-skeleton-loader>
-                <v-list-item class="px-0 pb-0" v-else-if="selectedItem">
+                <v-list-item bg-color="grey-darken-4" class="px-0 pb-0" v-else-if="selectedItem">
                     <FileContent :repo="repo.name" :path="selectedItem?.path" />
                 </v-list-item>
                 <template v-else-if="results && results.length > 0">

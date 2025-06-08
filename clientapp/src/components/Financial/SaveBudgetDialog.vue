@@ -2,26 +2,17 @@
     <v-dialog
       v-model="dialog"
       transition="dialog-bottom-transition"
-      fullscreen
+      width="600px"
     >
         <v-card>
             <v-toolbar color="white">
+
+                <v-toolbar-title>{{ props.budgetId ? 'Edit' : 'New' }} Budget</v-toolbar-title>
+
                 <v-btn
                     icon="mdi-close"
                     @click="dialog = false"
                 ></v-btn>
-
-                <v-toolbar-title>{{ props.budgetId ? 'Edit' : 'New' }} Budget</v-toolbar-title>
-
-                <v-spacer></v-spacer>
-
-                <v-toolbar-items>
-                    <v-btn
-                    text="Save"
-                    variant="text"
-                    @click="saveBudget"
-                    ></v-btn>
-                </v-toolbar-items>
             </v-toolbar>
             <v-divider />
             <v-card-text>
@@ -77,6 +68,25 @@
                     </v-col>
                 </v-row>
             </v-card-text>
+            
+        <v-card-actions class="my-2 d-flex justify-end">
+            <v-btn
+              class="text-none"
+              rounded="xl"
+              text="Cancel"
+              @click="dialog = false"
+            ></v-btn>
+
+            <v-btn
+              rounded="xl"
+              color="primary"
+              class="text-none"
+              variant="flat"
+              @click="saveBudget"
+            >
+              Save
+            </v-btn>
+        </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
@@ -166,7 +176,7 @@ async function saveBudget(){
         name: budgetName.value,
         startDate: startDate.value,
         endDate: endDate.value,
-        categories: selectedCategories.value.filter((c: any) => c.financialCategoryId > 0),
+        categories: selectedCategories.value?.filter((c: any) => c.financialCategoryId > 0),
         budgetAccessItems: selectedAccounts.value
     }
     

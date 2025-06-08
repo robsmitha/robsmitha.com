@@ -72,12 +72,8 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   extendRoutes: (autoRoutes) => {
-    const extendedRoutes = setupLayouts(autoRoutes);
-    const routesRoutes = setupLayouts(routes);
-    return [
-      ...extendedRoutes,
-      ...routesRoutes
-    ];
+    const allRoutes = [...autoRoutes, ...routes]
+    return setupLayouts(allRoutes);
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   scrollBehavior(to: RouteLocationNormalized, from: RouteLocationNormalized, savedPosition: null | { left: number, top: number }) {

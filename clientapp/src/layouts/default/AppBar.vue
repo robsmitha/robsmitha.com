@@ -9,20 +9,15 @@
       fixed
     >
       <template #prepend>
-        <v-avatar
+        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        <!-- <v-avatar
           size="50"
           @click="onBrandClick"
           >
-          <!-- <v-img
-            v-if="isMobile"
-            src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/robsmitha-avatar.png"
-            alt="Rob Smitha"
-            aspect-ratio="1"
-          ></v-img> -->
           <v-btn icon>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-white" role="img" viewBox="0 0 24 24"><title>Go Home</title><circle cx="12" cy="12" r="10"></circle><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"></path></svg>
           </v-btn>
-        </v-avatar>
+        </v-avatar> -->
       </template>
 
       <v-app-bar-title class="text-h6 ">
@@ -30,14 +25,66 @@
       </v-app-bar-title>
         
       <template #append>
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        <v-menu
+          v-model="menu"
+          location="bottom"
+        >
+          <template v-slot:activator="{ props }">
+            <v-avatar
+              v-if="auth.signedIn"
+              size="35"
+              color="white"
+              class="mr-2"
+              v-bind="props"
+              >
+              <v-btn icon>
+                <span class="text-h5 font-weight-bold">
+                  {{ auth.userDetails?.charAt(0)?.toUpperCase() }}
+                </span>
+              </v-btn>
+            </v-avatar>
+          </template>
+
+          <v-card min-width="300">
+            <v-list>
+              <v-list-item>
+                <!-- <template v-slot:append>
+                  <v-btn
+                    icon="mdi-cog"
+                    variant="text"
+                  ></v-btn>
+                </template> -->
+                <v-list-item-subtitle>
+                  {{ auth.userDetails }}
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-list>
+
+            <v-divider></v-divider>
+
+            <v-list density="compact">
+              <v-list-item prepend-icon="mdi-account-group" title="Users" to="/users"></v-list-item>
+              <v-list-item prepend-icon="mdi-tag-multiple" title="Products" to="/products"></v-list-item>
+              <v-list-item prepend-icon="mdi-currency-usd" title="Spending" to="/spending"></v-list-item>
+              <v-list-item prepend-icon="mdi-bank" title="Accounts" to="/accounts"></v-list-item>
+            </v-list>
+            
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-btn block color="blue-grey" href="/.auth/logout">
+                Logout
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-menu>
       </template>
     </v-app-bar>
 
     <v-navigation-drawer
         v-model="drawer"
         temporary
-        location="right"
+        location="left"
     >
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home-roof" title="Home" value="home" to="/"></v-list-item>
@@ -60,21 +107,21 @@
           <v-list-item prepend-icon="mdi-github" title="Github" href="/.auth/login/github"></v-list-item>
           <v-list-item prepend-icon="mdi-microsoft" title="Microsoft" href="/.auth/login/aad"></v-list-item>
         </template>
-        <template v-else>
+        <!-- <template v-else>
           <v-list-item :subtitle="auth.userDetails"></v-list-item>
           <v-list-item prepend-icon="mdi-account-group" title="Users" to="/users"></v-list-item>
           <v-list-item prepend-icon="mdi-tag-multiple" title="Products" to="/products"></v-list-item>
           <v-list-item prepend-icon="mdi-currency-usd" title="Spending" to="/spending"></v-list-item>
           <v-list-item prepend-icon="mdi-bank" title="Accounts" to="/accounts"></v-list-item>
-        </template>
+        </template> -->
       </v-list>
-      <template v-slot:append>
+      <!-- <template v-slot:append>
         <div v-if="auth.signedIn" class="pa-2">
           <v-btn block color="blue-grey" href="/.auth/logout">
             Logout
           </v-btn>
         </div>
-      </template>
+      </template> -->
     </v-navigation-drawer>
 </template>
 
@@ -103,6 +150,7 @@ auth.fetchAuth()
 
 const drawer = ref(false)
 const transparency = ref(false)
+const menu = ref(false)
 
 const isMobile = computed(() => mobile.value)
 

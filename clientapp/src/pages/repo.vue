@@ -260,7 +260,7 @@ async function searchGitHub(): Promise<void> {
             sha: i.sha,
             name: i.name,
             path: i.path,
-            html_url: i.html_url,
+            html_url: i.htmlUrl,
             repo_name: i.repository.name,
             repo_description: i.repository.description,
             text_matches: i.textMatches

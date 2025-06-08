@@ -3,26 +3,20 @@
       v-model="dialog"
       scrollable
       transition="dialog-bottom-transition"
-      fullscreen
+      :fullscreen="false"
     >
       <v-card>
-        <v-toolbar color="primary">
+        <v-toolbar color="white">
+            <v-toolbar-title>
+                <span class="font-weight-medium">{{ item?.productId ? 'Modify' : 'New' }} Product</span>
+            </v-toolbar-title>
             <v-btn
                 icon="mdi-close"
                 :disabled="loading"
                 @click="dialog = false"
             ></v-btn>
-            <v-toolbar-title>
-                <span class="font-weight-medium">{{ item?.productId ? 'Modify' : 'New' }} Product</span>
-            </v-toolbar-title>
-
-            <v-btn
-                :disabled="loading"
-                @click="onSave"
-            >
-              Save
-            </v-btn>
         </v-toolbar>
+        <v-divider />
         <v-card-text class="pa-0">
             <template v-if="loading">
               <v-container class="fill-height">
@@ -42,12 +36,6 @@
             </template>
             <template v-else>
                 <v-container fluid>
-                  <v-row>
-                    <v-col>
-                      <span class="text-subtitle-1 text-grey-darken-2 text-uppercase d-block mb-2">Details</span>
-                      <v-divider />
-                    </v-col>
-                  </v-row>
                   <v-row>
                     <v-col>
                       <v-text-field 
@@ -76,12 +64,6 @@
                         variant="outlined"
                         hint="Enter the grade of the product.">
                       </v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col class="pt-0">
-                      <span class="text-subtitle-1 text-grey-darken-2 text-uppercase d-block mb-2">Notes</span>
-                      <v-divider />
                     </v-col>
                   </v-row>
                   <v-row>
@@ -136,6 +118,26 @@
                 </v-container>
             </template>
         </v-card-text>
+        
+        <v-card-actions class="my-2 d-flex justify-end">
+            <v-btn
+              class="text-none"
+              rounded="xl"
+              text="Cancel"
+              @click="dialog = false"
+            ></v-btn>
+
+            <v-btn
+              rounded="xl"
+              color="primary"
+              class="text-none"
+              variant="flat"
+              :disabled="loading"
+              @click="onSave"
+            >
+              Save
+            </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 </template>

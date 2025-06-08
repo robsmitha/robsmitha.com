@@ -1,3 +1,9 @@
+
+<route lang="yaml">
+meta:
+  layout: landing
+</route>
+
 <template>
   <HelloWorld title="Code Fast. Dad Faster." :subtitle="store.user?.bio ?? 'Building things on the web since 2016.'" :actions="actions" />
 
@@ -44,7 +50,6 @@
 import { useGithubStore } from "@/store/github"
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
-
 
 const { mobile } = useDisplay()
 const isMobile = computed(() => mobile.value)

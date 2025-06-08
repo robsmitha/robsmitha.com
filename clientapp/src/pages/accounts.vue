@@ -1,8 +1,6 @@
 <template>
-    <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
-    <v-container>
-        <LinkedAccounts />
-    </v-container>
+    <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
+    <LinkedAccounts />
 </template>
 
 <script lang="ts" setup>

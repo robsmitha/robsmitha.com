@@ -1,96 +1,89 @@
 <template>
-    <v-sheet color="grey-lighten-4" class="pt-5 pb-9">
-        <v-container>
-            <v-row class="mb-2">
-                <v-col>
-                    <ContentHeader
-                        title="Products"
-                    />
-                </v-col>
-                <v-col class="text-right">
-                    <v-btn
-                        color="primary"
-                        rounded="xl"
-                        variant="flat"
-                        @click="$emit('create')"
-                    >
+    <v-container>
+        <v-row class="mt-3">
+            <v-col>
+                <ContentHeader
+                    title="Products"
+                />
+            </v-col>
+            <v-col class="text-right">
+                <v-btn
+                    color="primary"
+                    rounded="xl"
+                    variant="flat"
+                    size="large"
+                    @click="$emit('create')"
+                >
                     <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
                 </v-btn>
-                </v-col>
-            </v-row>
-            
-            <v-row>
-                <v-col>
-                    <v-text-field
-                        v-model="search"
-                        prepend-icon="mdi-filter"
-                        label="Filter"
-                        hint="Search all active products."
-                        persistent-hint
-                        clearable
-                        variant="outlined"
-                        rounded
-                    >
-                    </v-text-field>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col>
-                    <v-card>
-                        <v-data-table 
-                            :custom-filter="filter"
-                            :headers="headers"
-                            :items="items"
-                            :search="search"
-                            item-value="name">
-                            <template v-slot:top>
-                                <v-container>
-                                </v-container>
-                            </template>
-                            <template v-slot:loading>
-                                <v-skeleton-loader type="table-row@12"></v-skeleton-loader>
-                            </template>
-                            <template v-slot:item="{ item }">
-                                <tr>
-                                    <td v-for="header in headers" :key="header.key">
-                                        <template v-if="header.key === ''">
-                                            <v-btn variant="text" size="small" color="primary" icon @click="$emit('view', item?.serialNumber)">
-                                                <v-icon
-                                                    size="small"
-                                                >
-                                                    mdi-eye
-                                                </v-icon>
-                                            </v-btn>
-                                            <v-btn variant="text" size="small" color="primary" icon @click="$emit('edit', item?.productId)">
-                                                <v-icon
-                                                    size="small"
-                                                >
-                                                    mdi-pencil
-                                                </v-icon>
-                                            </v-btn>
-                                            <v-btn variant="text" size="small" color="primary" icon @click="$emit('delete', item?.productId)">
-                                                <v-icon
-                                                    size="small"
-                                                >
-                                                    mdi-delete
-                                                </v-icon>
-                                            </v-btn>
-                                        </template>
-                                        <template v-if="header.key === 'createdAt'">
-                                            {{ dateFilter(getNestedValue(item, header.key)) }}
-                                        </template>
-                                        <template v-else>
-                                            {{ getNestedValue(item, header.key!.toString()) }}
-                                        </template>
-                                    </td>
-                                </tr>
-                            </template>
-                        </v-data-table>
-                    </v-card>
-                </v-col>
-            </v-row>
-        </v-container>
-    </v-sheet>
+            </v-col>
+        </v-row>
+        <v-divider class="mt-3 mb-8" thickness="5px" length="50px" />
+        <v-row>
+            <v-col>
+                <v-card>
+                    <v-data-table 
+                        :custom-filter="filter"
+                        :headers="headers"
+                        :items="items"
+                        :search="search"
+                        item-value="name">
+                        <template v-slot:top>
+                            <v-container>
+                                <v-row>
+                                    <v-col>
+                                        <v-text-field
+                                            v-model="search"
+                                            prepend-icon="mdi-filter"
+                                            label="Filter"
+                                            hint="Search all active products."
+                                            persistent-hint
+                                            clearable
+                                            variant="outlined"
+                                            rounded
+                                        >
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </template>
+                        <template v-slot:loading>
+                            <v-skeleton-loader type="table-row@12"></v-skeleton-loader>
+                        </template>
+                        <template v-slot:item="{ item }">
+                            <tr>
+                                <td v-for="header in headers" :key="header.key">
+                                    <template v-if="header.key === ''">
+                                        <v-btn variant="text" size="small" color="primary" icon @click="$emit('view', item?.serialNumber)">
+                                            <v-icon>
+                                                mdi-eye
+                                            </v-icon>
+                                        </v-btn>
+                                        <v-btn variant="text" size="small" color="primary" icon @click="$emit('edit', item?.productId)">
+                                            <v-icon>
+                                                mdi-pencil
+                                            </v-icon>
+                                        </v-btn>
+                                        <v-btn variant="text" size="small" color="primary" icon @click="$emit('delete', item?.productId)">
+                                            <v-icon>
+                                                mdi-delete
+                                            </v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <template v-if="header.key === 'createdAt'">
+                                        {{ dateFilter(getNestedValue(item, header.key)) }}
+                                    </template>
+                                    <template v-else>
+                                        {{ getNestedValue(item, header.key!.toString()) }}
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </v-data-table>
+                </v-card>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script setup lang="ts">

@@ -1,18 +1,18 @@
 <template>
     
-    <v-row>
+    <v-row class="mt-3">
         <v-col>
             <ContentHeader
-                title="Your Budgets"
-                subtitle="Manage monthly budgets for linked accounts."
+                title="Spending"
             />
         </v-col>
         <v-col class="text-right">
-            <v-btn variant="flat" color="primary" rounded="xl" @click="dialog = true" :icon="$vuetify.display.mobile">
+            <v-btn variant="flat" color="primary" size="large" rounded="xl" @click="dialog = true" :icon="$vuetify.display.mobile">
                 <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
             </v-btn>
         </v-col>
     </v-row>
+    <v-divider class="mt-3 mb-5" thickness="5px" length="50px" />
     
     <v-row v-if="loading" class="mb-3">
         <v-col v-for="i in 3" :key="`${i}loading`" cols="12" sm="4">
@@ -24,7 +24,7 @@
         </v-col>
     </v-row>
     
-    <v-row v-else class="mb-3">
+    <v-row v-else class="mb-5">
         <v-col v-for="b in recentBudgets" :key="b.budget.budgetId" cols="12" sm="4">
             <v-card :to="`/budget/${b.budget.budgetId}/edit`">
                 <v-card-title class="text-overline">
@@ -58,11 +58,11 @@
     </v-row>
     
     <ContentHeader
-        title="Past Budgets"
-        subtitle="Review past spending"
+        title="Past Spending"
     />
+    <v-divider class="mt-3 mb-5" thickness="5px" length="50px" />
 
-    <v-row v-if="loading" class="mb-3">
+    <v-row v-if="loading" class="mb-5">
         <v-col v-for="i in 2" :key="`${i}loading`" cols="12" sm="4">
             <v-skeleton-loader
             class="mx-auto border"
@@ -71,7 +71,7 @@
             ></v-skeleton-loader>
         </v-col>
     </v-row>
-    <v-row v-else-if="pastBudgets.length > 0" class="mb-3">
+    <v-row v-else-if="pastBudgets.length > 0">
         <v-col v-for="b in pastBudgets" :key="b.budget.budgetId" cols="12" sm="4">
             <v-card :to="`/budget/${b.budget.budgetId}/edit`">
                 <v-card-title class="text-overline">

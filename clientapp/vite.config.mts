@@ -16,7 +16,10 @@ import * as fs from 'fs';
 export default defineConfig({
   plugins: [
     VueRouter(),
-    Layouts(),
+    Layouts({
+      layoutsDirs: 'src/layouts',
+      defaultLayout: 'default',
+    }),
     Vue({
       template: { transformAssetUrls },
     }),

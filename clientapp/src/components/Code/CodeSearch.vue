@@ -36,35 +36,25 @@
     </v-sheet>
     <v-sheet class="py-5">
         <v-container>
-            <v-card variant="flat" class="mb-3">
-                <v-card-title class="d-flex pb-0">
-                    <span class="text-h6">Code Search</span>
-                    <v-spacer />
-                     <v-btn v-show="items?.length"
+            <v-row class="mb-3">
+                <v-col>
+                    <ContentHeader
+                        title="Code Search"
+                        :subtitle="!items ? 'Use the categories below to search code' : `Found ${ items?.length } results in ${ repoResults.size } repositories`"
+                    />
+                </v-col>
+                <v-col v-if="items?.length" cols="auto" class="text-right">
+                    <v-btn
                         flat
                         icon="mdi-cancel"
                         small
-                        size="small"
+                        size="large"
                         @click="clearSearch"
-                        ></v-btn>
-                </v-card-title>
-                <v-card-text>
+                    ></v-btn>
+                </v-col>
+            </v-row>
+            <v-divider class="mt-3 mb-8" thickness="5px" length="50px" />
 
-                    <v-skeleton-loader
-                        v-if="loading"
-                        ref="skeleton"
-                        :type="'list-item'"
-                        class="w-50"
-                    ></v-skeleton-loader>
-                    <span v-else-if="!items" class="text-caption text-grey-darken-1 d-block mb-2">
-                        Use the categories below to search code
-                    </span>
-                    <span v-else class="text-caption text-grey-darken-1 d-block mb-2">
-                        Found {{ items?.length }} results in {{ repoResults.size }} repositories
-                    </span>
-                    <v-divider class="my-4" thickness="5px" length="50px" />
-                </v-card-text>
-            </v-card>
             
             <v-row v-if="loading">
                 <v-col v-for="i in 3" :key="i"

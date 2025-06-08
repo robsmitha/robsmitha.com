@@ -2,7 +2,6 @@
     <v-dialog
       v-model="dialog"
       :max-width="400"
-      :fullscreen="isMobile"
     >
         <v-card>
             <v-card-title class="d-flex justify-space-between align-center">
@@ -34,7 +33,7 @@
 
                 <v-btn
                   class="text-none"
-                  color="green-darken-4"
+                  color="primary"
                   rounded="xl"
                   text="Save"
                   variant="flat"
