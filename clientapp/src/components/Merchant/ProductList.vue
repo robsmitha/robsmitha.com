@@ -11,7 +11,7 @@
                     color="primary"
                     rounded="xl"
                     variant="flat"
-                    size="large"
+                    :icon="$vuetify.display.mobile"
                     @click="$emit('create')"
                 >
                     <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>

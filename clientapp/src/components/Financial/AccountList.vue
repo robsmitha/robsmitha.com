@@ -16,10 +16,15 @@
                     </div>
                 </template>
                 <v-card-text>
-                    <v-chip size="xsmall" density="compact" variant="tonal" color="primary">
+                    <v-chip size="xsmall" density="compact" variant="tonal">
                         <span class="text-caption px-2">{{ a.accounts.length }} Accounts</span>
                     </v-chip>
                 </v-card-text>
+                <v-card-actions v-if="showIncome">
+                    <v-btn size="x-small" variant="tonal" color="primary" icon :to="`/account/${a.institutionAccessItemId}/income`">
+                        <v-icon>mdi-link</v-icon>
+                    </v-btn>
+                </v-card-actions>
             </v-card>
         </v-col>
     </v-row>
@@ -28,7 +33,7 @@
 <script setup lang="ts">
 import moment from 'moment'
 
-const props = defineProps(['accessItems'])
+const props = defineProps(['accessItems', 'showIncome'])
 
 function getRandomColor(i: number) {
     const colors = [

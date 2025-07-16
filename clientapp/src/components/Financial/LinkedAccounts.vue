@@ -5,7 +5,6 @@
                 <v-col>
                     <ContentHeader
                         title="Accounts"
-                        subtitle="Linked Institutions"
                     />
                 </v-col>
                 <v-col class="text-right">
@@ -13,7 +12,7 @@
                         color="primary"
                         rounded="xl"
                         variant="flat"
-                        size="large"
+                        :icon="$vuetify.display.mobile"
                         @click="triggerPlaidLinkClick"
                     >
                         <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
@@ -21,7 +20,7 @@
                 </v-col>
             </v-row>
             <v-divider class="mt-3 mb-5" thickness="5px" length="50px" />
-            <AccountList :access-items="store.accessItems" />
+            <AccountList :access-items="store.accessItems" :show-income="true" />
         </v-container>
     </v-sheet>
 </template>

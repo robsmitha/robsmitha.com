@@ -15,8 +15,11 @@ import EditBudget from '@/components/Financial/EditBudget.vue'
 import BudgetAccounts from '@/components/Financial/BudgetAccounts.vue'
 import Exemptions from '@/components/Financial/Exemptions.vue'
 import search from '@/pages/search.vue'
+import account from '@/pages/account.vue'
+import IncomeSources from '@/components/Financial/IncomeSources.vue'
 
 import { RouteLocationNormalized } from 'vue-router';
+import IncomeTransactions from '@/components/Financial/IncomeTransactions.vue'
 const routes = [
   {
     path: '/bill/:congress/:billType/:billNumber',
@@ -67,6 +70,26 @@ const routes = [
     name: 'search',
     component: search,
     props: true
+  },
+  {
+    path: '/account/:institutionAccessItemId',
+    name: 'account',
+    component: account,
+    props: true,
+    children: [
+      {
+        path: 'income',
+        name: 'income',
+        component: IncomeSources,
+        props: true,
+      },
+      {
+        path: 'transactions/:incomeSourceId?',
+        name: 'transactions',
+        component: IncomeTransactions,
+        props: true,
+      }
+    ]
   }
 ];
 const router = createRouter({

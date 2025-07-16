@@ -7,7 +7,7 @@
                 />
             </v-col>
             <v-col class="text-right">
-                <v-btn rounded color="primary" variant="flat" size="large" disabled @click="dialog = true" :icon="$vuetify.display.mobile">
+                <v-btn rounded="xl" color="primary" variant="flat" disabled @click="dialog = true" :icon="$vuetify.display.mobile">
                     <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
                 </v-btn>
             </v-col>
@@ -156,7 +156,7 @@ const headers = [
     { title: 'Permissions', key: 'accessControl.policies' },
     { title: '', sortable: false, key: 'actions' }
 ]
-const resources = ['user', 'product', 'budget', 'code'];
+const resources = ['user', 'product', 'budget', 'code', 'income'];
 const actions = ['read', 'write', 'delete'];
 
 const loading = ref(false)

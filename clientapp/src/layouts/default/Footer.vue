@@ -31,7 +31,7 @@
                     <v-list bg-color="transparent" density="compact">
                         <template v-if="!auth.signedIn">
                             <v-list-item subtitle="Sign in"></v-list-item>
-                            <v-list-item v-if="!auth.signedIn" prepend-icon="mdi-github" title="Github" href="/.auth/login/github"></v-list-item>
+                            <!-- <v-list-item v-if="!auth.signedIn" prepend-icon="mdi-github" title="Github" href="/.auth/login/github"></v-list-item> -->
                             <v-list-item v-if="!auth.signedIn" prepend-icon="mdi-microsoft" title="Microsoft" href="/.auth/login/aad"></v-list-item>
                         </template>
                         <template v-else>

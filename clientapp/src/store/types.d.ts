@@ -185,3 +185,79 @@ export interface Up {
 export enum Taxonomy {
     Category = "category",
 }
+
+export interface IncomeSource {
+  incomeSourceId: number;
+  institutionAccessItemId: number;
+  name: string;
+  description: string;
+  startDate: string | Date | null; // ISO date string
+  endDate: string | Date | null;   // ISO date string
+  amountDue: number;
+  dayOfMonthDue: number;
+  incomeSourceType: string;
+  expectedPaymentMemos: string[];
+  isExisting: boolean;
+}
+
+export interface IncomePayment {
+  incomePaymentId: number;
+  transactionId: string;
+  incomeSourceId: number;
+  incomeSourceName: string;
+  paymentDate: string; // ISO date string
+  amount: number;
+  paymentMemo: string;
+  isManualAdjustment: boolean;
+  isExisting: boolean;
+}
+
+export interface PaymentHistoryItem {
+  month: string;
+  year: number;
+  paidAmount: number;
+  amountDue: number;
+}
+
+export interface IncomeSourceSummary {
+  incomeSource: IncomeSource;
+  incomePayments: IncomePayment[];
+  dueDate: string; // ISO date string
+  pastDueDate: string; // ISO date string
+  currentMonthPaymentTotal: number;
+  currentMonthPaid: boolean;
+  currentMonthPastDue: boolean;
+  paymentHistory: PaymentHistoryItem[];
+}
+
+export interface Account {
+  account_id: string;
+  mask: string;
+  name: string;
+  official_name: string;
+  subtype: string;
+  type: string;
+}
+
+export interface Transaction {
+  date: string; // YYYY-MM-DD
+  name: string;
+  amount: number;
+  transaction_id: string;
+  pending: boolean;
+  authorized_date: string | null; // YYYY-MM-DD or null
+  transaction_type: string;
+  payment_channel: string;
+  merchant_name: string | null;
+  account_id: string;
+  hasTransactionCategory: boolean;
+  category: string | null;
+  account: Account;
+  incomePayment: any | null; // Specify shape if known
+}
+
+export interface TransactionsResponse {
+  transactions: Transaction[];
+  expired: boolean;
+  institutionName: string;
+}

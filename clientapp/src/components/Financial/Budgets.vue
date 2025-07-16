@@ -7,7 +7,7 @@
             />
         </v-col>
         <v-col class="text-right">
-            <v-btn variant="flat" color="primary" size="large" rounded="xl" @click="dialog = true" :icon="$vuetify.display.mobile">
+            <v-btn variant="flat" color="primary" rounded="xl" @click="dialog = true" :icon="$vuetify.display.mobile">
                 <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
             </v-btn>
         </v-col>

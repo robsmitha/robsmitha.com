@@ -65,8 +65,8 @@
             <v-list density="compact">
               <v-list-item prepend-icon="mdi-account-group" title="Users" to="/users"></v-list-item>
               <v-list-item prepend-icon="mdi-tag-multiple" title="Products" to="/products"></v-list-item>
-              <v-list-item prepend-icon="mdi-currency-usd" title="Spending" to="/spending"></v-list-item>
               <v-list-item prepend-icon="mdi-bank" title="Accounts" to="/accounts"></v-list-item>
+              <v-list-item prepend-icon="mdi-currency-usd" title="Spending" to="/spending"></v-list-item>
             </v-list>
             
             <v-divider></v-divider>
@@ -104,7 +104,7 @@
 
         <template v-if="!auth.signedIn">
           <v-list-item subtitle="Sign in"></v-list-item>
-          <v-list-item prepend-icon="mdi-github" title="Github" href="/.auth/login/github"></v-list-item>
+          <!-- <v-list-item prepend-icon="mdi-github" title="Github" href="/.auth/login/github"></v-list-item> -->
           <v-list-item prepend-icon="mdi-microsoft" title="Microsoft" href="/.auth/login/aad"></v-list-item>
         </template>
         <!-- <template v-else>

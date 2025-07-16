@@ -9,8 +9,9 @@
     >
         <span class="d-block font-weight-bold">Too many requests. Please try again shortly.</span>
         <template v-if="!auth.signedIn">
-            Sign in with <a class="text-white" href="/.auth/login/github">GitHub</a> 
-            or <a class="text-white" href="/.auth/login/aad">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
+            Sign in with 
+            <!-- <a class="text-white" href="/.auth/login/github">GitHub</a> or  -->
+            <a class="text-white" href="/.auth/login/aad">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
         </template>
         <template v-else-if="!auth.hasValidAccessToken">
             Authorize robsmitha.com on GitHub to access a higher rate limit.

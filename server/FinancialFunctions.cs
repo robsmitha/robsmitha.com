@@ -84,7 +84,7 @@ namespace ElysianFunctions
         {
             _ = int.TryParse(req.Query["budgetId"], out var budgetId);
 
-            return await req.WriteJsonResponseAsync(await mediator.Send(new GetTransactionsQuery(budgetId)));
+            return await req.WriteJsonResponseAsync(await mediator.Send(new GetBudgetTransactionsQuery(budgetId)));
         }
 
         [Function("SaveBudget")]
@@ -138,6 +138,74 @@ namespace ElysianFunctions
             var model = await req.DeserializeBodyAsync<BudgetExcludedTransactionModel>();
 
             return await req.WriteJsonResponseAsync(await mediator.Send(new RestoreExcludedTransactionCommand(model.TransactionId, model.BudgetId)));
+        }
+
+        #endregion
+
+        #region Income
+
+        [Function("GetIncomeSource")]
+        public async Task<HttpResponseData> GetIncomeSource([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+        {
+            _ = int.TryParse(req.Query["incomeSourceId"], out var incomeSourceId);
+
+            return await req.WriteJsonResponseAsync(await mediator.Send(new GetIncomeSourceQuery(incomeSourceId)));
+        }
+
+        [Function("GetIncomeSources")]
+        public async Task<HttpResponseData> GetIncomeSources([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+        {
+            _ = int.TryParse(req.Query["institutionAccessItemId"], out var institutionAccessItemId);
+
+            return await req.WriteJsonResponseAsync(await mediator.Send(new GetIncomeSourcesQuery(institutionAccessItemId)));
+        }
+
+        [Function("GetTransactions")]
+        public async Task<HttpResponseData> GetTransactions([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+        {
+            _ = int.TryParse(req.Query["institutionAccessItemId"], out var institutionAccessItemId);
+
+            return await req.WriteJsonResponseAsync(await mediator.Send(new GetIncomeTransactionsQuery(institutionAccessItemId)));
+        }
+
+        [Function("SaveIncomeSource")]
+        public async Task<HttpResponseData> SaveIncomeSource([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+        {
+            var model = await req.DeserializeBodyAsync<IncomeSourceModel>();
+
+            return await req.WriteJsonResponseAsync(await mediator.Send(new SaveIncomeSourceCommand(model)));
+        }
+
+        [Function("SaveIncomePayment")]
+        public async Task<HttpResponseData> SaveIncomePayment([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+        {
+            var model = await req.DeserializeBodyAsync<IncomePaymentModel>();
+
+            return await req.WriteJsonResponseAsync(await mediator.Send(new SaveIncomePaymentCommand(model)));
+        }
+
+        [Function("DeleteIncomeSource")]
+        public async Task<HttpResponseData> DeleteIncomeSource([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+        {
+            var command = await req.DeserializeBodyAsync<DeleteIncomeSourceCommand>();
+            await mediator.Send(command);
+
+            return await req.WriteJsonResponseAsync(new
+            {
+                Success = true
+            });
+        }
+
+        [Function("DeleteIncomePayment")]
+        public async Task<HttpResponseData> DeleteIncomePayment([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+        {
+            var command = await req.DeserializeBodyAsync<DeleteIncomePaymentCommand>();
+            await mediator.Send(command);
+
+            return await req.WriteJsonResponseAsync(new
+            {
+                Success = true
+            });
         }
 
         #endregion
