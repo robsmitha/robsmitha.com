@@ -32,7 +32,7 @@
                         <v-col>
                             <v-autocomplete
                                 v-model="selectedIncomeSourceIdId"
-                                :items="store.incomeSources"
+                                :items="store.incomeSourceResponse?.incomeSources"
                                 :disabled="!selectedTransactions || selectedTransactions.length === 0 || store.loadingIncome"
                                 clearable
                                 chips
@@ -87,7 +87,7 @@ const selectedTransactions = ref<Transaction[]>([])
 const selectedIncomeSourceIdId = ref<number | IncomeSourceSummary | undefined>()
 
 
-watch(() => store.incomeSources, (val: IncomeSourceSummary[]) => {
+watch(() => store.incomeSourceResponse?.incomeSources, (val: IncomeSourceSummary[] | undefined) => {
     if(val){
         const item = val.find(i => i.incomeSource.incomeSourceId === Number(props.incomeSourceId))
         selectedIncomeSourceIdId.value = item

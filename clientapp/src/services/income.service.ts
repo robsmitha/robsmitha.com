@@ -24,8 +24,14 @@ async function getIncomeSource(incomeSourceId: number) {
 /**
  * GET /api/GetIncomeSources?institutionAccessItemId=123
  */
-async function getIncomeSources(institutionAccessItemId: number) {
-    const params = new URLSearchParams({ institutionAccessItemId: institutionAccessItemId.toString() });
+async function getIncomeSources(institutionAccessItemId: number, month: number | undefined, year: number | undefined) {
+    const params = new URLSearchParams();
+
+    params.set('institutionAccessItemId', institutionAccessItemId.toString());
+
+    if (month != null) params.set('month', month.toString());
+    if (year != null) params.set('year', year.toString());
+    
     return await elysianClient.getData(`/api/GetIncomeSources?${params}`);
 }
 

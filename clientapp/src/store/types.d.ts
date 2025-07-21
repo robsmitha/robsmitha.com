@@ -186,6 +186,28 @@ export enum Taxonomy {
     Category = "category",
 }
 
+export interface IncomeSourcesResponse {
+  incomeSources: IncomeSourceSummary[];
+  monthlyTimeline: MonthlyTimeline;
+  monthlyTimelineList: MonthlyTimeline[];
+  totalPaid: number;
+  totalDue: number;
+  totalOverdue: number;
+  nextDueDate: string;
+}
+
+export interface IncomeSourceSummary {
+  incomeSource: IncomeSource;
+  incomePayments: IncomePayment[];
+  monthlyTimeline: MonthlyTimeline;
+  dueDate: string;
+  pastDueDate: string;
+  currentMonthPaymentTotal: number;
+  currentMonthPaid: boolean;
+  currentMonthPastDue: boolean;
+  paymentHistory: PaymentHistoryItem[];
+}
+
 export interface IncomeSource {
   incomeSourceId: number;
   institutionAccessItemId: number;
@@ -212,18 +234,28 @@ export interface IncomePayment {
   isExisting: boolean;
 }
 
+export interface MonthlyTimeline {
+  text: string;
+  month: number;
+  year: number;
+  startOfMonth: string; // ISO date string
+  endOfMonth: string;   // ISO date string
+}
+
 export interface PaymentHistoryItem {
   month: string;
   year: number;
   paidAmount: number;
   amountDue: number;
+  dueDate: string; // ISO date string
 }
 
 export interface IncomeSourceSummary {
   incomeSource: IncomeSource;
   incomePayments: IncomePayment[];
-  dueDate: string; // ISO date string
-  pastDueDate: string; // ISO date string
+  monthlyTimeline: MonthlyTimeline;
+  dueDate: string;       // ISO date string
+  pastDueDate: string;   // ISO date string
   currentMonthPaymentTotal: number;
   currentMonthPaid: boolean;
   currentMonthPastDue: boolean;
@@ -254,6 +286,7 @@ export interface Transaction {
   category: string | null;
   account: Account;
   incomePayment: any | null; // Specify shape if known
+  monthlyTimeline: MonthlyTimeline;
 }
 
 export interface TransactionsResponse {

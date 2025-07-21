@@ -25,6 +25,9 @@
       </v-app-bar-title>
         
       <template #append>
+        <v-btn v-if="!auth.signedIn" variant="outlined" href="/.auth/login/aad" rounded>
+          Sign In
+        </v-btn>
         <v-menu
           v-model="menu"
           location="bottom"
@@ -33,7 +36,7 @@
             <v-avatar
               v-if="auth.signedIn"
               size="35"
-              color="white"
+              color="blue-darken-4"
               class="mr-2"
               v-bind="props"
               >
@@ -102,11 +105,11 @@
         <!-- <v-list-item prepend-icon="mdi-desktop-classic" title="robsmitha.github.io" href="https://robsmitha.github.io/" target="_blank"></v-list-item> -->
 
 
-        <template v-if="!auth.signedIn">
+        <!-- <template v-if="!auth.signedIn">
           <v-list-item subtitle="Sign in"></v-list-item>
-          <!-- <v-list-item prepend-icon="mdi-github" title="Github" href="/.auth/login/github"></v-list-item> -->
+          <v-list-item prepend-icon="mdi-github" title="Github" href="/.auth/login/github"></v-list-item>
           <v-list-item prepend-icon="mdi-microsoft" title="Microsoft" href="/.auth/login/aad"></v-list-item>
-        </template>
+        </template> -->
         <!-- <template v-else>
           <v-list-item :subtitle="auth.userDetails"></v-list-item>
           <v-list-item prepend-icon="mdi-account-group" title="Users" to="/users"></v-list-item>

@@ -2,7 +2,7 @@
     <v-row>
         <v-col>
             <ContentHeader
-                title="Revenue"
+                :title="store.selectedMonthlyTimeline?.text"
             />
         </v-col>
         <v-col class="text-right">
@@ -13,12 +13,77 @@
     </v-row>
     <v-divider class="mt-3 mb-5" thickness="5px" length="50px" />
 
-    <v-row>
+    <v-row dense>
+        <!-- Total Due -->
+        <v-col cols="12" sm="6" md="3">
+            <v-card class="pa-4" color="blue-lighten-5">
+                <v-row align="center">
+                    <v-col cols="auto">
+                        <v-icon color="blue-darken-2">mdi-cash-multiple</v-icon>
+                    </v-col>
+                    <v-col>
+                        <div class="text-caption text-blue-darken-4">Total Due</div>
+                        <div class="text-h6 font-weight-bold text-blue-darken-4">${{ store.incomeSourceResponse?.totalDue.toFixed(2) }}</div>
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-col>
+
+        <!-- Total Paid -->
+        <v-col cols="12" sm="6" md="3">
+            <v-card class="pa-4" color="green-lighten-5">
+                <v-row align="center">
+                    <v-col cols="auto">
+                        <v-icon color="green-darken-2">mdi-check-circle</v-icon>
+                    </v-col>
+                    <v-col>
+                        <div class="text-caption text-green-darken-4">Total Paid</div>
+                        <div class="text-h6 font-weight-bold text-green-darken-4">${{ store.incomeSourceResponse?.totalPaid.toFixed(2) }}</div>
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-col>
+
+        <!-- Total Overdue -->
+        <v-col cols="12" sm="6" md="3">
+            <v-card class="pa-4" color="red-lighten-5">
+                <v-row align="center">
+                    <v-col cols="auto">
+                        <v-icon color="red-darken-2">mdi-alert-circle</v-icon>
+                    </v-col>
+                    <v-col>
+                        <div class="text-caption text-red-darken-4">Total Overdue</div>
+                        <div class="text-h6 font-weight-bold text-red-darken-4">${{ store.incomeSourceResponse?.totalOverdue.toFixed(2) }}</div>
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-col>
+
+        <!-- Next Due Date -->
+        <v-col cols="12" sm="6" md="3">
+            <v-card class="pa-4">
+                <v-row align="center">
+                    <v-col cols="auto">
+                        <v-icon color="grey-darken-2">mdi-calendar-clock</v-icon>
+                    </v-col>
+                    <v-col>
+                        <div class="text-caption text-grey-darken-3">Next Due Date</div>
+                        <div v-if="store.incomeSourceResponse?.nextDueDate" class="text-h6 font-weight-bold text-grey-darken-3">
+                            {{ store.incomeSourceResponse.nextDueDate.startsWith('0001-01-01') ? 'None' : new Date(store.incomeSourceResponse.nextDueDate).toLocaleDateString('en-US') }}
+                        </div>
+                    </v-col>
+                </v-row>
+            </v-card>
+        </v-col>
+    </v-row>
+
+
+    <v-row dense>
         <v-col>
             <v-card>
                 <v-data-table 
                     :headers="headers" 
-                    :items="store.incomeSources"
+                    :items="store.incomeSourceResponse?.incomeSources"
                     :custom-filter="filter"
                     :search="search"
                     item-value="name"
@@ -47,7 +112,6 @@
                         <tr class="text-no-wrap">
                             <td>{{ item.incomeSource.name }}</td>
                             <td v-if="!isMobile">{{ item.incomeSource.amountDue.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) }}</td>
-                            <td v-if="!isMobile">{{ new Date(item.dueDate).toLocaleDateString() }}</td>
                             <td>
                                 <v-tooltip v-if="item.currentMonthPaid" location="top">
                                     <template #activator="{ props }">
@@ -239,7 +303,6 @@ const headers = isMobile.value
     : [
         { title: 'Name', key: 'incomeSource.name' },
         { title: 'Amount Due', key: 'incomeSource.amountDue' },
-        { title: 'Due Date', key: 'incomeSource.dueDate' },
         { title: 'Status', key: 'incomeSource.dayOfMonthDue' },
         { title: '', key: 'actions', sortable: false }
     ];

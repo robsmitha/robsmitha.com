@@ -156,8 +156,10 @@ namespace ElysianFunctions
         public async Task<HttpResponseData> GetIncomeSources([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
             _ = int.TryParse(req.Query["institutionAccessItemId"], out var institutionAccessItemId);
+            int? month = int.TryParse(req.Query["month"], out var m) ? m : null;
+            int? year = int.TryParse(req.Query["year"], out var y) ? y : null;
 
-            return await req.WriteJsonResponseAsync(await mediator.Send(new GetIncomeSourcesQuery(institutionAccessItemId)));
+            return await req.WriteJsonResponseAsync(await mediator.Send(new GetIncomeSourcesQuery(institutionAccessItemId, month, year)));
         }
 
         [Function("GetTransactions")]
