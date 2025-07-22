@@ -37,7 +37,7 @@
                         <v-select v-model="dayOfMonthDue" label="Day Of Month Due" :items="Array.from({ length: 28 }, (_, i) => i + 1)"></v-select>
                     </v-col>
                 </v-row>
-                <!-- <v-row>
+                <v-row>
                     <v-col>
                         <v-menu :close-on-content-click="false">
                             <template v-slot:activator="{ props }">
@@ -54,7 +54,7 @@
                             <v-date-picker hide-header v-model="endDate"></v-date-picker>
                         </v-menu>
                     </v-col>
-                </v-row> -->
+                </v-row>
             </v-card-text>
             
         <v-card-actions class="my-2 d-flex justify-end">
