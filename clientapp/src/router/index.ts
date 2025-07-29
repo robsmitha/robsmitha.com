@@ -47,7 +47,7 @@ const routes = [
       },
       {
         path: 'transactions',
-        name: 'transactions',
+        name: 'budgettransactions',
         component: Transactions,
         props: true,
       },
@@ -85,7 +85,7 @@ const routes = [
       },
       {
         path: 'transactions/:incomeSourceId?',
-        name: 'transactions',
+        name: 'incometransactions',
         component: IncomeTransactions,
         props: true,
       }
