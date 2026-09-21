@@ -6,83 +6,54 @@
             />
         </v-col>
         <v-col class="text-right">
-            <v-btn variant="flat" color="primary" rounded="xl" @click="dialog = true" :icon="$vuetify.display.mobile">
+            <v-btn variant="outlined" color="primary" class="font-mono text-none" @click="dialog = true" :icon="$vuetify.display.mobile">
                 <v-icon>mdi-plus</v-icon> <span v-if="!$vuetify.display.mobile">New</span>
             </v-btn>
         </v-col>
     </v-row>
-    <v-divider class="mt-3 mb-5" thickness="5px" length="50px" />
+    <v-divider class="mt-3 mb-5" color="primary" thickness="4" length="48" />
 
-    <v-row dense>
-        <!-- Total Due -->
-        <v-col cols="12" sm="6" md="3">
-            <v-card class="pa-4" color="blue-lighten-5">
-                <v-row align="center">
-                    <v-col cols="auto">
-                        <v-icon color="blue-darken-2">mdi-cash-multiple</v-icon>
-                    </v-col>
-                    <v-col>
-                        <div class="text-caption text-blue-darken-4">Total Due</div>
-                        <div class="text-h6 font-weight-bold text-blue-darken-4">${{ store.incomeSourceResponse?.totalDue.toFixed(2) }}</div>
-                    </v-col>
-                </v-row>
-            </v-card>
-        </v-col>
+    <div class="d-flex flex-wrap ga-8 income-stats mb-8">
+        <div>
+            <div class="d-flex align-center ga-2">
+                <v-icon color="info" size="20">mdi-cash-multiple</v-icon>
+                <span class="font-mono text-caption text-slate text-uppercase">Total Due</span>
+            </div>
+            <span class="font-mono text-h5 text-info font-weight-bold d-block">${{ store.incomeSourceResponse?.totalDue.toFixed(2) }}</span>
+        </div>
 
-        <!-- Total Paid -->
-        <v-col cols="12" sm="6" md="3">
-            <v-card class="pa-4" color="green-lighten-5">
-                <v-row align="center">
-                    <v-col cols="auto">
-                        <v-icon color="green-darken-2">mdi-check-circle</v-icon>
-                    </v-col>
-                    <v-col>
-                        <div class="text-caption text-green-darken-4">Total Paid</div>
-                        <div class="text-h6 font-weight-bold text-green-darken-4">${{ store.incomeSourceResponse?.totalPaid.toFixed(2) }}</div>
-                    </v-col>
-                </v-row>
-            </v-card>
-        </v-col>
+        <div>
+            <div class="d-flex align-center ga-2">
+                <v-icon color="primary" size="20">mdi-check-circle</v-icon>
+                <span class="font-mono text-caption text-slate text-uppercase">Total Paid</span>
+            </div>
+            <span class="font-mono text-h5 text-primary font-weight-bold d-block">${{ store.incomeSourceResponse?.totalPaid.toFixed(2) }}</span>
+        </div>
 
-        <!-- Total Overdue -->
-        <v-col cols="12" sm="6" md="3">
-            <v-card class="pa-4" color="red-lighten-5">
-                <v-row align="center">
-                    <v-col cols="auto">
-                        <v-icon color="red-darken-2">mdi-alert-circle</v-icon>
-                    </v-col>
-                    <v-col>
-                        <div class="text-caption text-red-darken-4">Total Overdue</div>
-                        <div class="text-h6 font-weight-bold text-red-darken-4">${{ store.incomeSourceResponse?.totalOverdue.toFixed(2) }}</div>
-                    </v-col>
-                </v-row>
-            </v-card>
-        </v-col>
+        <div>
+            <div class="d-flex align-center ga-2">
+                <v-icon color="error" size="20">mdi-alert-circle</v-icon>
+                <span class="font-mono text-caption text-slate text-uppercase">Total Overdue</span>
+            </div>
+            <span class="font-mono text-h5 text-error font-weight-bold d-block">${{ store.incomeSourceResponse?.totalOverdue.toFixed(2) }}</span>
+        </div>
 
-        <!-- Next Due Date -->
-        <v-col cols="12" sm="6" md="3">
-            <v-card class="pa-4">
-                <v-row align="center">
-                    <v-col cols="auto">
-                        <v-icon color="grey-darken-2">mdi-calendar-clock</v-icon>
-                    </v-col>
-                    <v-col>
-                        <div class="text-caption text-grey-darken-3">Next Due Date</div>
-                        <div v-if="store.incomeSourceResponse?.nextDueDate" class="text-h6 font-weight-bold text-grey-darken-3">
-                            {{ store.incomeSourceResponse.nextDueDate.startsWith('0001-01-01') ? 'None' : new Date(store.incomeSourceResponse.nextDueDate).toLocaleDateString('en-US') }}
-                        </div>
-                    </v-col>
-                </v-row>
-            </v-card>
-        </v-col>
-    </v-row>
-
+        <div>
+            <div class="d-flex align-center ga-2">
+                <v-icon color="slate" size="20">mdi-calendar-clock</v-icon>
+                <span class="font-mono text-caption text-slate text-uppercase">Next Due Date</span>
+            </div>
+            <span v-if="store.incomeSourceResponse?.nextDueDate" class="font-mono text-h5 text-lightest-slate font-weight-bold d-block">
+                {{ store.incomeSourceResponse.nextDueDate.startsWith('0001-01-01') ? 'None' : new Date(store.incomeSourceResponse.nextDueDate).toLocaleDateString('en-US') }}
+            </span>
+        </div>
+    </div>
 
     <v-row dense>
         <v-col>
-            <v-card>
-                <v-data-table 
-                    :headers="headers" 
+            <v-card color="surface" class="income-table-card">
+                <v-data-table
+                    :headers="headers"
                     :items="store.incomeSourceResponse?.incomeSources"
                     :custom-filter="filter"
                     :search="search"
@@ -99,7 +70,10 @@
                                         label="Filter"
                                         clearable
                                         variant="outlined"
-                                        rounded
+                                        color="primary"
+                                        base-color="slate"
+                                        class="font-mono"
+                                        rounded="lg"
                                         density="compact"
                                         hide-details
                                     >
@@ -117,9 +91,10 @@
                                     <template #activator="{ props }">
                                         <span v-bind="props">
                                             <v-chip
-                                                
                                                 size="small"
-                                                color="green-darken-3"
+                                                color="primary"
+                                                variant="tonal"
+                                                class="font-mono"
                                             >
                                                 Paid
                                             </v-chip>
@@ -135,7 +110,9 @@
                                         <span v-bind="props">
                                             <v-chip
                                                 size="small"
-                                                color="blue-darken-3"
+                                                color="info"
+                                                variant="tonal"
+                                                class="font-mono"
                                             >
                                                 Partially Paid
                                             </v-chip>
@@ -151,7 +128,9 @@
                                         <span v-bind="props">
                                             <v-chip
                                                 size="small"
-                                                color="red-darken-3"
+                                                color="error"
+                                                variant="tonal"
+                                                class="font-mono"
                                             >
                                                 Past Due
                                             </v-chip>
@@ -167,6 +146,9 @@
                                         <span v-bind="props">
                                             <v-chip
                                                 size="small"
+                                                color="slate"
+                                                variant="outlined"
+                                                class="font-mono"
                                             >
                                                 No Payment
                                             </v-chip>
@@ -181,7 +163,7 @@
                             <td>
                                 <v-tooltip text="Edit" location="top">
                                     <template #activator="{ props }">
-                                    <v-btn v-bind="props" size="x-small" color="grey-darken-1" variant="text" icon class="text-none mr-1" @click="editIncomeSource(item)">
+                                    <v-btn v-bind="props" size="x-small" color="slate" variant="text" icon class="text-none mr-1" @click="editIncomeSource(item)">
                                         <v-icon>mdi-pencil</v-icon>
                                     </v-btn>
                                     </template>
@@ -189,7 +171,7 @@
 
                                 <v-tooltip text="Payment History" location="top">
                                     <template #activator="{ props }">
-                                    <v-btn v-bind="props" size="x-small" color="grey-darken-1" variant="text" icon class="text-none mr-1" @click="openPaymentHistory(item)">
+                                    <v-btn v-bind="props" size="x-small" color="slate" variant="text" icon class="text-none mr-1" @click="openPaymentHistory(item)">
                                         <v-icon>mdi-clock-outline</v-icon>
                                     </v-btn>
                                     </template>
@@ -197,7 +179,7 @@
 
                                 <v-tooltip text="Link Transactions" location="top">
                                     <template #activator="{ props }">
-                                    <v-btn v-bind="props" size="x-small" color="grey-darken-1" variant="text" icon class="text-none mr-1" :to="`/account/${institutionAccessItemId}/transactions/${item.incomeSource.incomeSourceId}`">
+                                    <v-btn v-bind="props" size="x-small" color="slate" variant="text" icon class="text-none mr-1" :to="`/account/${institutionAccessItemId}/transactions/${item.incomeSource.incomeSourceId}`">
                                         <v-icon>mdi-link</v-icon>
                                     </v-btn>
                                     </template>
@@ -205,7 +187,7 @@
 
                                 <v-tooltip text="Delete" location="top">
                                     <template #activator="{ props }">
-                                    <v-btn v-bind="props" size="x-small" color="grey-darken-1" variant="text" icon class="text-none" @click="deleteIncomeSource(item)">
+                                    <v-btn v-bind="props" size="x-small" color="slate" variant="text" icon class="text-none" @click="deleteIncomeSource(item)">
                                         <v-icon>mdi-trash-can</v-icon>
                                     </v-btn>
                                     </template>
@@ -218,7 +200,7 @@
             </v-card>
         </v-col>
     </v-row>
-   
+
     <SaveIncomeSourceDialog 
         :open="dialog" 
         :income-source-id="selectedincomeSourceId" 
@@ -351,6 +333,34 @@ function closePaymentHistory(){
 async function deleteIncomeSource(item: IncomeSourceSummary) {
     await incomeService.deleteIncomeSource({ incomeSourceId: item.incomeSource.incomeSourceId })
     await store.fetchIncomeSources(Number(props.institutionAccessItemId));
-    
+
 }
 </script>
+
+<style scoped>
+.income-stats > div {
+    padding-left: 2rem;
+    border-left: 1px solid rgb(var(--v-theme-lightest-navy));
+}
+
+.income-stats > div:first-child {
+    padding-left: 0;
+    border-left: none;
+}
+
+.income-table-card {
+    border: 1px solid rgb(var(--v-theme-lightest-navy));
+}
+
+@media (max-width: 600px) {
+    .income-stats {
+        gap: 1.5rem !important;
+    }
+
+    .income-stats > div {
+        padding-left: 0;
+        border-left: none;
+        min-width: 40%;
+    }
+}
+</style>

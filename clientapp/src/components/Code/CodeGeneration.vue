@@ -2,25 +2,30 @@
     <v-navigation-drawer
         location="left"
         permanent
-        color="grey-darken-4"
+        color="light-navy"
         :rail="collapsed"
+        class="generate-drawer"
       >
         <template v-slot:prepend>
           <v-list-item
                 lines="two"
-                subtitle="Beta"
-                title="Generate Code"
                 :class="{ 'pl-2': collapsed }"
             >
                 <template v-slot:prepend>
-                    <v-avatar color="grey-darken-4" class="ml-2">
-                        <v-icon color="white" :size="collapsed ? 'xsmall': 'large'">mdi-rocket-launch-outline</v-icon>
+                    <v-avatar color="surface" class="ml-2">
+                        <v-icon color="primary" :size="collapsed ? 'xsmall': 'large'">mdi-rocket-launch-outline</v-icon>
                     </v-avatar>
+                </template>
+                <template v-if="!collapsed" v-slot:title>
+                    <span class="text-lightest-slate font-weight-bold">Generate Code</span>
+                </template>
+                <template v-if="!collapsed" v-slot:subtitle>
+                    <span class="font-mono text-primary text-caption text-uppercase">Beta</span>
                 </template>
             </v-list-item>
         </template>
 
-        <v-divider></v-divider>
+        <v-divider color="lightest-navy"></v-divider>
         <v-form
             v-if="!collapsed"
             v-model="form"
@@ -28,44 +33,89 @@
         >
             <v-list density="compact" nav>
                 <v-list-item>
-                    <v-text-field v-model="responseName" label="Response Name" hint="Enter name of response" :rules="[rules.required]" persistent-hint></v-text-field>
+                    <v-text-field
+                        v-model="responseName"
+                        label="Response Name"
+                        hint="Enter name of response"
+                        :rules="[rules.required]"
+                        persistent-hint
+                        variant="outlined"
+                        color="primary"
+                        base-color="slate"
+                        class="font-mono mt-3"
+                    ></v-text-field>
                 </v-list-item>
                 <v-list-item>
-                    <v-select v-model="language" :items="['C#', 'TypeScript']" hint="Select language" persistent-hint></v-select>
+                    <v-select
+                        v-model="language"
+                        :items="['C#', 'TypeScript']"
+                        hint="Select language"
+                        persistent-hint
+                        variant="outlined"
+                        color="primary"
+                        base-color="slate"
+                        class="font-mono mt-3"
+                    ></v-select>
                 </v-list-item>
                 <v-list-item>
-                    <v-text-field v-model="namespace" label="Namespace" hint="Enter the namespace" persistent-hint></v-text-field>
+                    <v-text-field
+                        v-model="namespace"
+                        label="Namespace"
+                        hint="Enter the namespace"
+                        persistent-hint
+                        variant="outlined"
+                        color="primary"
+                        base-color="slate"
+                        class="font-mono mt-3"
+                    ></v-text-field>
                 </v-list-item>
                 <v-list-item>
-                    <v-textarea v-model="sampleJson" variant="filled" rows="8" hint="Enter sample json" :rules="[rules.required]" persistent-hint></v-textarea>
+                    <v-textarea
+                        v-model="sampleJson"
+                        label="Sample JSON"
+                        variant="outlined"
+                        color="primary"
+                        base-color="slate"
+                        rows="8"
+                        hint="Enter sample json"
+                        :rules="[rules.required]"
+                        persistent-hint
+                        class="font-mono mt-3"
+                    ></v-textarea>
                 </v-list-item>
             </v-list>
-            
+
             <v-btn
                 :disabled="!form"
                 :loading="loading"
-                class="text-uppercase font-weight-medium"
+                class="font-mono text-none mx-4"
+                style="width: calc(100% - 32px);"
                 type="submit"
-                variant="text"
-                block
+                variant="outlined"
+                color="primary"
+                prepend-icon="mdi-cog-play-outline"
                 >
                 Generate
             </v-btn>
         </v-form>
         <v-btn
             :disabled="!generatedCode"
-            class="text-uppercase font-weight-medium"
+            class="font-mono text-none mx-4 mt-2"
+            style="width: calc(100% - 32px);"
             type="submit"
             variant="text"
-            block
+            color="primary"
             @click="copyCode"
             >
-            <span v-if="!collapsed">Copy</span>
+            <span v-if="!collapsed">
+                <v-icon start size="16">mdi-content-copy</v-icon>Copy
+            </span>
             <v-icon v-else>mdi-content-copy</v-icon>
         </v-btn>
 
-        
+
         <template v-slot:append>
+          <v-divider color="lightest-navy"></v-divider>
           <v-list-item
                 :class="{ 'pl-2': collapsed }"
             >
@@ -73,6 +123,7 @@
                     <v-btn
                         :icon="collapsed ? 'mdi-arrow-collapse-right' : 'mdi-arrow-collapse-left'"
                         variant="text"
+                        color="slate"
                         size="small"
                         class="ml-0"
                         @click="collapsed = !collapsed"
@@ -82,10 +133,10 @@
         </template>
     </v-navigation-drawer>
 
-    <v-sheet>
-        <div style="overflow: auto;">
+    <v-sheet color="background">
+        <div class="code-scroll" style="overflow: auto;">
             <template v-if="loading">
-                <v-skeleton-loader color="grey-lighten-4 pa-0" v-for="i in 7" :key="i" type="paragraph">
+                <v-skeleton-loader color="surface" class="pa-4" v-for="i in 7" :key="i" type="paragraph">
                 </v-skeleton-loader>
             </template>
             <highlightjs
@@ -98,16 +149,17 @@
             :code="defaultResponse"></highlightjs>
         </div>
     </v-sheet>
-    <v-divider/>
     <v-snackbar
       v-model="snackbar"
+      color="surface"
     >
-      {{ snackbarText }}
+      <span class="font-mono text-body-2 text-lightest-slate">{{ snackbarText }}</span>
 
       <template v-slot:actions>
         <v-btn
-          color="white"
+          color="primary"
           variant="text"
+          class="font-mono text-none"
           @click="snackbar = false"
         >
           Close
@@ -137,7 +189,7 @@ const form = ref(false)
 const rules = {
     required: (value: string) => !!value || 'Field is required',
 };
-const defaultResponse = 
+const defaultResponse =
 `//----------------------
 // <auto-generated>
 //     Generated using the NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0) (http://NJsonSchema.org)
@@ -175,7 +227,7 @@ async function generateCode(){
     if(!form.value){
         return;
     }
-    
+
     const codeGenerationRequest = {
         responseName: responseName.value,
         language: language.value,
@@ -203,3 +255,14 @@ function copyCode(){
 }
 
 </script>
+
+<style scoped>
+.generate-drawer :deep(.v-navigation-drawer__border) {
+    background-color: rgb(var(--v-theme-lightest-navy));
+    opacity: 1;
+}
+
+.code-scroll {
+    min-height: 100vh;
+}
+</style>

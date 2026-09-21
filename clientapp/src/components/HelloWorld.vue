@@ -1,46 +1,53 @@
 <template>
-  <v-parallax 
-      :src="props.src" 
-      :height="props.height"
-      class="mt-n16 align-center"
-  >
-      <v-container class="text-white text-centerr">
-        <v-row>
-          <v-col v-if="!isMobile" md="auto" cols="12">
-              <v-avatar size="260">
-                <v-img
-                    src="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/robsmitha-avatar.png"
-                    alt="Rob Smitha"
-                    aspect-ratio="1"
-                ></v-img>
-            </v-avatar>
-          </v-col>
-          <v-col md="auto" cols="12" class="pl-12">
-            <span :class="titleClass">{{ props.title }}</span>
-            <span class="text-subtitle d-block mb-6" v-html="props.subtitle"></span>
-            <v-btn v-for="b in actions" :key="b.text" variant="outlined" rounded :to="b.to" :href="b.href" :target="b.href ? '_blank': ''" :prepend-icon="b.icon">{{ b.text }}</v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-  </v-parallax>
+  <section class="hero-section d-flex align-center bg-background">
+    <v-container>
+      <v-row>
+        <v-col cols="12" lg="9" xl="8">
+          <!-- <p class="font-mono text-primary text-body-2 mb-4 hero-eyebrow">
+            <span aria-hidden="true">&gt;</span> Hi, my name is
+          </p> -->
+
+          <h1 class="text-lightest-slate font-weight-bold hero-name mb-1">
+            Rob Smitha.
+          </h1>
+          <h2 class="text-slate font-weight-bold hero-role mb-6">
+            {{ props.title }}
+          </h2>
+
+          <p class="text-slate hero-bio" v-html="props.subtitle"></p>
+
+          <div class="mt-8 d-flex flex-wrap ga-4">
+            <v-btn
+              v-for="b in props.actions"
+              :key="b.text"
+              variant="outlined"
+              color="primary"
+              size="large"
+              class="font-mono text-none"
+              :to="b.to"
+              :href="b.href"
+              :target="b.href ? '_blank' : undefined"
+              :prepend-icon="b.icon"
+            >
+              {{ b.text }}
+            </v-btn>
+          </div>
+
+          <div class="mt-12 d-flex flex-wrap ga-8 hero-stats">
+            <div v-for="s in stats" :key="s.label">
+              <span class="font-mono text-h4 text-lightest-slate font-weight-bold d-block">{{ s.value }}</span>
+              <span class="font-mono text-caption text-slate text-uppercase">{{ s.label }}</span>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+  </section>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useDisplay } from 'vuetify'
-
-const { mobile } = useDisplay()
-const isMobile = computed(() => mobile.value)
-const titleClass = computed(() => {
-  return {
-    'text-h3': !isMobile.value,
-    'text-h2': isMobile.value,
-    'd-block': true,
-    'mb-4': true,
-    'font-weight-light': true,
-    'mt-14': true
-  }
-})
+import { useGithubStore } from '@/store/github'
 
 type HeroAction = {
   text: string,
@@ -50,10 +57,75 @@ type HeroAction = {
 }
 
 const props = defineProps({
-  src: { type: String, default: 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/images/md/bg-030.jpg' },
-  height: { type: Number, default: 400 },
   title: { type: String, required: true },
   subtitle: { type: String, required: true },
   actions: { type: Array<HeroAction>, default: [] }
 })
+
+const store = useGithubStore()
+
+// Real numbers pulled from the GitHub API via the shared store, not hardcoded copy.
+const stats = computed(() => {
+  const repos = store.repos ?? []
+  const languageCount = new Set(repos.map(r => r.language).filter(Boolean)).size
+  const yearsExperience = new Date().getFullYear() - 2016
+  return [
+    { value: repos.length > 0 ? repos.length : '—', label: 'Public Repos' },
+    { value: languageCount > 0 ? languageCount : '—', label: 'Languages' },
+    { value: yearsExperience, label: 'Years Experience' },
+  ]
+})
 </script>
+
+<style scoped>
+.hero-section {
+  min-height: 70vh;
+  padding-top: 64px;
+}
+
+.hero-eyebrow {
+  letter-spacing: 0.02em;
+}
+
+.hero-name {
+  font-size: clamp(2.25rem, 3vw + 1.5rem, 4.5rem);
+  line-height: 1.1;
+}
+
+.hero-role {
+  font-size: clamp(1.5rem, 2vw + 1rem, 3rem);
+  line-height: 1.15;
+}
+
+.hero-bio {
+  max-width: 560px;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.hero-stats > div {
+  padding-left: 2rem;
+  border-left: 1px solid rgb(var(--v-theme-lightest-navy));
+}
+
+.hero-stats > div:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+@media (max-width: 600px) {
+  .hero-section {
+    min-height: 92vh;
+  }
+
+  .hero-stats {
+    gap: 1.5rem !important;
+  }
+
+  .hero-stats > div {
+    padding-left: 0;
+    border-left: none;
+    min-width: 40%;
+  }
+}
+</style>

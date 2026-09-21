@@ -1,5 +1,5 @@
 <template>
-    <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
+    <v-breadcrumbs :items="breadcrumbs" class="px-4 pt-4 font-mono text-caption"></v-breadcrumbs>
     <ProductList
         :items="products"
         @view="viewProduct"
@@ -15,26 +15,27 @@
         @save="saveProduct"
         @delete-image="deleteProductImage"
     />
-    
+
     <v-dialog
         v-model="snackbar"
         :max-width="500"
     >
-        <v-card>
+        <v-card color="surface">
             <v-card-title class="d-flex justify-space-between align-center">
                 <div>
-                    <v-icon color="red-darken-3" size="small">mdi-alert</v-icon>
-                    <span class="ml-2">Request Failed</span>
+                    <v-icon color="error" size="small">mdi-alert</v-icon>
+                    <span class="ml-2 text-lightest-slate">Request Failed</span>
                 </div>
 
                 <v-btn
                   icon="mdi-close"
                   variant="text"
+                  color="slate"
                   @click="snackbar = false"
                 ></v-btn>
               </v-card-title>
-              <v-divider />
-              <v-card-text class="pt-2">
+              <v-divider color="lightest-navy" />
+              <v-card-text class="pt-2 text-slate">
                 {{ errorMessage }}
               </v-card-text>
         </v-card>

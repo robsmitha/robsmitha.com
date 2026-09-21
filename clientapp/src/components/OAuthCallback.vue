@@ -1,17 +1,27 @@
 <template>
-    <v-container>
-        <v-row>
-            <v-col md="6" offset-md="3" cols="12">
-                <h1 class="text-xs-center">{{ message }}</h1>
-                <v-progress-linear
-                    v-if="loading"
-                    color="yellow-darken-2"
-                    indeterminate
-                ></v-progress-linear>
-            </v-col>
-        </v-row>
-    </v-container>
+    <v-sheet color="background" class="d-flex align-center justify-center oauth-screen">
+        <v-container>
+            <v-row>
+                <v-col md="6" offset-md="3" cols="12" class="text-center">
+                    <h1 class="text-lightest-slate text-h5 font-weight-bold mb-6">{{ message }}</h1>
+                    <v-progress-linear
+                        v-if="loading"
+                        color="primary"
+                        bg-color="lightest-navy"
+                        indeterminate
+                        rounded
+                    ></v-progress-linear>
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-sheet>
 </template>
+
+<style scoped>
+.oauth-screen {
+    min-height: 60vh;
+}
+</style>
 
 <script lang="ts" setup>
 import { ref, watch} from 'vue'
@@ -42,4 +52,3 @@ if (code && state) {
     loading.value = false
 }
 </script>
-  

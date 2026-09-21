@@ -7,24 +7,26 @@
 
     <v-row class="my-2">
         <v-col>
-            <v-data-table
-                :headers="excludedHeaders"
-                :items="store.budget?.excludedTransactions"
-                :loading="store.loadingBudget"
-                item-value="transactionId"
-                items-per-page="5"
-            >
-                <template v-slot:[`item.actions`]="{ item }">
-                    <v-btn 
-                        size="small" 
-                        color="grey-darken-2" 
-                        icon 
-                        variant="text" 
-                        @click="restoreTransaction(item)">
-                        <v-icon>mdi-delete-off-outline</v-icon>
-                    </v-btn>
-                </template>
-            </v-data-table>
+            <v-card color="surface" class="bordered-card">
+                <v-data-table
+                    :headers="excludedHeaders"
+                    :items="store.budget?.excludedTransactions"
+                    :loading="store.loadingBudget"
+                    item-value="transactionId"
+                    items-per-page="5"
+                >
+                    <template v-slot:[`item.actions`]="{ item }">
+                        <v-btn
+                            size="small"
+                            color="slate"
+                            icon
+                            variant="text"
+                            @click="restoreTransaction(item)">
+                            <v-icon>mdi-delete-off-outline</v-icon>
+                        </v-btn>
+                    </template>
+                </v-data-table>
+            </v-card>
         </v-col>
     </v-row>
 </template>
@@ -52,3 +54,9 @@ async function restoreTransaction(t: any) {
     await store.fetchBudget(Number(props.budgetId))
 }
 </script>
+
+<style scoped>
+.bordered-card {
+    border: 1px solid rgb(var(--v-theme-lightest-navy));
+}
+</style>

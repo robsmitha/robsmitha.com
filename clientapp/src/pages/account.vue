@@ -1,38 +1,41 @@
 <template>
-    <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
+    <v-breadcrumbs :items="breadcrumbs" class="px-4 pt-4 font-mono text-caption"></v-breadcrumbs>
     <v-navigation-drawer
         v-model="drawer"
         :rail="rail"
         permanent
-        color="grey-darken-4"
+        color="light-navy"
+        class="account-drawer"
       >
         <template v-slot:prepend>
           <v-list-item
                 lines="two"
-                title="Account"
                 :class="{ 'pl-2': rail }"
                 to="income"
             >
                 <template v-slot:prepend>
-                    <v-avatar color="blue-darken-4" class="ml-2">
-                        <v-icon color="white" :size="rail ? 'xsmall': 'large'">mdi-bank</v-icon>
+                    <v-avatar color="surface" class="ml-2">
+                        <v-icon color="primary" :size="rail ? 'xsmall': 'large'">mdi-bank</v-icon>
                     </v-avatar>
+                </template>
+                <template v-if="!rail" v-slot:title>
+                    <span class="text-lightest-slate font-weight-bold">Account</span>
                 </template>
                 <template v-slot:subtitle>
                     <v-progress-linear
                       v-if="store.loadingTransactions"
-                      color="blue-darken-4"
+                      color="primary"
                       class="mt-2 mb-1"
                       height="6"
                       indeterminate
                       rounded
                     ></v-progress-linear>
-                    <span v-else>{{ store.transactionsResponse?.institutionName }}</span>
+                    <span v-else class="font-mono text-caption text-slate">{{ store.transactionsResponse?.institutionName }}</span>
                 </template>
             </v-list-item>
         </template>
 
-        <v-divider></v-divider>
+        <v-divider color="lightest-navy"></v-divider>
 
         <v-list density="compact" nav>
             <v-list-item prepend-icon="mdi-currency-usd" title="Dashboard" value="income" :to="`/account/${institutionAccessItemId}/income`"></v-list-item>
@@ -46,8 +49,9 @@
               </template>
             </v-list-item>
         </v-list>
-        
+
         <template v-slot:append>
+          <v-divider color="lightest-navy"></v-divider>
           <v-list-item :class="{ 'pl-2': rail }">
             <v-menu
               v-if="!rail"
@@ -59,14 +63,15 @@
                 <v-btn
                   v-bind="props"
                   block
-                  dark
                   variant="text"
+                  color="slate"
+                  class="font-mono text-none"
                 >
                   {{ store.selectedMonthlyTimeline?.text || '' }}
                 </v-btn>
               </template>
-              
-              <v-list>
+
+              <v-list bg-color="surface">
                 <v-list-item
                   v-for="option in store.incomeSourceResponse?.monthlyTimelineList"
                   :key="option.text"
@@ -80,30 +85,18 @@
                 <v-btn
                     :icon="rail ? 'mdi-arrow-collapse-right' : 'mdi-arrow-collapse-left'"
                     variant="text"
+                    color="slate"
                     size="small"
                     class="ml-0"
                     @click="rail = !rail"
                 ></v-btn>
             </template>
           </v-list-item>
-          <!-- <v-list-item
-                :class="{ 'pl-2': rail }"
-            >
-                <template v-slot:append>
-                    <v-btn
-                        :icon="rail ? 'mdi-arrow-collapse-right' : 'mdi-arrow-collapse-left'"
-                        variant="text"
-                        size="small"
-                        class="ml-0"
-                        @click="rail = !rail"
-                    ></v-btn>
-                </template>
-            </v-list-item> -->
         </template>
     </v-navigation-drawer>
 
-    
-    <v-sheet color="grey-lighten-4" class="h-100">
+
+    <v-sheet color="background" class="h-100">
         <v-container fluid>
           <router-view />
         </v-container>
@@ -173,3 +166,11 @@ onMounted(async () => {
     store.fetchTransactions(Number(props.institutionAccessItemId))
 })
 </script>
+
+<style scoped>
+.account-drawer :deep(.v-navigation-drawer__border) {
+    background-color: rgb(var(--v-theme-lightest-navy));
+    opacity: 1;
+}
+</style>
+

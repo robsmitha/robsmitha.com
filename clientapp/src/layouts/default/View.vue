@@ -1,8 +1,7 @@
 <template>
-  <v-main class="d-flex flex-column" style="min-height: 100vh;">
-      <v-sheet color="grey-lighten-4" class="flex-grow-1">
+  <v-main>
+    
       <router-view />
-    </v-sheet>
   </v-main>
 </template>
 

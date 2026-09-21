@@ -5,6 +5,48 @@
  */
 
 // https://vuetifyjs.com/features/sass-variables/`
-// @use 'vuetify/settings' with (
-//   $color-pack: false
-// );
+@use 'vuetify/settings' with (
+  $body-font-family: ('Inter', 'Roboto', sans-serif),
+  $heading-font-family: ('Inter', 'Roboto', sans-serif)
+);
+
+:root {
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background-color: rgba(100, 255, 218, 0.2);
+  color: #ccd6f6;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a192f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #233554;
+  border-radius: 10px;
+}
+
+// Shared code-preview treatment for every <highlightjs> block on the site
+// (repo file preview, code generation output, etc).
+pre {
+  margin: 0;
+  background: transparent !important;
+}
+
+.hljs {
+  background: transparent !important;
+  padding: 1.5rem !important;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}

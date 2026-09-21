@@ -4,72 +4,73 @@
       transition="dialog-bottom-transition"
       width="600px"
     >
-    <v-card>
-            <v-toolbar color="white">
+    <v-card color="surface">
+            <v-toolbar color="light-navy">
 
-                <v-toolbar-title>{{ props.incomeSourceId ? 'Edit' : 'New' }} Revenue Source</v-toolbar-title>
+                <v-toolbar-title class="text-lightest-slate">{{ props.incomeSourceId ? 'Edit' : 'New' }} Revenue Source</v-toolbar-title>
 
                 <v-btn
                     icon="mdi-close"
+                    color="slate"
                     @click="dialog = false"
                 ></v-btn>
             </v-toolbar>
-            <v-divider />
+            <v-divider color="lightest-navy" />
             <v-card-text>
                 <v-row>
                     <v-col>
-                        <v-text-field v-model="name" label="Name"></v-text-field>
+                        <v-text-field v-model="name" label="Name" variant="outlined" color="primary" base-color="slate"></v-text-field>
                     </v-col>
                     <v-col>
-                        <v-select v-model="incomeSourceType" label="Income Type" :items="['Rent', 'Loan', 'Other']"></v-select>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col>
-                        <v-textarea v-model="description" label="Description"></v-textarea>
+                        <v-select v-model="incomeSourceType" label="Income Type" :items="['Rent', 'Loan', 'Other']" variant="outlined" color="primary" base-color="slate"></v-select>
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col>
-                        <v-text-field v-model="amountDue" label="Amount Due"></v-text-field>
+                        <v-textarea v-model="description" label="Description" variant="outlined" color="primary" base-color="slate"></v-textarea>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <v-text-field v-model="amountDue" label="Amount Due" variant="outlined" color="primary" base-color="slate" class="font-mono"></v-text-field>
                     </v-col>
                     <v-col>
-                        <v-select v-model="dayOfMonthDue" label="Day Of Month Due" :items="Array.from({ length: 28 }, (_, i) => i + 1)"></v-select>
+                        <v-select v-model="dayOfMonthDue" label="Day Of Month Due" :items="Array.from({ length: 28 }, (_, i) => i + 1)" variant="outlined" color="primary" base-color="slate"></v-select>
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col>
                         <v-menu :close-on-content-click="false">
                             <template v-slot:activator="{ props }">
-                                <v-text-field v-model="startDateFormatted" label="Start Date" clearable @click:clear="startDate = null" v-bind="props"></v-text-field>
+                                <v-text-field v-model="startDateFormatted" label="Start Date" clearable variant="outlined" color="primary" base-color="slate" @click:clear="startDate = null" v-bind="props"></v-text-field>
                             </template>
-                            <v-date-picker hide-header v-model="startDate"></v-date-picker>
+                            <v-date-picker hide-header v-model="startDate" color="primary"></v-date-picker>
                         </v-menu>
                     </v-col>
                     <v-col>
                         <v-menu :close-on-content-click="false">
                             <template v-slot:activator="{ props }">
-                                <v-text-field v-model="endDateFormatted" label="End Date" clearable @click:clear="endDate = null" v-bind="props"></v-text-field>
+                                <v-text-field v-model="endDateFormatted" label="End Date" clearable variant="outlined" color="primary" base-color="slate" @click:clear="endDate = null" v-bind="props"></v-text-field>
                             </template>
-                            <v-date-picker hide-header v-model="endDate"></v-date-picker>
+                            <v-date-picker hide-header v-model="endDate" color="primary"></v-date-picker>
                         </v-menu>
                     </v-col>
                 </v-row>
             </v-card-text>
-            
+
         <v-card-actions class="my-2 d-flex justify-end">
             <v-btn
-              class="text-none"
-              rounded="xl"
+              class="font-mono text-none"
+              variant="text"
+              color="slate"
               text="Cancel"
               @click="dialog = false"
             ></v-btn>
 
             <v-btn
-              rounded="xl"
               color="primary"
-              class="text-none"
-              variant="flat"
+              class="font-mono text-none"
+              variant="outlined"
               @click="saveIncomeSource"
             >
               Save

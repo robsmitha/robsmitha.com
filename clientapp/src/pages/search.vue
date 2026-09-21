@@ -1,39 +1,40 @@
 <template>
-    <v-breadcrumbs bg-color="grey-darken-4" :items="breadcrumbs"></v-breadcrumbs>
+    <v-breadcrumbs :items="breadcrumbs" class="px-4 pt-4 font-mono text-caption"></v-breadcrumbs>
 
-    <FindProduct 
+    <FindProduct
         :term="term"
         :loading="loading"
         @input="term = $event"
-        @search="searchBySerialNumber" 
+        @search="searchBySerialNumber"
         @clear="clear"
     />
 
     <ViewProduct
-        :product="product" 
-        :images="sasUris" 
-        :loading="loading" 
+        :product="product"
+        :images="sasUris"
+        :loading="loading"
     />
-    
+
     <v-dialog
         v-model="snackbar"
         :max-width="500"
     >
-        <v-card>
+        <v-card color="surface">
             <v-card-title class="d-flex justify-space-between align-center">
                 <div>
-                    <v-icon color="blue-darken-3" size="small">mdi-information</v-icon>
-                    <span class="ml-2">Product Not Found</span>
+                    <v-icon color="info" size="small">mdi-information</v-icon>
+                    <span class="ml-2 text-lightest-slate">Product Not Found</span>
                 </div>
 
                 <v-btn
                   icon="mdi-close"
                   variant="text"
+                  color="slate"
                   @click="snackbar = false"
                 ></v-btn>
               </v-card-title>
-              <v-divider />
-              <v-card-text class="pt-2">
+              <v-divider color="lightest-navy" />
+              <v-card-text class="pt-2 text-slate">
                 {{ errorMessage }}
               </v-card-text>
         </v-card>

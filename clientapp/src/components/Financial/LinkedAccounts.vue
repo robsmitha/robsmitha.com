@@ -1,5 +1,5 @@
 <template>
-    <v-sheet color="grey-lighten-4" class="pt-5 pb-9">
+    <v-sheet color="background" class="pt-5 pb-9">
         <v-container>
             <v-row>
                 <v-col>
@@ -9,9 +9,9 @@
                 </v-col>
                 <v-col class="text-right">
                     <v-btn
+                        variant="outlined"
                         color="primary"
-                        rounded="xl"
-                        variant="flat"
+                        class="font-mono text-none"
                         :icon="$vuetify.display.mobile"
                         @click="triggerPlaidLinkClick"
                     >
@@ -19,7 +19,7 @@
                     </v-btn>
                 </v-col>
             </v-row>
-            <v-divider class="mt-3 mb-5" thickness="5px" length="50px" />
+            <v-divider class="mt-3 mb-5" color="primary" thickness="4" length="48" />
             <AccountList :access-items="store.accessItems" :show-income="true" />
         </v-container>
     </v-sheet>

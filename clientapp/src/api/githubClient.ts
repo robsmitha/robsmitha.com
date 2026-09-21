@@ -30,6 +30,8 @@ export interface GithubRepo {
   watchers_count: number;
   forks_count: number;
   language: string;
+  topics?: string[];
+  homepage?: string;
   // Add other repo properties as needed
 }
 

@@ -4,28 +4,30 @@
       transition="dialog-bottom-transition"
       width="600px"
     >
-        <v-card>
-            <v-toolbar color="white">
+        <v-card color="surface">
+            <v-toolbar color="light-navy">
 
-                <v-toolbar-title>{{ props.budgetId ? 'Edit' : 'New' }} Budget</v-toolbar-title>
+                <v-toolbar-title class="text-lightest-slate">{{ props.budgetId ? 'Edit' : 'New' }} Budget</v-toolbar-title>
 
                 <v-btn
                     icon="mdi-close"
+                    variant="text"
+                    color="slate"
                     @click="dialog = false"
                 ></v-btn>
             </v-toolbar>
-            <v-divider />
+            <v-divider color="lightest-navy" />
             <v-card-text>
                 <v-row>
                     <v-col>
-                        <v-text-field v-model="budgetName" label="Budget Name"></v-text-field>
+                        <v-text-field v-model="budgetName" label="Budget Name" variant="outlined" color="primary" base-color="slate"></v-text-field>
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col>
                         <v-menu :close-on-content-click="false">
                             <template v-slot:activator="{ props }">
-                                <v-text-field v-model="startDateFormatted" label="Start Date" v-bind="props"></v-text-field>
+                                <v-text-field v-model="startDateFormatted" label="Start Date" variant="outlined" color="primary" base-color="slate" v-bind="props"></v-text-field>
                             </template>
                             <v-date-picker hide-header v-model="startDate"></v-date-picker>
                         </v-menu>
@@ -33,7 +35,7 @@
                     <v-col>
                         <v-menu :close-on-content-click="false">
                             <template v-slot:activator="{ props }">
-                                <v-text-field v-model="endDateFormatted" label="End Date" v-bind="props"></v-text-field>
+                                <v-text-field v-model="endDateFormatted" label="End Date" variant="outlined" color="primary" base-color="slate" v-bind="props"></v-text-field>
                             </template>
                             <v-date-picker hide-header v-model="endDate"></v-date-picker>
                         </v-menu>
@@ -50,6 +52,9 @@
                             :items="store.accessItems"
                             item-value="institutionAccessItemId"
                             item-title="institution.name"
+                            variant="outlined"
+                            color="primary"
+                            base-color="slate"
                         ></v-combobox>
                     </v-col>
                 </v-row>
@@ -64,24 +69,27 @@
                             :items="store.categories"
                             item-value="financialCategoryId"
                             item-title="name"
+                            variant="outlined"
+                            color="primary"
+                            base-color="slate"
                         ></v-combobox>
                     </v-col>
                 </v-row>
             </v-card-text>
-            
+
         <v-card-actions class="my-2 d-flex justify-end">
             <v-btn
-              class="text-none"
-              rounded="xl"
+              class="font-mono text-none"
+              variant="text"
+              color="slate"
               text="Cancel"
               @click="dialog = false"
             ></v-btn>
 
             <v-btn
-              rounded="xl"
               color="primary"
-              class="text-none"
-              variant="flat"
+              class="font-mono text-none"
+              variant="outlined"
               @click="saveBudget"
             >
               Save

@@ -17,26 +17,28 @@
                 item-value="financialCategoryId"
                 item-title="name"
                 variant="outlined"
+                color="primary"
+                base-color="slate"
                 hide-details
                 density="compact"
             >
             </v-autocomplete>
         </v-col>
         <v-col cols="3" md="1" class="pl-1">
-            <v-btn 
-                color="green-darken-4" 
-                variant="tonal" 
-                class="h-100" 
-                block 
-                :disabled="!selectedCategoryId" 
-                :loading="store.loadingBudget" 
+            <v-btn
+                color="primary"
+                variant="outlined"
+                class="h-100 font-mono text-none"
+                block
+                :disabled="!selectedCategoryId"
+                :loading="store.loadingBudget"
                 @click="saveCategories"
             >
-                <v-icon>mdi-content-save</v-icon> Save
+                <v-icon start>mdi-content-save</v-icon> Save
             </v-btn>
         </v-col>
     </v-row>
-    <v-card>
+    <v-card color="surface" class="bordered-card">
         <v-card-text>
             <v-data-table
                 v-model="selectedTransactions"
@@ -49,7 +51,7 @@
                 show-select
             >
                 <template v-slot:[`item.actions`]="{ item }">
-                    <v-btn size="small" color="grey-darken-2" icon variant="text" @click="excludeTransactions(item)">
+                    <v-btn size="small" color="slate" icon variant="text" @click="excludeTransactions(item)">
                         <v-icon>mdi-delete-outline</v-icon>
                     </v-btn>
                 </template>
@@ -102,3 +104,9 @@ async function excludeTransactions(t: any) {
 }
 
 </script>
+
+<style scoped>
+.bordered-card {
+    border: 1px solid rgb(var(--v-theme-lightest-navy));
+}
+</style>

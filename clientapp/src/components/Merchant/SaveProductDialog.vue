@@ -5,18 +5,19 @@
       transition="dialog-bottom-transition"
       :fullscreen="false"
     >
-      <v-card>
-        <v-toolbar color="white">
+      <v-card color="surface">
+        <v-toolbar color="light-navy">
             <v-toolbar-title>
-                <span class="font-weight-medium">{{ item?.productId ? 'Modify' : 'New' }} Product</span>
+                <span class="font-weight-bold text-lightest-slate">{{ item?.productId ? 'Modify' : 'New' }} Product</span>
             </v-toolbar-title>
             <v-btn
                 icon="mdi-close"
+                color="slate"
                 :disabled="loading"
                 @click="dialog = false"
             ></v-btn>
         </v-toolbar>
-        <v-divider />
+        <v-divider color="lightest-navy" />
         <v-card-text class="pa-0">
             <template v-if="loading">
               <v-container class="fill-height">
@@ -24,10 +25,11 @@
                   <v-col cols="auto" class="text-center">
                     <v-progress-circular
                       indeterminate
+                      color="primary"
                       :size="70"
-                      :width="5"    
+                      :width="5"
                     ></v-progress-circular>
-                    <div class="mt-5 text-h5">
+                    <div class="mt-5 text-h5 text-lightest-slate">
                       Loading, please wait..
                     </div>
                   </v-col>
@@ -38,30 +40,39 @@
                 <v-container fluid>
                   <v-row>
                     <v-col>
-                      <v-text-field 
+                      <v-text-field
                         v-model="form.name"
                         label="Name"
                         required
                         variant="outlined"
+                        color="primary"
+                        base-color="slate"
+                        class="font-mono"
                         hint="Use a recognizable name for the product.">
                       </v-text-field>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="12" md="6">
-                      <v-text-field 
-                        v-model="form.serialNumber" 
-                        label="Serial Number" 
+                      <v-text-field
+                        v-model="form.serialNumber"
+                        label="Serial Number"
                         variant="outlined"
+                        color="primary"
+                        base-color="slate"
+                        class="font-mono"
                         hint="Products must have a unique serial number."
                         required>
                       </v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field 
-                        v-model="form.grade" 
-                        label="Grade" 
+                      <v-text-field
+                        v-model="form.grade"
+                        label="Grade"
                         variant="outlined"
+                        color="primary"
+                        base-color="slate"
+                        class="font-mono"
                         hint="Enter the grade of the product.">
                       </v-text-field>
                     </v-col>
@@ -69,9 +80,12 @@
                   <v-row>
                     <v-col>
                       <v-textarea
-                        v-model="form.description" 
-                        label="Enter note" 
+                        v-model="form.description"
+                        label="Enter note"
                         variant="outlined"
+                        color="primary"
+                        base-color="slate"
+                        class="font-mono"
                         auto-grow
                         rows="3"
                         hint="Generic notes about this product. You can add notes after the product is created.">
@@ -80,8 +94,8 @@
                   </v-row>
                   <v-row>
                     <v-col class="pt-0">
-                      <span class="text-subtitle-1 text-grey-darken-2 text-uppercase d-block mb-2">Images</span>
-                      <v-divider />
+                      <span class="font-mono text-primary text-caption text-uppercase d-block mb-2">Images</span>
+                      <v-divider color="lightest-navy" />
                     </v-col>
                   </v-row>
                   <v-row>
@@ -94,6 +108,8 @@
                         show-size
                         clearable
                         variant="outlined"
+                        color="primary"
+                        base-color="slate"
                         chips
                         hint="Add pictures of the product. These will display on the site when searched by serial number."
                         persistent-hint
@@ -102,12 +118,12 @@
                   </v-row>
                   <v-row v-if="form.images?.length > 0">
                     <v-col>
-                      <v-chip 
-                          v-for="i in form.images" 
+                      <v-chip
+                          v-for="i in form.images"
                           :key="i.productImageId"
-                          class="mr-2 mb-2"
+                          class="mr-2 mb-2 font-mono"
                           closable
-                          label
+                          variant="outlined"
                           color="primary"
                           @click:close="onDeleteImage(i.productImageId)"
                         >
@@ -118,20 +134,22 @@
                 </v-container>
             </template>
         </v-card-text>
-        
+
+        <v-divider color="lightest-navy" />
         <v-card-actions class="my-2 d-flex justify-end">
             <v-btn
-              class="text-none"
-              rounded="xl"
-              text="Cancel"
+              class="font-mono text-none"
+              variant="text"
+              color="slate"
               @click="dialog = false"
-            ></v-btn>
+            >
+              Cancel
+            </v-btn>
 
             <v-btn
-              rounded="xl"
               color="primary"
-              class="text-none"
-              variant="flat"
+              class="font-mono text-none"
+              variant="outlined"
               :disabled="loading"
               @click="onSave"
             >

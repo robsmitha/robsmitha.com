@@ -7,15 +7,15 @@
             />
         </v-col>
         <v-col class="text-right">
-            <v-btn variant="flat" color="primary" rounded="xl" :disabled="!selectedIncomeSourceIdId" :loading="store.loadingTransactions" @click="assignTransaction" :icon="$vuetify.display.mobile">
+            <v-btn variant="outlined" color="primary" class="font-mono text-none" :disabled="!selectedIncomeSourceIdId" :loading="store.loadingTransactions" @click="assignTransaction" :icon="$vuetify.display.mobile">
                 <v-icon>mdi-check</v-icon> <span v-if="!$vuetify.display.mobile">Save</span>
             </v-btn>
         </v-col>
     </v-row>
 
-    <v-divider class="mt-3 mb-5" thickness="5px" length="50px" />
+    <v-divider class="mt-3 mb-5" color="primary" thickness="4" length="48" />
 
-    <v-card>
+    <v-card color="surface" class="transactions-card">
         <v-data-table
             v-model="selectedTransactions"
             :headers="headers"
@@ -40,9 +40,12 @@
                                 item-value="incomeSource.incomeSourceId"
                                 item-title="incomeSource.name"
                                 variant="outlined"
+                                color="primary"
+                                base-color="slate"
+                                class="font-mono"
                                 hide-details
                                 density="compact"
-                                rounded="xl"
+                                rounded="lg"
                                 prepend-icon="mdi-link"
                             >
                             </v-autocomplete>
@@ -51,7 +54,7 @@
                 </v-container>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-                <v-btn v-if="!!item.incomePayment?.incomePaymentId" size="small" color="grey-darken-2" icon variant="text" @click="unAssignTransaction(item)">
+                <v-btn v-if="!!item.incomePayment?.incomePaymentId" size="small" color="slate" icon variant="text" @click="unAssignTransaction(item)">
                     <v-icon>mdi-link-off</v-icon>
                 </v-btn>
             </template>
@@ -123,3 +126,9 @@ async function unAssignTransaction(item: Transaction) {
 }
 
 </script>
+
+<style scoped>
+.transactions-card {
+    border: 1px solid rgb(var(--v-theme-lightest-navy));
+}
+</style>

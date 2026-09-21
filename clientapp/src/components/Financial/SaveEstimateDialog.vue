@@ -3,40 +3,41 @@
       v-model="dialog"
       :max-width="400"
     >
-        <v-card>
+        <v-card color="surface">
             <v-card-title class="d-flex justify-space-between align-center">
-                <div class="text-h5 text-medium-emphasis ps-2">
+                <div class="text-h5 text-lightest-slate ps-2">
                     Save Estimate
                 </div>
 
                 <v-btn
                     icon="mdi-close"
                     variant="text"
+                    color="slate"
                     @click="dialog = false"
                 ></v-btn>
             </v-card-title>
-            <v-divider />
+            <v-divider color="lightest-navy" />
             <v-card-text>
                 <v-row>
                     <v-col>
-                        <v-text-field v-model="estimate" :label="`${props.categoryName} Estimate`"></v-text-field>
+                        <v-text-field v-model="estimate" :label="`${props.categoryName} Estimate`" variant="outlined" color="primary" base-color="slate"></v-text-field>
                     </v-col>
                 </v-row>
             </v-card-text>
             <v-card-actions class="my-2 d-flex justify-end">
                 <v-btn
-                  class="text-none"
-                  rounded="xl"
+                  class="font-mono text-none"
+                  variant="text"
+                  color="slate"
                   text="Cancel"
                   @click="dialog = false"
                 ></v-btn>
 
                 <v-btn
-                  class="text-none"
+                  class="font-mono text-none"
                   color="primary"
-                  rounded="xl"
                   text="Save"
-                  variant="flat"
+                  variant="outlined"
                   @click="saveEstimate"
                 ></v-btn>
             </v-card-actions>

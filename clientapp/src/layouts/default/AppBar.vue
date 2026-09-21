@@ -1,31 +1,50 @@
 <template>
-    <v-app-bar 
+    <v-app-bar
       id="navTop"
-      :color="!drawer && transparency ? 'transparent' : 'black'" 
-      :class="{
-        'text-white': !drawer && transparency
-      }" 
+      :color="!drawer && transparency ? 'transparent' : 'background'"
+      :class="[
+        'text-lightest-slate',
+        { 'nav-solid': drawer || !transparency }
+      ]"
       flat
       fixed
     >
       <template #prepend>
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-        <!-- <v-avatar
-          size="50"
-          @click="onBrandClick"
-          >
-          <v-btn icon>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="text-white" role="img" viewBox="0 0 24 24"><title>Go Home</title><circle cx="12" cy="12" r="10"></circle><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"></path></svg>
-          </v-btn>
-        </v-avatar> -->
       </template>
 
-      <v-app-bar-title class="text-h6 ">
-        robsmitha.com
+      <v-app-bar-title>
+        <span class="font-mono text-subtitle-1 cursor-pointer" @click="onBrandClick">
+          <span class="text-primary">rob</span><span class="text-lightest-slate">smitha.com</span>
+        </span>
       </v-app-bar-title>
-        
+
+      <!-- <ul v-if="!isMobile" class="d-flex align-center ga-6 nav-links pl-0 mr-6">
+        <li v-for="(link, i) in navLinks" :key="link.text">
+          <router-link :to="link.to" class="font-mono text-body-2 text-lightest-slate nav-link">
+            <span class="text-primary">{{ String(i + 1).padStart(2, '0') }}.</span> {{ link.text }}
+          </router-link>
+        </li>
+      </ul> -->
+
       <template #append>
-        <v-btn v-if="!auth.signedIn" variant="outlined" href="/.auth/login/aad" rounded>
+        <template v-if="!isMobile">
+          <v-btn
+            icon="mdi-github"
+            variant="text"
+            href="https://github.com/robsmitha"
+            target="_blank"
+            aria-label="GitHub"
+          ></v-btn>
+          <v-btn
+            icon="mdi-linkedin"
+            variant="text"
+            href="https://www.linkedin.com/in/robsmitha/"
+            target="_blank"
+            aria-label="LinkedIn"
+          ></v-btn>
+        </template>
+        <v-btn v-if="!auth.signedIn" variant="outlined" color="primary" href="/.auth/login/aad" class="ml-2">
           Sign In
         </v-btn>
         <v-menu
@@ -48,34 +67,28 @@
             </v-avatar>
           </template>
 
-          <v-card min-width="300">
-            <v-list>
+          <v-card min-width="300" color="surface">
+            <v-list bg-color="surface">
               <v-list-item>
-                <!-- <template v-slot:append>
-                  <v-btn
-                    icon="mdi-cog"
-                    variant="text"
-                  ></v-btn>
-                </template> -->
-                <v-list-item-subtitle>
+                <v-list-item-subtitle class="text-slate">
                   {{ auth.userDetails }}
                 </v-list-item-subtitle>
               </v-list-item>
             </v-list>
 
-            <v-divider></v-divider>
+            <v-divider color="lightest-navy"></v-divider>
 
-            <v-list density="compact">
+            <v-list density="compact" bg-color="surface">
               <v-list-item prepend-icon="mdi-account-group" title="Users" to="/users"></v-list-item>
               <v-list-item prepend-icon="mdi-tag-multiple" title="Products" to="/products"></v-list-item>
               <v-list-item prepend-icon="mdi-bank" title="Accounts" to="/accounts"></v-list-item>
               <v-list-item prepend-icon="mdi-currency-usd" title="Spending" to="/spending"></v-list-item>
             </v-list>
-            
-            <v-divider></v-divider>
+
+            <v-divider color="lightest-navy"></v-divider>
 
             <v-card-actions>
-              <v-btn block color="blue-grey" href="/.auth/logout">
+              <v-btn block variant="outlined" color="primary" href="/.auth/logout">
                 Logout
               </v-btn>
             </v-card-actions>
@@ -88,6 +101,7 @@
         v-model="drawer"
         temporary
         location="left"
+        color="surface"
     >
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home-roof" title="Home" value="home" to="/"></v-list-item>
@@ -157,6 +171,11 @@ const menu = ref(false)
 
 const isMobile = computed(() => mobile.value)
 
+// const navLinks = [
+//   { text: 'Projects', to: { path: '/', hash: '#projects' } },
+//   { text: 'Features', to: { path: '/', hash: '#features' } },
+// ]
+
 watch(route, (newVal) => {
     transparency.value = newVal.path === '/'
 }, { immediate: true })
@@ -176,3 +195,32 @@ function onBrandClick(){
   }
 }
 </script>
+
+<style scoped>
+:deep(.nav-solid) {
+  background-color: rgb(var(--v-theme-background)) !important;
+  border-bottom: 1px solid rgb(var(--v-theme-lightest-navy));
+  box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.5) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.nav-links {
+  list-style: none;
+}
+
+.nav-link {
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease, opacity 0.2s ease;
+  opacity: 0.85;
+}
+
+.nav-link:hover {
+  opacity: 1;
+  border-color: rgb(var(--v-theme-primary));
+}
+</style>

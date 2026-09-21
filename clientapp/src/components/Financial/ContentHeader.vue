@@ -1,13 +1,13 @@
 <template>
     <v-row>
         <v-col>
-            <span class="text-caption text-grey-darken-2 d-block">
+            <span class="font-mono text-primary text-caption text-uppercase d-block">
                 {{ props.overline }}
             </span>
-            <span class="text-h4 d-block">
+            <span class="text-lightest-slate text-h4 font-weight-bold d-block">
                 {{ props.title }}
             </span>
-            <span class="text-subtitle-1 text-grey-darken-1 font-weight-thin d-block">
+            <span class="text-slate text-subtitle-1 font-weight-light d-block">
                 {{ props.subtitle }}
             </span>
         </v-col>
