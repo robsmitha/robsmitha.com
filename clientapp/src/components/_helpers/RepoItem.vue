@@ -17,7 +17,15 @@
           </span>
           <v-tooltip v-if="isRecent" text="Updated in the last 30 days" location="top">
             <template v-slot:activator="{ props: tip }">
-              <span v-bind="tip" class="recent-dot" aria-label="Recently updated"></span>
+              <span v-bind="tip" class="recent-indicator" aria-label="Recently updated">
+                <span
+                  v-for="(p, i) in ashParticles"
+                  :key="i"
+                  class="ash-particle"
+                  :style="{ '--dx': p.dx, '--dy': p.dy, 'animation-delay': p.delay }"
+                ></span>
+                <span class="recent-core"></span>
+              </span>
             </template>
           </v-tooltip>
           <v-icon color="slate" size="20">mdi-arrow-top-right</v-icon>
@@ -83,6 +91,24 @@ const isRecent = computed(() => {
   return daysSincePush <= 30;
 });
 
+// Scatter vectors for the "snap" dust particles — golden-angle spacing keeps
+// them from landing in an obviously even/mechanical ring, with a slight
+// upward drift bias so the ash reads as rising and dispersing, not just
+// radiating outward.
+const ashParticles = computed(() => {
+  return Array.from({ length: 10 }).map((_, i) => {
+    const angle = (i * 137.508 * Math.PI) / 180;
+    const distance = 9 + (i % 3) * 4;
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance - 5;
+    return {
+      dx: `${dx.toFixed(1)}px`,
+      dy: `${dy.toFixed(1)}px`,
+      delay: `${(-(i * 0.14)).toFixed(2)}s`,
+    };
+  });
+});
+
 </script>
 
 <style scoped>
@@ -109,18 +135,77 @@ const isRecent = computed(() => {
   overflow: hidden;
 }
 
-.recent-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgb(var(--v-theme-primary));
-  box-shadow: 0 0 0 rgba(100, 255, 218, 0.6);
-  animation: recent-pulse 2s infinite;
+/* Recently-updated indicator: a solid core that periodically "snaps" —
+   dissolving into drifting ash particles that scatter and fade, then
+   reforming, like the Thanos snap disintegration effect. */
+.recent-indicator {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@keyframes recent-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(100, 255, 218, 0.5); }
-  70% { box-shadow: 0 0 0 6px rgba(100, 255, 218, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(100, 255, 218, 0); }
+.recent-core {
+  position: relative;
+  z-index: 1;
+  width: 6px;
+  height: 6px;
+  background: rgb(var(--v-theme-primary));
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  animation: core-snap 3.4s ease-in-out infinite;
+}
+
+@keyframes core-snap {
+  0%, 10% { opacity: 0; transform: scale(0.4); }
+  24% { opacity: 1; transform: scale(1); }
+  56% { opacity: 1; transform: scale(1); }
+  68% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 0; transform: scale(0.5); }
+}
+
+.ash-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 2px;
+  margin: -1px 0 0 -1px;
+  border-radius: 1px;
+  background: rgb(var(--v-theme-primary));
+  opacity: 0;
+  animation: ash-drift 3.4s ease-in infinite;
+}
+
+@keyframes ash-drift {
+  0%, 56% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1);
+  }
+  63% {
+    opacity: 1;
+    transform: translate(calc(var(--dx) * 0.3), calc(var(--dy) * 0.3)) scale(0.9);
+  }
+  88% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recent-core {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .ash-particle {
+    display: none;
+  }
 }
 </style>

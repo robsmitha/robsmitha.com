@@ -225,12 +225,12 @@ function closeDialog(){
 }
 
 .file-list-item:hover {
-    background-color: rgba(100, 255, 218, 0.04);
+    background-color: rgba(var(--v-theme-primary), 0.04);
 }
 
 .file-list-item.v-list-item--active {
     border-left-color: rgb(var(--v-theme-primary));
-    background-color: rgba(100, 255, 218, 0.06);
+    background-color: rgba(var(--v-theme-primary), 0.06);
 }
 
 .snippet {
@@ -240,7 +240,7 @@ function closeDialog(){
 }
 
 .snippet :deep(mark) {
-    background-color: rgba(100, 255, 218, 0.25);
+    background-color: rgba(var(--v-theme-primary), 0.25);
     color: rgb(var(--v-theme-primary));
     padding: 0 2px;
     border-radius: 2px;

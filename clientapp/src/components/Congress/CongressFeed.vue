@@ -168,7 +168,7 @@ async function load({ done } : any) {
 }
 
 .bill-row:hover {
-    background-color: rgba(100, 255, 218, 0.04);
+    background-color: rgba(var(--v-theme-primary), 0.04);
     border-left-color: rgb(var(--v-theme-primary));
 }
 

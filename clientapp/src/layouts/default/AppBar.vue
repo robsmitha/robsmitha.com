@@ -15,7 +15,7 @@
 
       <v-app-bar-title>
         <span class="font-mono text-subtitle-1 cursor-pointer" @click="onBrandClick">
-          <span class="text-primary">rob</span><span class="text-lightest-slate">smitha.com</span>
+          <span :class="{ 'text-white': transparency, 'text-primary': !transparency }">rob</span><span class="text-lightest-slate">smitha.com</span>
         </span>
       </v-app-bar-title>
 
@@ -44,7 +44,7 @@
             aria-label="LinkedIn"
           ></v-btn>
         </template>
-        <v-btn v-if="!auth.signedIn" variant="outlined" color="primary" href="/.auth/login/aad" class="ml-2">
+        <v-btn v-if="!auth.signedIn" variant="outlined" color="white" href="/.auth/login/aad" class="ml-2">
           Sign In
         </v-btn>
         <v-menu

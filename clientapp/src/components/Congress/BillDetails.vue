@@ -238,7 +238,7 @@ function partyColor(party: string){
 }
 
 .cbo-row:hover {
-    background-color: rgba(100, 255, 218, 0.04);
+    background-color: rgba(var(--v-theme-primary), 0.04);
 }
 
 .person-row:last-child,

@@ -65,7 +65,7 @@ const topSnippet = computed(() => props.items[0] ? firstMatch(props.items[0]) : 
 }
 
 .result-row:hover {
-    background-color: rgba(100, 255, 218, 0.04);
+    background-color: rgba(var(--v-theme-primary), 0.04);
     border-left-color: rgb(var(--v-theme-primary));
 }
 
@@ -84,7 +84,7 @@ const topSnippet = computed(() => props.items[0] ? firstMatch(props.items[0]) : 
 }
 
 .snippet :deep(mark) {
-    background-color: rgba(100, 255, 218, 0.25);
+    background-color: rgba(var(--v-theme-primary), 0.25);
     color: rgb(var(--v-theme-primary));
     padding: 0 2px;
     border-radius: 2px;
