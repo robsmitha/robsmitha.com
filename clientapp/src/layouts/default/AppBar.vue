@@ -56,10 +56,10 @@
               v-if="auth.signedIn"
               size="35"
               color="blue-darken-4"
-              class="mr-2"
+              class="mx-2"
               v-bind="props"
               >
-              <v-btn icon>
+              <v-btn icon variant="text">
                 <span class="text-h5 font-weight-bold">
                   {{ auth.userDetails?.charAt(0)?.toUpperCase() }}
                 </span>

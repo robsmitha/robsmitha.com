@@ -16,8 +16,17 @@ import * as fs from 'fs';
 export default defineConfig({
   plugins: [
     VueRouter(),
+    // Do not pass `layoutsDirs` even though it's just the default ('src/layouts'):
+    // vite-plugin-vue-layouts@0.10's canEnableClientLayout() checks for a key named
+    // "layoutDirs" (no "s"), so passing the real "layoutsDirs" option always fails
+    // that check and forces the heavier server-side layout mode. That mode installs
+    // its own configureServer file watcher which intercepts every change under
+    // src/layouts/** and routes it through a manual full-reload instead of letting
+    // Vite's normal per-component HMR run - which is why editing files like
+    // layouts/default/AppBar.vue or Footer.vue silently didn't hot reload. Omitting
+    // the option keeps the plugin on its lightweight import.meta.glob-based client
+    // layout path, which has no custom watcher and hot reloads normally.
     Layouts({
-      layoutsDirs: 'src/layouts',
       defaultLayout: 'default',
     }),
     Vue({
