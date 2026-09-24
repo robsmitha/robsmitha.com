@@ -62,6 +62,26 @@ export function congressGovAmendmentUrl(congress: number | string, type: string,
   return `https://www.congress.gov/amendment/${ordinal(congress)}-congress/${slug}/${number}`
 }
 
+export function congressGovNominationUrl(congress: number | string, number: number | string): string {
+  return `https://www.congress.gov/nomination/${ordinal(congress)}-congress/${number}`
+}
+
+export function congressGovLawsUrl(congress: number | string): string {
+  return `https://www.congress.gov/public-laws/${ordinal(congress)}-congress`
+}
+
+// Bill types grouped by the chamber they start in, with the names readers know them by.
+export const billTypes: { type: string, label: string, chamber: 'House' | 'Senate' }[] = [
+  { type: 'HR', label: 'House bills', chamber: 'House' },
+  { type: 'S', label: 'Senate bills', chamber: 'Senate' },
+  { type: 'HRES', label: 'House resolutions', chamber: 'House' },
+  { type: 'SRES', label: 'Senate resolutions', chamber: 'Senate' },
+  { type: 'HJRES', label: 'House joint resolutions', chamber: 'House' },
+  { type: 'SJRES', label: 'Senate joint resolutions', chamber: 'Senate' },
+  { type: 'HCONRES', label: 'House concurrent resolutions', chamber: 'House' },
+  { type: 'SCONRES', label: 'Senate concurrent resolutions', chamber: 'Senate' },
+]
+
 export function bioguideUrl(bioguideId: string): string {
   return `https://bioguide.congress.gov/search/bio/${bioguideId}`
 }

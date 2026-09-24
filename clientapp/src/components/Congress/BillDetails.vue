@@ -66,6 +66,56 @@
     <v-container v-if="bill" class="bill-body py-12">
         <v-row>
             <v-col cols="12" md="8" class="pr-md-8">
+                <section v-if="summaries.length" class="mb-14">
+                    <SectionHeading :index="sectionIndex('summary')" title="Summary" />
+                    <!-- CRS writes a new summary as the bill changes; newest first. -->
+                    <!-- Bills that went all the way can have eight or more versions, too many for chips. -->
+                    <v-select
+                        v-if="summaries.length > 4"
+                        :model-value="summaryIndex"
+                        :items="summaries.map((s, i) => ({ title: `${s.actionDesc}${s.actionDate ? ' · ' + moment(s.actionDate).format('MMM D, YYYY') : ''}`, value: i }))"
+                        label="Version"
+                        variant="outlined"
+                        density="compact"
+                        hide-details
+                        class="summary-select font-mono mb-4"
+                        @update:model-value="selectSummary"
+                    />
+                    <div v-else-if="summaries.length > 1" class="d-flex flex-wrap ga-2 mb-4">
+                        <v-chip
+                            v-for="(s, i) in summaries"
+                            :key="`${s.versionCode}_${i}`"
+                            :variant="summaryIndex === i ? 'flat' : 'outlined'"
+                            :color="summaryIndex === i ? 'primary' : 'slate'"
+                            size="small"
+                            class="font-mono"
+                            @click="selectSummary(i)"
+                        >
+                            {{ s.actionDesc }}<template v-if="s.actionDate"> &middot; {{ moment(s.actionDate).format('MMM D, YYYY') }}</template>
+                        </v-chip>
+                    </div>
+                    <div class="summary-card pa-5">
+                        <p class="font-mono text-caption text-slate mb-3">
+                            Congressional Research Service &middot; {{ summary!.actionDesc }}<template v-if="summary!.actionDate">, {{ moment(summary!.actionDate).format('MMM D, YYYY') }}</template>
+                        </p>
+                        <div
+                            class="summary-text text-light-slate text-body-2"
+                            :class="{ 'summary-text--clamped': !showFullSummary }"
+                            v-html="summary!.text"
+                        ></div>
+                        <v-btn
+                            variant="text"
+                            color="primary"
+                            density="comfortable"
+                            class="font-mono text-none mt-2 px-0"
+                            :append-icon="showFullSummary ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+                            @click="showFullSummary = !showFullSummary"
+                        >
+                            {{ showFullSummary ? 'Show less' : 'Read full summary' }}
+                        </v-btn>
+                    </div>
+                </section>
+
                 <section class="mb-14">
                     <SectionHeading :index="sectionIndex('progress')" title="Progress" />
                     <BillProgress
@@ -75,6 +125,38 @@
                         :introduced-date="bill.introducedDate"
                         :became-law="(bill.laws?.length ?? 0) > 0"
                     />
+                </section>
+
+                <section v-if="committees.length" class="mb-14">
+                    <SectionHeading :index="sectionIndex('committees')" title="Committees" />
+                    <div class="d-flex flex-column ga-3">
+                        <div
+                            v-for="c in committees"
+                            :key="c.systemCode"
+                            class="committee-card pa-4"
+                            :style="{ '--chamber': `var(--v-theme-${chamberColor(c.chamber)})` }"
+                        >
+                            <div class="d-flex align-center flex-wrap ga-2 mb-3">
+                                <span class="chamber-pill font-mono text-caption">{{ c.chamber }}</span>
+                                <span class="text-lightest-slate font-weight-bold">{{ c.name }}</span>
+                            </div>
+                            <ul class="activity-list">
+                                <li v-for="(a, i) in sortedActivities(c.activities)" :key="i" class="d-flex ga-3 font-mono text-caption">
+                                    <span class="activity-date text-slate">{{ moment(a.date).format('MMM D, YYYY') }}</span>
+                                    <span :class="`text-${activityColor(a.name)}`">{{ a.name }}</span>
+                                </li>
+                            </ul>
+                            <div v-for="sc in c.subcommittees ?? []" :key="sc.systemCode" class="subcommittee mt-3 pt-3">
+                                <span class="text-light-slate text-body-2 d-block mb-2">{{ sc.name }}</span>
+                                <ul class="activity-list">
+                                    <li v-for="(a, i) in sortedActivities(sc.activities)" :key="i" class="d-flex ga-3 font-mono text-caption">
+                                        <span class="activity-date text-slate">{{ moment(a.date).format('MMM D, YYYY') }}</span>
+                                        <span :class="`text-${activityColor(a.name)}`">{{ a.name }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <section class="mb-14">
@@ -155,6 +237,43 @@
                         @click="showAllAmendments = !showAllAmendments"
                     >
                         {{ showAllAmendments ? 'Show fewer' : `Show all ${amendments.length} amendments` }}
+                    </v-btn>
+                </section>
+
+                <section v-if="relatedBills.length" class="mb-14">
+                    <SectionHeading :index="sectionIndex('related')" title="Related Bills" />
+                    <div class="d-flex flex-column ga-3">
+                        <router-link
+                            v-for="r in visibleRelatedBills"
+                            :key="`${r.congress}${r.type}${r.number}`"
+                            :to="`/bill/${r.congress}/${r.type}/${r.number}`"
+                            class="link-card pa-4 pr-10"
+                        >
+                            <div class="d-flex align-center flex-wrap ga-2 mb-2">
+                                <span class="font-mono font-weight-bold text-lightest-slate">{{ r.type }}{{ r.number }}</span>
+                                <span
+                                    v-for="rel in relationshipLabels(r)"
+                                    :key="rel.label"
+                                    class="relation-pill font-mono text-caption"
+                                    :class="`text-${rel.color}`"
+                                >{{ rel.label }}</span>
+                                <span v-if="r.congress !== bill.congress" class="font-mono text-caption text-slate">{{ ordinal(r.congress!) }} Congress</span>
+                            </div>
+                            <span class="related-title text-light-slate text-body-2">{{ r.title }}</span>
+                            <span v-if="r.latestAction?.actionDate" class="font-mono text-caption text-slate d-block mt-2">
+                                Latest action {{ moment(r.latestAction.actionDate).format('MMM D, YYYY') }}
+                            </span>
+                            <v-icon class="link-card-icon" size="16" color="slate">mdi-arrow-right</v-icon>
+                        </router-link>
+                    </div>
+                    <v-btn
+                        v-if="relatedBills.length > relatedLimit"
+                        variant="outlined"
+                        color="primary"
+                        class="font-mono text-none mt-4"
+                        @click="showAllRelated = !showAllRelated"
+                    >
+                        {{ showAllRelated ? 'Show fewer' : `Show all ${relatedBills.length} related bills` }}
                     </v-btn>
                 </section>
 
@@ -297,6 +416,9 @@ import { Bill } from '@/components/Congress/types/BillDetailsResponse.types'
 import { Action } from '@/components/Congress/types/BillActionsResponse.types'
 import { Cosponsor } from '@/components/Congress/types/BillCosponsorsResponse.types'
 import { Amendment } from '@/components/Congress/types/BillAmendmentsResponse.types'
+import { Summarie } from '@/components/Congress/types/BillSummariesResponse.types'
+import { Committee, Activitie } from '@/components/Congress/types/BillCommitteesResponse.types'
+import { RelatedBill } from '@/components/Congress/types/BillRelatedbillsResponse.types'
 import moment from 'moment'
 import apiClient from '@/api/elysianClient'
 import {
@@ -318,6 +440,13 @@ const showAllActions = ref(false)
 const timelineLimit = 6
 const showAllAmendments = ref(false)
 const amendmentLimit = 12
+const summaries = ref<Summarie[]>([])
+const summaryIndex = ref(0)
+const showFullSummary = ref(false)
+const committees = ref<Committee[]>([])
+const relatedBills = ref<RelatedBill[]>([])
+const showAllRelated = ref(false)
+const relatedLimit = 6
 
 onMounted(() => {
     getBill()
@@ -334,6 +463,13 @@ async function getBill(){
     actions.value = response.data.billActions.actions ?? []
     cosponsors.value = response.data.billCosponsors.cosponsors ?? []
     amendments.value = response.data.billAmendments.amendments ?? []
+    // The API lists versions oldest first, and some share a date (introduced and reported
+    // the same day), so reverse before the stable sort to keep the later one on top.
+    summaries.value = [...(response.data.billSummaries?.summaries ?? [])]
+        .reverse()
+        .sort((a: Summarie, b: Summarie) => Number(new Date(b.actionDate ?? 0)) - Number(new Date(a.actionDate ?? 0)))
+    committees.value = response.data.billCommittees?.committees ?? []
+    relatedBills.value = response.data.billRelatedBills?.relatedBills ?? []
 }
 
 const status = computed(() => billStatus(bill.value?.latestAction?.text))
@@ -353,8 +489,13 @@ const stats = computed(() => {
 
 // Sections are numbered in the order they appear, skipping ones with no data.
 const sectionIndex = (key: string) => {
-    const order = ['progress', 'timeline']
+    const order: string[] = []
+    if (summaries.value.length) order.push('summary')
+    order.push('progress')
+    if (committees.value.length) order.push('committees')
+    order.push('timeline')
     if (amendments.value.length) order.push('amendments')
+    if (relatedBills.value.length) order.push('related')
     if (bill.value?.cboCostEstimates?.length || bill.value?.committeeReports?.length) order.push('reports')
     return String(order.indexOf(key) + 1).padStart(2, '0')
 }
@@ -398,6 +539,37 @@ function actionKind(a: Action): { label: string, color: string } {
 }
 
 const visibleAmendments = computed(() => showAllAmendments.value ? amendments.value : amendments.value.slice(0, amendmentLimit))
+
+// Summary
+const summary = computed(() => summaries.value[summaryIndex.value])
+
+function selectSummary(i: number) {
+    summaryIndex.value = i
+    showFullSummary.value = false
+}
+
+// Committees: activities in the order they happened, e.g. referred, then markup, then reported.
+const sortedActivities = (activities?: Activitie[]) =>
+    [...(activities ?? [])].sort((a, b) => Number(new Date(a.date ?? 0)) - Number(new Date(b.date ?? 0)))
+
+function activityColor(name?: string): string {
+    if (/reported/i.test(name ?? '')) return 'green'
+    if (/markup/i.test(name ?? '')) return 'violet'
+    if (/hearing/i.test(name ?? '')) return 'info'
+    if (/discharged/i.test(name ?? '')) return 'amber'
+    return 'light-slate'
+}
+
+// Related bills: several sources (CRS, House, Senate) can name the same relationship, so show each kind once.
+const visibleRelatedBills = computed(() => showAllRelated.value ? relatedBills.value : relatedBills.value.slice(0, relatedLimit))
+
+function relationshipLabels(r: RelatedBill): { label: string, color: string }[] {
+    const types = new Set((r.relationshipDetails ?? []).map(d => d.type).filter((t): t is string => !!t))
+    return Array.from(types).map(label => ({
+        label,
+        color: /identical/i.test(label) ? 'violet' : /procedural/i.test(label) ? 'amber' : 'light-slate'
+    }))
+}
 
 // Roll call actions carry the tally in their text, e.g. "Yeas and Nays: 387 - 26" or "Yea-Nay Vote. 88 - 4".
 function voteTally(a: Action): { yeas: number, nays: number } | undefined {
@@ -507,6 +679,90 @@ const seat = (p: { state: string, district?: number }) =>
 .latest-action-label {
     letter-spacing: 0.06em;
     opacity: 0.7;
+}
+
+/* Summary */
+.summary-card {
+    border-radius: 12px;
+    background: rgb(var(--v-theme-surface));
+    border: 1px solid rgb(var(--v-theme-lightest-navy));
+    border-left: 3px solid rgb(var(--v-theme-primary));
+}
+
+.summary-select {
+    max-width: 420px;
+}
+
+.summary-text {
+    line-height: 1.7;
+    max-width: 70ch;
+}
+
+.summary-text :deep(p) {
+    margin-bottom: 0.75rem;
+}
+
+.summary-text :deep(strong) {
+    color: rgb(var(--v-theme-lightest-slate));
+}
+
+.summary-text :deep(ul) {
+    padding-left: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.summary-text--clamped {
+    max-height: 11rem;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, black 60%, transparent);
+}
+
+/* Committees */
+.committee-card {
+    border-radius: 12px;
+    background:
+        radial-gradient(90% 120% at 0% 0%, rgba(var(--chamber), 0.08), transparent 60%),
+        rgb(var(--v-theme-surface));
+    border: 1px solid rgb(var(--v-theme-lightest-navy));
+    border-left: 3px solid rgba(var(--chamber), 0.7);
+}
+
+.chamber-pill {
+    padding: 1px 9px;
+    border-radius: 999px;
+    color: rgb(var(--chamber));
+    background: rgba(var(--chamber), 0.14);
+}
+
+.activity-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.activity-date {
+    flex-shrink: 0;
+    width: 7.5rem;
+}
+
+.subcommittee {
+    border-top: 1px dashed rgb(var(--v-theme-lightest-navy));
+}
+
+/* Related bills */
+.related-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.relation-pill {
+    padding: 1px 9px;
+    border-radius: 999px;
+    background: rgba(var(--v-theme-on-surface), 0.06);
 }
 
 /* Timeline, same rail as the feed */
