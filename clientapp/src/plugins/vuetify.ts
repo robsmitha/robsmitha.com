@@ -12,7 +12,9 @@ import 'vuetify/styles'
 import { createVuetify, type ThemeDefinition } from 'vuetify'
 
 // Dark, near-black developer-portfolio theme with an RGB-keyboard-inspired
-// accent treatment in the hero. Custom keys (navy / slate / mono-ink etc.)
+// accent treatment in the hero. Accents come from JetBrains' Darcula syntax
+// colors (keyword orange, function blue, field purple, string green), all of
+// which clear 4.5:1 contrast on the near-black background. Custom keys (navy / slate / mono-ink etc.)
 // still render as Vuetify utility classes at runtime, e.g. `bg-light-navy`,
 // `text-slate`, `border-lightest-navy` — only the hex values shifted from
 // navy to neutral near-black greys, so every component that already
@@ -25,17 +27,17 @@ const portfolio: ThemeDefinition = {
     'surface-bright': '#2a2a2e',
     'surface-light': '#1c1c1f',
     'surface-variant': '#2a2a2e',
-    primary: '#5e3ba3',
+    primary: '#CF8E6D',
     secondary: '#8a8a93',
-    accent: '#5e3ba3',
+    accent: '#CF8E6D',
     error: '#ff6b6b',
-    info: '#57cbff',
+    info: '#56A8F5',
     success: '#64ffda',
     warning: '#f6c177',
 
     'on-background': '#eaeaef',
     'on-surface': '#eaeaef',
-    'on-primary': '#f5f3ff',
+    'on-primary': '#0a0a0c',
     'on-secondary': '#0a0a0c',
 
     navy: '#0a0a0c',
@@ -44,8 +46,8 @@ const portfolio: ThemeDefinition = {
     slate: '#8a8a93',
     'light-slate': '#aeaeb6',
     'lightest-slate': '#eaeaef',
-    green: '#64ffda',
-    violet: '#c792ea',
+    green: '#6AAB73',
+    violet: '#C77DBB',
     amber: '#f6c177',
     orange: '#f78c6c',
   },

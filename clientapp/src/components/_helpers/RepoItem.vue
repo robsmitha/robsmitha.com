@@ -8,9 +8,11 @@
       :hover="true"
       @click="emit('repo-selected', repo.name)"
     >
-      <div class="d-flex align-center justify-space-between mb-8">
-        <v-icon color="primary" size="36">mdi-folder-outline</v-icon>
-        <div class="d-flex align-center ga-3">
+      <div class="d-flex align-start justify-space-between ga-3 mb-2">
+        <h3 class="text-lightest-slate text-subtitle-1 font-weight-bold repo-card-title">
+          {{ props.repo.name }}
+        </h3>
+        <div class="d-flex align-center ga-3 flex-shrink-0 repo-card-meta">
           <span v-if="props.repo.stargazers_count > 0" class="d-flex align-center ga-1 font-mono text-caption text-amber">
             <v-icon size="14" color="amber">mdi-star</v-icon>
             {{ props.repo.stargazers_count }}
@@ -32,16 +34,12 @@
         </div>
       </div>
 
-      <h3 class="text-lightest-slate text-subtitle-1 font-weight-bold mb-2 repo-card-title">
-        {{ props.repo.name }}
-      </h3>
-
       <p v-if="!hideDescription" class="text-slate text-body-2 repo-card-desc flex-grow-1">
         {{ props.repo.description }}
       </p>
 
-      <div class="d-flex align-center flex-wrap ga-2 font-mono text-caption text-slate mt-6">
-        <v-avatar size="18" tile>
+      <div class="d-flex align-center flex-wrap ga-2 font-mono text-caption text-slate mt-4">
+        <v-avatar size="22" color="surface-bright" class="repo-lang-avatar">
           <Devicon :icon="icon" />
         </v-avatar>
         <span>{{ props.repo.language }}</span>
@@ -126,6 +124,18 @@ const ashParticles = computed(() => {
 
 .repo-card-title {
   line-height: 1.3;
+  word-break: break-word;
+}
+
+.repo-card-meta {
+  min-height: 1.3em;
+}
+
+/* Devicon renders its own 40px avatar; shrink it so the logo sits fully
+   inside the round badge instead of being clipped at the corners. */
+.repo-lang-avatar :deep(.v-avatar) {
+  width: 14px !important;
+  height: 14px !important;
 }
 
 .repo-card-desc {

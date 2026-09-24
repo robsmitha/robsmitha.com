@@ -1,8 +1,6 @@
 <template>
   <section class="hero-section d-flex align-center bg-background">
     <div class="hero-glow" aria-hidden="true"></div>
-    <div class="hero-scales" aria-hidden="true">
-    </div>
 
     <v-container class="hero-container">
       <v-row>
@@ -36,13 +34,6 @@
               {{ b.text }}
             </v-btn>
           </div>
-
-          <div class="mt-12 d-flex flex-wrap ga-8 hero-stats">
-            <div v-for="s in stats" :key="s.label">
-              <span class="font-mono text-h4 text-lightest-slate font-weight-bold d-block">{{ s.value }}</span>
-              <span class="font-mono text-caption text-slate text-uppercase">{{ s.label }}</span>
-            </div>
-          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -50,9 +41,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useGithubStore } from '@/store/github'
-
 type HeroAction = {
   text: string,
   to: string | undefined,
@@ -65,30 +53,16 @@ const props = defineProps({
   subtitle: { type: String, required: true },
   actions: { type: Array<HeroAction>, default: [] }
 })
-
-const store = useGithubStore()
-
-// Real numbers pulled from the GitHub API via the shared store, not hardcoded copy.
-const stats = computed(() => {
-  const repos = store.repos ?? []
-  const languageCount = new Set(repos.map(r => r.language).filter(Boolean)).size
-  const yearsExperience = new Date().getFullYear() - 2016
-  return [
-    { value: repos.length > 0 ? repos.length : '—', label: 'Public Repos' },
-    { value: languageCount > 0 ? languageCount : '—', label: 'Languages' },
-    { value: yearsExperience, label: 'Years Experience' },
-  ]
-})
 </script>
 
 <style scoped>
 .hero-section {
   position: relative;
   overflow: hidden;
-  min-height: 70vh;
+  min-height: 65vh;
   /* v-main already reserves 64px via the fixed app-bar's layout offset (padding-top),
      which pushes this section's box below the app-bar instead of behind it. Pull it
-     back up by that same amount so the glow/scale background renders underneath the
+     back up by that same amount so the glow background renders underneath the
      transparent navbar too, then pad the content back down so it isn't covered by it. */
   margin-top: -64px;
   padding-top: 64px;
@@ -121,66 +95,6 @@ const stats = computed(() => {
   100% { transform: translate3d(3%, -2%, 0) scale(1); }
 }
 
-/* Overlapping scale/shingle texture — rows of curved tiles offset like fish or
-   dragon scales, each briefly catching a flash of color as if light were
-   sweeping/shuttering across them. */
-.hero-scales {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-  opacity: 0.55;
-  padding-top: 5vh;
-}
-
-.scale-row {
-  display: flex;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-top: -14px;
-}
-
-.scale-row:first-child {
-  margin-top: 0;
-}
-
-.scale-row--offset {
-  transform: translateX(-19px);
-}
-
-.scale {
-  flex: 0 0 auto;
-  width: 38px;
-  height: 44px;
-  border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%;
-  background: rgb(var(--v-theme-lightest-navy));
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-  opacity: 0.4;
-  animation: scale-shimmer 9s ease-in-out infinite;
-  animation-delay: calc(var(--i) * -0.18s);
-}
-
-@keyframes scale-shimmer {
-  0%, 85%, 100% {
-    background: rgb(var(--v-theme-lightest-navy));
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-    opacity: 0.4;
-  }
-  92% {
-    background: hsl(calc(var(--i) * 41), 88%, 63%);
-    box-shadow: 0 0 14px 3px hsl(calc(var(--i) * 41), 88%, 55%);
-    opacity: 0.9;
-  }
-}
-
-@media (max-width: 960px) {
-  .scale {
-    width: 30px;
-    height: 35px;
-  }
-}
-
 .hero-eyebrow {
   letter-spacing: 0.02em;
 }
@@ -209,13 +123,12 @@ const stats = computed(() => {
   transform: translateY(-2px);
   box-shadow:
     0 0 0 1px rgba(var(--v-theme-primary), 0.4),
-    0 0 20px 2px rgba(150, 100, 255, 0.25),
-    0 0 36px 6px rgba(255, 100, 180, 0.15);
+    0 0 20px 2px rgba(86, 168, 245, 0.2),
+    0 0 36px 6px rgba(207, 142, 109, 0.15);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-glow,
-  .scale,
   .hero-name {
     animation: none;
   }
@@ -232,29 +145,10 @@ const stats = computed(() => {
   line-height: 1.6;
 }
 
-.hero-stats > div {
-  padding-left: 2rem;
-  border-left: 1px solid rgb(var(--v-theme-lightest-navy));
-}
-
-.hero-stats > div:first-child {
-  padding-left: 0;
-  border-left: none;
-}
 
 @media (max-width: 600px) {
   .hero-section {
-    min-height: 92vh;
-  }
-
-  .hero-stats {
-    gap: 1.5rem !important;
-  }
-
-  .hero-stats > div {
-    padding-left: 0;
-    border-left: none;
-    min-width: 40%;
+    min-height: 80vh;
   }
 }
 </style>
