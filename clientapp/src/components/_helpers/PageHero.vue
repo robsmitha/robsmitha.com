@@ -18,7 +18,7 @@
 defineProps({
     eyebrow: { type: String, default: '' },
     tone: { type: String as () => 'teal' | 'plum' | 'navy', default: 'navy' },
-    art: { type: String as () => 'ribbon' | 'arcs' | 'capitol', default: 'arcs' }
+    art: { type: String as () => 'ribbon' | 'arcs' | 'capitol' | 'editor', default: 'arcs' }
 })
 </script>
 

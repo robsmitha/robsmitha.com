@@ -19,6 +19,7 @@ declare module 'vue' {
     Budgets: typeof import('./src/components/Financial/Budgets.vue')['default']
     CodeGeneration: typeof import('./src/components/Code/CodeGeneration.vue')['default']
     CodeResultItem: typeof import('./src/components/Code/CodeResultItem.vue')['default']
+    CodeResultsSkeleton: typeof import('./src/components/Code/CodeResultsSkeleton.vue')['default']
     CodeSearch: typeof import('./src/components/Code/CodeSearch.vue')['default']
     CodeSearchRepos: typeof import('./src/components/Code/CodeSearchRepos.vue')['default']
     Commits: typeof import('./src/components/Repo/Commits.vue')['default']

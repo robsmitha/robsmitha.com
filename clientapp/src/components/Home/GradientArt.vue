@@ -26,6 +26,50 @@
     </svg>
 
     <svg
+        v-else-if="variant === 'editor'"
+        class="gradient-art"
+        viewBox="0 0 400 300"
+        aria-hidden="true"
+        focusable="false"
+    >
+        <defs>
+            <radialGradient :id="`${uid}-halo`" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0%" stop-color="#2AACB8" stop-opacity="0.3" />
+                <stop offset="100%" stop-color="#2AACB8" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient :id="`${uid}-lens`" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#21D789" />
+                <stop offset="50%" stop-color="#56A8F5" />
+                <stop offset="100%" stop-color="#C77DBB" />
+            </linearGradient>
+        </defs>
+        <circle cx="200" cy="150" r="160" :fill="`url(#${uid}-halo)`" />
+        <!-- editor window -->
+        <rect x="46" y="46" width="290" height="200" rx="14" fill="#151517" stroke="#ffffff" stroke-opacity="0.12" />
+        <circle cx="68" cy="66" r="5" fill="#FE2857" />
+        <circle cx="86" cy="66" r="5" fill="#FC801D" />
+        <circle cx="104" cy="66" r="5" fill="#21D789" />
+        <!-- the matched line, highlighted like a search hit -->
+        <rect x="60" :y="lineY(3) - 7" width="262" height="18" rx="4" fill="#CF8E6D" fill-opacity="0.18" />
+        <template v-for="(line, i) in codeLines" :key="i">
+            <rect x="64" :y="lineY(i)" width="10" height="5" rx="2.5" fill="#ffffff" fill-opacity="0.15" />
+            <rect
+                v-for="(seg, j) in line"
+                :key="j"
+                :x="seg[0]"
+                :y="lineY(i)"
+                :width="seg[1]"
+                height="5"
+                rx="2.5"
+                :fill="seg[2]"
+            />
+        </template>
+        <!-- magnifying glass over the window -->
+        <circle cx="308" cy="210" r="38" fill="#0a0a0c" fill-opacity="0.55" :stroke="`url(#${uid}-lens)`" stroke-width="9" />
+        <line x1="336" y1="238" x2="364" y2="266" :stroke="`url(#${uid}-lens)`" stroke-width="12" stroke-linecap="round" />
+    </svg>
+
+    <svg
         v-else-if="variant === 'capitol'"
         class="gradient-art"
         viewBox="0 0 400 300"
@@ -90,12 +134,25 @@
 
 <script setup lang="ts">
 defineProps({
-    variant: { type: String as () => 'ribbon' | 'arcs' | 'capitol', default: 'arcs' }
+    variant: { type: String as () => 'ribbon' | 'arcs' | 'capitol' | 'editor', default: 'arcs' }
 })
 
 // Each instance needs its own gradient/filter ids, otherwise two panels on the
 // page would end up sharing (and overriding) the same <defs>.
 const uid = `art-${Math.random().toString(36).slice(2, 8)}`
+
+// Code lines for the editor art: [x, width, color] segments in Darcula syntax colors.
+const codeLines: [number, number, string][][] = [
+    [[86, 34, '#CF8E6D'], [126, 60, '#56A8F5'], [192, 20, '#ffffff33']],
+    [[98, 28, '#CF8E6D'], [132, 44, '#C77DBB'], [182, 70, '#6AAB73']],
+    [[98, 50, '#56A8F5'], [154, 30, '#ffffff33']],
+    [[110, 36, '#CF8E6D'], [152, 86, '#6AAB73'], [244, 26, '#2AACB8']],
+    [[110, 54, '#C77DBB'], [170, 40, '#56A8F5']],
+    [[98, 22, '#ffffff33']],
+    [[86, 44, '#CF8E6D'], [136, 52, '#56A8F5']],
+    [[98, 64, '#6AAB73'], [168, 30, '#2AACB8']],
+]
+const lineY = (i: number) => 90 + i * 19
 
 // A tilted infinity loop.
 const ribbonPath = 'M70,170 C60,70 170,60 205,150 S330,250 345,150 S240,50 205,150 S80,260 70,170Z'

@@ -1,96 +1,59 @@
 <template>
-    <section class="search-hero bg-light-navy">
-        <v-container class="py-10">
-            <v-row align="start" justify="space-between">
-                <v-col cols="12" md="8">
-                    <p class="font-mono text-primary text-body-2 mb-2">
-                        <span aria-hidden="true">&gt;</span> github.com/robsmitha
-                    </p>
-                    <h1 class="text-lightest-slate text-h4 font-weight-bold mb-3">
-                        Search Code
-                    </h1>
-                    <p class="text-slate" style="max-width: 560px;">
-                        Search across every public repository using GitHub's code search &mdash;
-                        full boolean syntax with per-language and per-repo scoping.
-                    </p>
-                </v-col>
-                <v-col cols="12" md="auto">
-                    <v-btn
-                        variant="outlined"
-                        color="primary"
-                        class="font-mono text-none"
-                        prepend-icon="mdi-book-open-variant"
-                        href="https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-code"
-                        target="_blank"
-                    >
-                        API Docs
-                    </v-btn>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="12">
-                    <SearchField
-                        :term="term"
-                        :rate-limited="rateLimited"
-                        :loading="loading"
-                        label="/robsmitha"
-                        :dark="true"
-                        :show-details="true"
-                        @input="term = $event"
-                        @search="searchGitHub"
-                        @clear="clearSearch"
-                        @authorize="authorizeGitHubApp" />
-                </v-col>
-            </v-row>
-        </v-container>
-    </section>
-
-    <v-container class="py-10">
-        <div class="d-flex align-center mb-6 section-heading">
-            <span class="font-mono text-primary text-body-2 mr-3">01.</span>
-            <h3 class="text-lightest-slate text-h5 font-weight-bold text-nowrap">
-                Browse
-            </h3>
-            <v-divider class="ml-4 flex-grow-1" color="lightest-navy" thickness="1" />
-        </div>
-        <p class="text-slate text-body-2 mb-8">
-            Use the categories below to run a canned search.
+    <PageHero eyebrow="> github.com/robsmitha" tone="teal" art="editor">
+        <h1 class="hero-title font-weight-bold mb-3">Search Code</h1>
+        <p class="hero-text mb-6">
+            Search every public repository with GitHub's code search, using full boolean
+            syntax and per-language or per-repo scoping.
         </p>
-        <SearchCategories
+
+        <SearchField
+            :term="term"
             :rate-limited="rateLimited"
             :loading="loading"
-            @category-selected="onCategorySelected"
-        />
+            label="Search github.com/robsmitha"
+            :dark="true"
+            :show-details="true"
+            @input="term = $event"
+            @search="searchGitHub"
+            @clear="clearSearch"
+            @authorize="authorizeGitHubApp" />
 
-        <template v-if="hasSearched">
-            <v-divider color="lightest-navy" class="my-14"></v-divider>
+        <div class="d-flex flex-wrap align-center ga-8 mt-6">
+            <div>
+                <span class="font-mono text-h5 font-weight-bold d-block">{{ store.repos?.length || '—' }}</span>
+                <span class="font-mono text-caption hero-label">Public repos</span>
+            </div>
+            <div>
+                <span class="font-mono text-h5 font-weight-bold d-block">{{ languageCount || '—' }}</span>
+                <span class="font-mono text-caption hero-label">Languages</span>
+            </div>
+            <a
+                class="docs-link font-mono text-caption d-inline-flex align-center ga-1"
+                href="https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28#search-code"
+                target="_blank"
+            >
+                <v-icon size="14">mdi-book-open-variant</v-icon> GitHub API docs <v-icon size="12">mdi-open-in-new</v-icon>
+            </a>
+        </div>
+    </PageHero>
 
-            <div ref="resultsSection" class="d-flex align-center mb-6 section-heading">
-                <span class="font-mono text-primary text-body-2 mr-3">02.</span>
-                <h3 class="text-lightest-slate text-h5 font-weight-bold text-nowrap">
-                    Results
-                </h3>
-                <v-divider class="ml-4 flex-grow-1" color="lightest-navy" thickness="1" />
-                <v-btn
-                    variant="outlined"
-                    color="slate"
-                    prepend-icon="mdi-close"
-                    class="font-mono text-none"
-                    size="small"
-                    @click="clearSearch"
-                >
+    <v-container class="search-body py-12">
+        <section v-if="hasSearched" ref="resultsSection" class="results mb-16">
+            <SectionHeading index="01" title="Results" />
+
+            <div class="d-flex align-center flex-wrap ga-3 mb-8">
+                <code class="query-pill font-mono text-caption">{{ term }}</code>
+                <span v-if="!loading" class="font-mono text-caption text-slate">
+                    {{ items?.length ?? 0 }} result{{ (items?.length ?? 0) === 1 ? '' : 's' }}
+                    across {{ repoResults.size }} repositor{{ repoResults.size === 1 ? 'y' : 'ies' }}
+                </span>
+                <v-spacer />
+                <v-btn variant="outlined" color="slate" rounded="pill" size="small" prepend-icon="mdi-close" class="text-none" @click="clearSearch">
                     Clear search
                 </v-btn>
             </div>
-            <p v-if="!loading" class="font-mono text-slate text-body-2 mb-8">
-                {{ items?.length ?? 0 }} result{{ (items?.length ?? 0) === 1 ? '' : 's' }} across {{ repoResults.size }} repositor{{ repoResults.size === 1 ? 'y' : 'ies' }}
-            </p>
 
-            <v-skeleton-loader
-                v-if="loading"
-                type="list-item-two-line@5"
-                color="surface"
-            ></v-skeleton-loader>
+            <CodeResultsSkeleton v-if="loading" />
 
             <v-data-iterator
                 v-else-if="repoResults.size > 0"
@@ -98,7 +61,7 @@
                 :items-per-page="8"
             >
                 <template v-slot:default="{ items }">
-                    <v-sheet color="surface" rounded="lg" class="result-list">
+                    <div class="d-flex flex-column ga-3">
                         <CodeResultItem
                             v-for="repo in items"
                             :key="repo.raw.name"
@@ -106,43 +69,52 @@
                             :items="repoResults.get(repo.raw) ?? []"
                             @repo-selected="repoSelected"
                         />
-                    </v-sheet>
+                    </div>
                 </template>
 
                 <template v-slot:footer="{ page, pageCount, prevPage, nextPage }">
                     <div v-if="pageCount > 1" class="d-flex align-center justify-center pa-4 mt-4">
-                        <v-btn
-                            :disabled="page === 1"
-                            density="comfortable"
-                            icon="mdi-arrow-left"
-                            variant="outlined"
-                            color="primary"
-                            @click="prevPage"
-                        ></v-btn>
-
-                        <div class="mx-4 text-caption font-mono text-slate">
-                            Page {{ page }} of {{ pageCount }}
-                        </div>
-
-                        <v-btn
-                            :disabled="page >= pageCount"
-                            density="comfortable"
-                            icon="mdi-arrow-right"
-                            variant="outlined"
-                            color="primary"
-                            @click="nextPage"
-                        ></v-btn>
+                        <v-btn :disabled="page === 1" density="comfortable" icon="mdi-arrow-left" variant="outlined" color="primary" @click="prevPage"></v-btn>
+                        <div class="mx-4 text-caption font-mono text-slate">Page {{ page }} of {{ pageCount }}</div>
+                        <v-btn :disabled="page >= pageCount" density="comfortable" icon="mdi-arrow-right" variant="outlined" color="primary" @click="nextPage"></v-btn>
                     </div>
                 </template>
             </v-data-iterator>
 
-            <div v-else class="d-flex flex-column align-center py-12 text-center">
-                <v-icon size="40" class="mb-3 text-lightest-navy">mdi-file-search-outline</v-icon>
-                <p class="text-body-2 text-slate">
-                    No results found for "{{ term }}". Try a different query or qualifier.
-                </p>
+            <div v-else class="empty-state d-flex flex-column align-center py-12 px-4 text-center">
+                <v-icon size="40" class="mb-3 text-slate">mdi-file-search-outline</v-icon>
+                <p class="text-lightest-slate font-weight-bold mb-1">No matches for <code class="font-mono">{{ term }}</code></p>
+                <p class="text-body-2 text-slate mb-0">Try a broader term, or pick one of the searches below.</p>
             </div>
-        </template>
+        </section>
+
+        <section>
+            <SectionHeading :index="hasSearched ? '02' : '01'" title="Browse" />
+            <p class="text-slate text-body-2 mb-8">
+                Not sure what to search for? Start with one of these, grouped by the part of the stack they cover.
+            </p>
+            <SearchCategories
+                :rate-limited="rateLimited"
+                :loading="loading"
+                @category-selected="onCategorySelected"
+            />
+        </section>
+
+        <CtaPanel
+            class="mt-16"
+            tone="plum"
+            art="arcs"
+            eyebrow="Another tool on this site"
+            title="Turn JSON into typed code."
+            text="Paste a JSON payload and get C# and TypeScript DTOs back, generated with NJsonSchema."
+        >
+            <v-btn color="white" variant="flat" rounded="pill" size="large" class="text-none" to="/generate-code">
+                Generate code
+            </v-btn>
+            <v-btn color="white" variant="outlined" rounded="pill" size="large" class="text-none" prepend-icon="mdi-github" href="https://github.com/robsmitha?tab=repositories" target="_blank">
+                All repos on GitHub
+            </v-btn>
+        </CtaPanel>
     </v-container>
 
     <SearchResultsDialog :open="dialog" :loading="loading" :repo="selectedRepo" :title="`${getWords(term)}`" :results="selectedResults" @close="dialog = false" />
@@ -168,6 +140,8 @@ const resultsSection = ref<HTMLElement | null>(null)
 // Dialog
 const dialog = ref(false)
 const selectedRepo = ref<GithubRepo>()
+
+const languageCount = computed(() => new Set((store.repos ?? []).map(r => r.language).filter(Boolean)).size)
 
 const repoResults = computed(() => {
     if(!items.value || !store.repoLookup){
@@ -266,12 +240,51 @@ function getWords(str: string){
 </script>
 
 <style scoped>
-.result-list {
-    border: 1px solid rgb(var(--v-theme-lightest-navy));
-    overflow: hidden;
+.search-body {
+    max-width: 1100px;
 }
 
-:deep(.v-expansion-panel-text__wrapper) {
-    padding: 0px;
+.results {
+    scroll-margin-top: 80px;
+}
+
+.hero-title {
+    font-size: clamp(1.8rem, 2vw + 1rem, 2.6rem);
+    line-height: 1.1;
+}
+
+.hero-text {
+    max-width: 52ch;
+    opacity: 0.82;
+}
+
+.hero-label {
+    opacity: 0.7;
+}
+
+.docs-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+}
+
+.docs-link:hover {
+    text-decoration: underline;
+}
+
+.query-pill {
+    padding: 3px 10px;
+    border-radius: 6px;
+    color: rgb(var(--v-theme-primary));
+    background: rgba(var(--v-theme-primary), 0.12);
+    word-break: break-word;
+}
+
+.empty-state {
+    border-radius: 12px;
+    border: 1px dashed rgb(var(--v-theme-lightest-navy));
+}
+
+.empty-state code {
+    color: rgb(var(--v-theme-primary));
 }
 </style>

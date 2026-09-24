@@ -20,7 +20,7 @@ defineProps({
     text: { type: String, required: true },
     eyebrow: { type: String, default: '' },
     tone: { type: String as () => 'teal' | 'plum', default: 'plum' },
-    art: { type: String as () => 'ribbon' | 'arcs' | 'capitol', default: 'arcs' }
+    art: { type: String as () => 'ribbon' | 'arcs' | 'capitol' | 'editor', default: 'arcs' }
 })
 </script>
 

@@ -1,50 +1,35 @@
 <template>
-    <div v-if="store.parentCategories.size === 0">
-        <template v-for="i in 3" :key="i">
-            <v-skeleton-loader type="subtitle" color="surface" width="200px" class="mb-2"></v-skeleton-loader>
-            <v-row class="mb-4">
-                <v-col md="3" sm="4" cols="12" v-for="j in Math.floor(Math.random() * (4 - 1 + 1)) + 1" :key="j">
-                    <v-skeleton-loader type="paragraph" color="surface"></v-skeleton-loader>
-                </v-col>
-            </v-row>
-        </template>
-    </div>
-    <template v-else>
-    <template v-for="parentCategory in store.parentCategories" :key="parentCategory.id">
-        <span class="font-mono text-primary text-caption text-uppercase d-block mb-2">
-            {{ parentCategory.name }}
-        </span>
-        <p v-if="parentCategory.description" class="text-slate text-body-2 mb-4">{{ parentCategory.description }}</p>
-        <v-row class="mb-6">
-            <v-col md="3" sm="4" cols="12" v-for="subCategory in store.groupedCategories.get(parentCategory.id)" :key="subCategory.id">
-                <v-card
-                    color="surface"
-                    rounded="lg"
-                    flat
-                    class="category-card h-100"
-                    :disabled="rateLimited"
+    <div class="d-flex flex-column ga-10">
+        <section
+            v-for="(parentCategory, g) in store.parentCategories"
+            :key="parentCategory.id"
+            :style="{ '--accent': `var(--v-theme-${accentFor(g)})` }"
+        >
+            <h3 class="group-label font-mono text-caption text-uppercase mb-1">{{ parentCategory.name }}</h3>
+            <p v-if="parentCategory.description" class="text-slate text-body-2 mb-4">{{ parentCategory.description }}</p>
+
+            <div class="category-grid mt-3">
+                <button
+                    v-for="subCategory in store.groupedCategories.get(parentCategory.id)"
+                    :key="subCategory.id"
+                    type="button"
+                    class="category-card pa-5 text-left"
+                    :disabled="rateLimited || loading"
                     @click="emit('category-selected', subCategory)"
                 >
-                    <v-card-text class="pa-4">
-                        <span class="text-lightest-slate text-body-1 font-weight-bold d-block mb-3">{{ subCategory.name }}</span>
-                        <div class="d-flex flex-wrap ga-1">
-                            <v-chip
-                                v-for="w in getWords(subCategory.description)"
-                                :key="w"
-                                variant="outlined"
-                                color="slate"
-                                class="font-mono"
-                                size="small"
-                            >
-                                {{ w }}
-                            </v-chip>
-                        </div>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
-    </template>
-    </template>
+                    <div class="d-flex align-center justify-space-between mb-4">
+                        <v-avatar size="30" color="surface-bright" class="category-icon">
+                            <Devicon v-if="iconFor(subCategory.description).icon" :icon="iconFor(subCategory.description).icon" />
+                            <Devicon v-else :file-name="iconFor(subCategory.description).fileName" />
+                        </v-avatar>
+                        <v-icon size="18" class="category-arrow">mdi-arrow-right</v-icon>
+                    </div>
+                    <span class="text-lightest-slate text-body-1 font-weight-bold d-block mb-3">{{ subCategory.name }}</span>
+                    <code class="query font-mono text-caption">{{ subCategory.description }}</code>
+                </button>
+            </div>
+        </section>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -54,26 +39,90 @@ const store = useAppStore()
 defineProps(['rateLimited', 'loading'])
 const emit = defineEmits(['category-selected'])
 
-function getWords(str: string){
-    // Extracting words using regular expression
-    let words = str.split(/\s+OR\s+|(?=language:)|(?=extension:)/);
+// Each group gets its own accent, like the tinted feature cards on the landing page.
+const accents = ['primary', 'info', 'violet', 'green']
+const accentFor = (index: number) => accents[index % accents.length]
 
-    // Removing "language:" and "extension:" tokens and their values
-    words = words.map(word => word.replace(/(language|extension):/, '').replace(/\s+.+$/, ''));
-    return words;
+// Pick a logo from the query's qualifiers: language:vue -> Vue, extension:cshtml -> Razor.
+function iconFor(query: string): { icon?: string, fileName?: string } {
+    if (/React/.test(query)) return { icon: 'react' }
+    const language = /language:(\S+)/.exec(query)?.[1]
+    if (language) return { icon: language === 'csharp' ? 'c#' : language }
+    const extension = /extension:(\S+)/.exec(query)?.[1]
+    return { fileName: `file.${extension ?? 'txt'}` }
 }
 </script>
 
 <style scoped>
+.group-label {
+    color: rgb(var(--accent));
+    letter-spacing: 0.08em;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
 .category-card {
     cursor: pointer;
-    border: 1px solid rgb(var(--v-theme-lightest-navy));
+    border-radius: 12px;
+    background:
+        radial-gradient(120% 90% at 100% 0%, rgba(var(--accent), 0.22), transparent 55%),
+        linear-gradient(180deg, rgba(var(--accent), 0.06), rgb(var(--v-theme-surface)) 70%);
+    border: 1px solid rgba(var(--accent), 0.28);
+    color: inherit;
+    font: inherit;
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.category-card:hover {
+.category-card:hover:not(:disabled),
+.category-card:focus-visible {
     transform: translateY(-4px);
-    border-color: rgb(var(--v-theme-primary));
-    box-shadow: 0 16px 24px -14px rgba(2, 12, 27, 0.7);
+    border-color: rgba(var(--accent), 0.8);
+    box-shadow: 0 18px 40px -18px rgba(var(--accent), 0.55);
+    outline: none;
+}
+
+.category-card:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.category-arrow {
+    color: rgb(var(--v-theme-slate));
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.category-card:hover:not(:disabled) .category-arrow {
+    color: rgb(var(--accent));
+    transform: translateX(3px);
+}
+
+/* Devicon renders its own 40px avatar; shrink it to sit inside the round badge. */
+.category-icon :deep(.v-avatar) {
+    width: 18px !important;
+    height: 18px !important;
+}
+
+.query {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: rgb(var(--accent));
+    background: rgba(var(--accent), 0.12);
+    word-break: break-word;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .category-card,
+    .category-arrow {
+        transition: none;
+    }
+
+    .category-card:hover:not(:disabled) {
+        transform: none;
+    }
 }
 </style>

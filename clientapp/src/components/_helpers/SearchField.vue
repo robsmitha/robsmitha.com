@@ -1,52 +1,60 @@
 <template>
-    <v-alert
-        v-if="rateLimited"
-        border="start"
-        border-color="error"
-        color="surface"
-        class="mb-4 font-mono text-body-2"
-        variant="outlined"
-    >
-        <span class="d-block font-weight-bold text-lightest-slate mb-1">Too many requests. Please try again shortly.</span>
+    <div v-if="rateLimited" class="rate-limit pa-4 mb-4" role="alert">
+        <span class="d-block font-weight-bold mb-1">Too many requests. Please try again shortly.</span>
         <template v-if="!auth.signedIn">
-            <span class="text-slate">
+            <span class="rate-limit-text text-body-2">
                 Sign in with
-                <a class="text-primary" href="/.auth/login/aad">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
+                <a class="text-info" href="/.auth/login/aad">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
             </span>
         </template>
         <template v-else-if="!auth.hasValidAccessToken">
-            <span class="text-slate">Authorize robsmitha.com on GitHub to access a higher rate limit.</span>
-            <v-btn size="small" variant="outlined" color="primary" class="font-mono text-none ml-2" @click="emit('authorize', search)">
-                <v-icon size="small" start>mdi-github</v-icon> Authorize
+            <span class="rate-limit-text text-body-2">Authorize robsmitha.com on GitHub to access a higher rate limit.</span>
+            <v-btn size="small" color="white" variant="flat" rounded="pill" class="text-none ml-2" prepend-icon="mdi-github" @click="emit('authorize', search)">
+                Authorize
             </v-btn>
         </template>
-    </v-alert>
+    </div>
 
     <v-text-field
         v-if="!props.rateLimited"
         v-model="search"
-        append-inner-icon="mdi-magnify"
         clearable
         required
         persistent-hint
         variant="outlined"
         color="primary"
         base-color="slate"
-        class="font-mono"
+        class="font-mono search-field"
         rounded="lg"
         :readonly="loading"
-        @click:append-inner="emit('search', search)"
         @keypress.enter="emit('search', search)"
     >
+        <template v-slot:prepend-inner>
+            <v-icon icon="mdi-github" size="20" class="mr-1"></v-icon>
+        </template>
         <template v-slot:label>
-            <span>
-                <v-icon icon="mdi-github" size="small"></v-icon>&nbsp;{{ label }}
-            </span>
+            <span>{{ label }}</span>
+        </template>
+        <template v-slot:append-inner>
+            <v-btn
+                color="white"
+                variant="flat"
+                rounded="pill"
+                size="small"
+                class="text-none search-button"
+                :loading="loading"
+                @click="emit('search', search)"
+            >
+                Search
+            </v-btn>
         </template>
         <template v-slot:details>
-            <span v-if="showDetails" class="ml-n4 text-slate">
-                To learn more about the format of the query, see <a class="text-primary" target="_blank" href="https://docs.github.com/rest/search/search#constructing-a-search-query">Constructing a search query</a>.
-                See <a class="text-primary" target="_blank" href="https://docs.github.com/search-github/searching-on-github/searching-code">Searching code</a> for a detailed list of qualifiers.
+            <span v-if="showDetails" class="ml-n4 search-help">
+                Supports GitHub's
+                <a class="text-info" target="_blank" href="https://docs.github.com/rest/search/search#constructing-a-search-query">query syntax</a>
+                and
+                <a class="text-info" target="_blank" href="https://docs.github.com/search-github/searching-on-github/searching-code">code qualifiers</a>
+                like <code>language:</code> and <code>extension:</code>.
             </span>
         </template>
     </v-text-field>
@@ -78,3 +86,42 @@ watch(search, async (newSearch: string) => {
     }
 })
 </script>
+
+<style scoped>
+/* Sits on the colored hero panels, so it uses a translucent dark fill rather than a theme surface. */
+.search-field :deep(.v-field) {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.search-field :deep(.v-field__append-inner) {
+    align-items: center;
+    padding-top: 0;
+}
+
+.search-button {
+    letter-spacing: 0;
+}
+
+.search-help {
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.6;
+}
+
+.search-help code {
+    font-family: var(--font-mono);
+    padding: 0 4px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.rate-limit {
+    border-radius: 10px;
+    border-left: 3px solid rgb(var(--v-theme-error));
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+}
+
+.rate-limit-text {
+    opacity: 0.8;
+}
+</style>
