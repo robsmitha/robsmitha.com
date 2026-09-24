@@ -5,12 +5,14 @@ import apiClient from '@/api/elysianClient'
 
 type State = {
   userDetails: string | undefined,
+  identityProvider: string | undefined,
   hasGitHubAccessToken: boolean | undefined
 }
 
 export const useAuthStore = defineStore('auth', {
   state: (): State => ({
     userDetails: undefined,
+    identityProvider: undefined,
     hasGitHubAccessToken: undefined
   }),
   getters: {
@@ -30,6 +32,7 @@ export const useAuthStore = defineStore('auth', {
       const identity: ClaimsIdentity = response.data
       if (identity?.clientPrincipal) {
         this.userDetails = identity.clientPrincipal.userDetails
+        this.identityProvider = identity.clientPrincipal.identityProvider
         
         const tokenResponse = await apiClient?.getData('/api/GitHubAuthMe')
         if (tokenResponse?.success){

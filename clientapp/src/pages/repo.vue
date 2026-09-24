@@ -1,113 +1,143 @@
 <template>
     <v-breadcrumbs :items="breadcrumbs" class="px-4 pt-4 font-mono text-caption"></v-breadcrumbs>
 
-    <section class="repo-hero bg-light-navy">
-        <v-container v-if="repo.loading" class="py-10">
-            <v-skeleton-loader
-                type="heading, paragraph, heading"
-                color="surface"
-            ></v-skeleton-loader>
-        </v-container>
-        <v-container v-else class="py-10">
-            <v-row>
-                <v-col>
-                    <div class="d-flex align-center flex-wrap ga-3">
-                        <v-icon color="primary" size="28">mdi-folder-outline</v-icon>
-                        <span :class="titleClass" class="text-lightest-slate">
-                            {{ repo.success ? repo.data.name : "Failed to load repo." }}
-                        </span>
-                        <v-chip v-if="repo.data?.language" size="small" variant="outlined" color="primary" class="font-mono">
-                            <v-avatar start size="16" tile><Devicon :icon="repo.data.language" /></v-avatar>
-                            {{ repo.data.language }}
-                        </v-chip>
-                        <v-spacer />
-                        <div class="d-flex ga-1">
-                            <v-btn v-if="repo.data?.homepage" target="_blank" rel="noopener noreferrer" icon="mdi-web" variant="text" color="lightest-slate" :href="repo.data.homepage"></v-btn>
-                            <v-btn target="_blank" rel="noopener noreferrer" icon="mdi-github" variant="text" color="lightest-slate" :href="repo.data?.html_url"></v-btn>
-                        </div>
-                    </div>
-                    <v-divider class="mt-5 mb-4" thickness="4" length="48" color="primary" />
-                    <p class="text-body-1 text-slate" style="max-width: 640px;">
-                        {{ repo.data?.description}}
-                    </p>
+    <PageHero :eyebrow="`> github.com/robsmitha/${repoName}`" tone="navy" art="editor">
+        <!-- Hero placeholder, laid out like the loaded hero below. -->
+        <div v-if="repo.loading" aria-busy="true" aria-label="Loading repository">
+            <div class="d-flex ga-2 mb-4">
+                <v-skeleton-loader v-for="w in [96, 84, 120]" :key="w" type="chip" class="hero-bone" :style="{ width: `${w}px` }" />
+            </div>
+            <v-skeleton-loader type="heading" class="hero-bone hero-bone--title mb-4" style="width: 55%" />
+            <v-skeleton-loader type="text" class="hero-bone hero-bone--line mb-2" style="width: 85%" />
+            <v-skeleton-loader type="text" class="hero-bone hero-bone--line mb-8" style="width: 60%" />
+            <div class="d-flex ga-8 mb-8">
+                <v-skeleton-loader v-for="i in 4" :key="i" type="heading" class="hero-bone hero-bone--stat" />
+            </div>
+            <v-skeleton-loader type="image" class="hero-bone hero-bone--field" />
+        </div>
 
-                    <div v-if="repo.success" class="d-flex flex-wrap ga-8 mt-10 repo-stats">
-                        <div v-for="s in repoStats" :key="s.label">
-                            <span class="font-mono text-h5 text-lightest-slate font-weight-bold d-block">{{ s.value }}</span>
-                            <span class="font-mono text-caption text-slate text-uppercase">{{ s.label }}</span>
-                        </div>
-                    </div>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="12">
-                    <SearchField
-                        v-if="repo.success"
-                        :label="`Search ${repo.data?.name}`"
-                        :term="term"
-                        :rate-limited="rateLimited"
-                        :dark="true"
-                        :show-details="true"
-                        :loading="loading"
-                        @input="term = $event"
-                        @search="searchGitHub"
-                        @clear="clearSearch"
-                        @authorize="authorizeGitHubApp" />
-                </v-col>
-            </v-row>
-            <v-row v-if="repo.success && repo.data.topics?.length">
-                <v-col>
-                    <v-chip
+        <div v-else-if="!repo.success">
+            <h1 class="hero-title font-weight-bold mb-3">{{ repoName }}</h1>
+            <p class="hero-text mb-6">
+                This repository couldn't be loaded from GitHub. It may be private or renamed, or GitHub's rate limit may have been reached.
+            </p>
+            <v-btn color="white" variant="flat" rounded="pill" class="text-none" to="/">Back to all projects</v-btn>
+        </div>
+
+        <template v-else>
+            <div class="d-flex align-center flex-wrap ga-2 mb-4">
+                <span v-if="repo.data.language" class="hero-pill font-mono text-caption">
+                    <v-avatar size="16" class="pill-icon"><Devicon :icon="repo.data.language" /></v-avatar>
+                    {{ repo.data.language }}
+                </span>
+                <span v-if="repo.data.license?.spdx_id && repo.data.license.spdx_id !== 'NOASSERTION'" class="hero-pill font-mono text-caption">
+                    <v-icon size="14">mdi-scale-balance</v-icon>{{ repo.data.license.spdx_id }}
+                </span>
+                <span class="hero-pill font-mono text-caption">
+                    <span class="status-dot" :class="isActive ? 'bg-green' : 'bg-slate'"></span>
+                    Updated {{ moment(repo.data.pushed_at).fromNow() }}
+                </span>
+                <span v-if="repo.data.fork" class="hero-pill font-mono text-caption">Fork</span>
+                <span v-if="repo.data.archived" class="hero-pill font-mono text-caption text-amber">Archived</span>
+            </div>
+
+            <h1 class="hero-title font-weight-bold mb-3">{{ repo.data.name }}</h1>
+            <p v-if="repo.data.description" class="hero-text mb-5">{{ repo.data.description }}</p>
+
+            <div v-if="repo.data.topics?.length" class="d-flex flex-wrap ga-2 mb-6">
+                <button
                     v-for="t in repo.data.topics"
                     :key="t"
-                    variant="outlined"
-                    color="slate"
-                    size="small"
-                    class="font-mono mr-2 mb-2 topic-chip"
-                    @click="searchTopic(t)">
-                    {{ t }}
-                </v-chip>
-                </v-col>
-            </v-row>
-        </v-container>
-    </section>
+                    type="button"
+                    class="topic-pill font-mono text-caption"
+                    @click="searchTopic(t)"
+                >
+                    #{{ t }}
+                </button>
+            </div>
 
-    <v-container class="py-10">
-        <div class="d-flex align-center mb-6 section-heading">
-            <span class="font-mono text-primary text-body-2 mr-3">01.</span>
-            <h3 class="text-lightest-slate text-h5 font-weight-bold text-nowrap">
-                Code Breakdown
-            </h3>
-            <v-divider class="ml-4 flex-grow-1" color="lightest-navy" thickness="1" />
-        </div>
-        <template v-if="languages.loading">
-            <v-skeleton-loader
-            type="heading, list-item-avatar-three-line"
-            color="surface"
-            class="rounded-lg"
-            width="300px"
-            ></v-skeleton-loader>
+            <div class="d-flex flex-wrap ga-8 mb-6">
+                <div v-for="s in repoStats" :key="s.label">
+                    <span class="font-mono text-h5 font-weight-bold d-block">{{ s.value }}</span>
+                    <span class="font-mono text-caption hero-label">{{ s.label }}</span>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap ga-3 mb-8">
+                <v-btn color="white" variant="flat" rounded="pill" class="text-none" prepend-icon="mdi-github" :href="repo.data.html_url" target="_blank" rel="noopener noreferrer">
+                    View on GitHub
+                </v-btn>
+                <v-btn v-if="repo.data.homepage" color="white" variant="outlined" rounded="pill" class="text-none" append-icon="mdi-open-in-new" :href="repo.data.homepage" target="_blank" rel="noopener noreferrer">
+                    Live site
+                </v-btn>
+            </div>
+
+            <SearchField
+                :label="`Search ${repo.data.name}`"
+                :term="term"
+                :rate-limited="rateLimited"
+                :dark="true"
+                :show-details="true"
+                :loading="loading"
+                @input="term = $event"
+                @search="searchGitHub"
+                @clear="clearSearch"
+                @authorize="authorizeGitHubApp" />
         </template>
-        <ErrorMessage  v-else-if="!languages.success" message="Could not load languages" />
-        <Languages v-else :languages="languages" @language-selected="searchLanguage" />
-    </v-container>
+    </PageHero>
 
-    <v-container class="pt-2 pb-16">
-        <div class="d-flex align-center mb-6 section-heading">
-            <span class="font-mono text-primary text-body-2 mr-3">02.</span>
-            <h3 class="text-lightest-slate text-h5 font-weight-bold text-nowrap">
-                Recent Activity
-            </h3>
-            <v-divider class="ml-4 flex-grow-1" color="lightest-navy" thickness="1" />
-        </div>
-        <v-skeleton-loader v-if="commits.loading"
-        type="list-item-avatar-three-line@5"
-        color="surface"
-        class="rounded-lg"
-        width="300px"
-        ></v-skeleton-loader>
-        <ErrorMessage  v-else-if="!commits.success" message="Could not load commits" />
-        <Commits v-else :commits="commits" />
+    <v-container class="repo-body py-12">
+        <section class="mb-14">
+            <SectionHeading index="01" title="Languages" />
+            <div v-if="languages.loading" aria-busy="true" aria-label="Loading languages">
+                <v-skeleton-loader type="text" class="bone bone--bar mb-3" />
+                <v-skeleton-loader type="text" class="bone bone--caption mb-6" style="width: 260px" />
+                <div class="bone-grid">
+                    <v-skeleton-loader v-for="i in 4" :key="i" type="image" class="bone bone--card" />
+                </div>
+            </div>
+            <p v-else-if="!languages.success" class="text-slate text-body-2">Couldn't load languages from GitHub.</p>
+            <Languages v-else :languages="languages" @language-selected="searchLanguage" />
+        </section>
+
+        <section class="mb-14">
+            <SectionHeading index="02" title="Activity" />
+            <div v-if="commits.loading" class="d-flex flex-wrap ga-8" aria-busy="true" aria-label="Loading activity">
+                <div class="d-flex flex-wrap ga-6 flex-grow-1">
+                    <v-skeleton-loader v-for="i in 4" :key="i" type="heading" class="bone bone--stat" />
+                </div>
+                <v-skeleton-loader type="image" class="bone bone--heatmap" />
+            </div>
+            <p v-else-if="!commits.success" class="text-slate text-body-2">Couldn't load commits from GitHub.</p>
+            <CommitActivity v-else :commits="allCommits" />
+        </section>
+
+        <section>
+            <SectionHeading index="03" title="Commits" />
+            <div v-if="commits.loading" aria-busy="true" aria-label="Loading commits">
+                <div v-for="g in 2" :key="g" class="bone-day">
+                    <v-skeleton-loader type="text" class="bone bone--caption mb-3" style="width: 200px" />
+                    <v-skeleton-loader v-for="r in 2" :key="r" type="image" class="bone bone--commit mb-3" />
+                </div>
+            </div>
+            <Commits v-else-if="commits.success" :commits="commits" />
+        </section>
+
+        <CtaPanel
+            class="mt-12"
+            tone="teal"
+            art="editor"
+            eyebrow="Keep exploring"
+            title="Search across every repo."
+            text="Code search looks through all of my public repositories at once, with GitHub's full query syntax."
+        >
+            <v-btn color="white" variant="flat" rounded="pill" size="large" class="text-none" to="/code">
+                Search code
+            </v-btn>
+            <v-btn color="white" variant="outlined" rounded="pill" size="large" class="text-none" to="/">
+                All projects
+            </v-btn>
+        </CtaPanel>
     </v-container>
 
     <SearchResultsDialog :open="dialog" :loading="loading" :repo="repo.data" :title="`${getWords(term)}`" :results="searchResults" @close="closeDialog" />
@@ -117,31 +147,12 @@
 import githubClient from '@/api/githubClient'
 import elysianClient from '@/api/elysianClient'
 import { ref, computed, onMounted } from 'vue'
-import { useDisplay } from 'vuetify'
-import { SearchItem, TextMatch } from '@/components/Code/CodeSearch.types'
-
-const { mobile } = useDisplay()
-const isMobile = computed(() => mobile.value)
-
-const titleClass = computed(() => ({
-    'text-h4': !isMobile.value,
-    'text-h5': isMobile.value,
-    'font-weight-bold': true
-}))
+import { SearchItem } from '@/components/Code/CodeSearch.types'
+import moment from 'moment'
 
 const props = defineProps({
   name: { type: String }
 })
-
-const formatter = new Intl.DateTimeFormat('en-US', {
-  timeZone: 'UTC',
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  timeZoneName: 'short'
-});
 
 const repoName: string = props.name as string;
 const breadcrumbs = [
@@ -151,7 +162,7 @@ const breadcrumbs = [
     to: '/',
   },
   {
-    title: 'REPO',
+    title: repoName.toUpperCase(),
     disabled: true
   }
 ]
@@ -182,9 +193,16 @@ const repoStats = computed(() => {
     return [
         { value: d.stargazers_count ?? 0, label: 'Stars' },
         { value: d.forks_count ?? 0, label: 'Forks' },
-        { value: new Date(d.created_at).getFullYear(), label: 'Since' },
+        { value: d.open_issues_count ?? 0, label: 'Open issues' },
+        { value: new Date(d.created_at).getFullYear(), label: 'Created' },
     ]
 })
+
+// Pushed to in the last 30 days.
+const isActive = computed(() => repo.value.success && moment().diff(moment(repo.value.data.pushed_at), 'days') <= 30)
+
+// Flat list of fetched commits, newest first, for the activity summary.
+const allCommits = computed(() => commits.value.success ? commits.value.data.flatMap((g: any) => g.commits) : [])
 
 // Search
 const loading = ref(false)
@@ -213,25 +231,16 @@ async function getRepo() {
 
 async function getLanguages(){
     const data = await githubClient?.getLanguages(repoName)
-    const colors = new Map<string, string>([
-        ["C#", "violet"],
-        ["TypeScript", "info"],
-        ["Vue", "primary"],
-        ["HTML", "orange"],
-        ["JavaScript", "amber"],
-        ["CSS", "secondary"],
-        ["SCSS", "secondary"]
-    ]);
     const cards: Array<any> = []
     if (data) {
-        const keys = Object.keys(data)
+        // GitHub reports bytes of code per language; show the largest first.
+        const keys = Object.keys(data).sort((a, b) => data[b] - data[a])
         const sum = keys.reduce((s, l) => s + data[l], 0)
-        keys.map(l => {
+        keys.forEach(l => {
             cards.push({
                 language: l,
-                lines: data[l],
-                percent: Math.round((data[l] / sum) * 100),
-                color: colors.get(l) ?? 'secondary'
+                bytes: data[l],
+                percent: Math.round((data[l] / sum) * 100)
             })
         })
     }
@@ -246,7 +255,7 @@ async function getLanguages(){
 async function getCommits(){
     const data = await githubClient?.getCommits(repoName)
     const dates = data !== null ? data.reduce((groups: any, group: any) => {
-        const date = group.commit.committer.date.split('T')[0];
+        const date = moment(group.commit.committer.date).format('YYYY-MM-DD');
         if (!groups[date]) {
             groups[date] = [];
         }
@@ -351,38 +360,163 @@ function getWords(str: string){
 </script>
 
 <style scoped>
-.repo-hero {
-    border-bottom: 1px solid rgb(var(--v-theme-lightest-navy));
+.repo-body {
+    max-width: 1100px;
 }
 
-.repo-stats > div {
-    padding-left: 2rem;
+.hero-title {
+    font-size: clamp(1.8rem, 2vw + 1rem, 2.6rem);
+    line-height: 1.1;
+    word-break: break-word;
+}
+
+.hero-text {
+    max-width: 56ch;
+    opacity: 0.82;
+}
+
+.hero-label {
+    opacity: 0.7;
+}
+
+.hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Devicon renders its own 40px avatar; shrink it to fit the pill. */
+.pill-icon :deep(.v-avatar) {
+    width: 14px !important;
+    height: 14px !important;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.topic-pill {
+    padding: 3px 10px;
+    border-radius: 999px;
+    color: rgb(var(--v-theme-info));
+    background: rgba(var(--v-theme-info), 0.14);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.topic-pill:hover,
+.topic-pill:focus-visible {
+    border-color: rgb(var(--v-theme-info));
+    outline: none;
+}
+
+/* Placeholder bones: strip Vuetify's built-in margins and tone the color down
+   (the theme's border-opacity of 1 would otherwise make every bone solid white). */
+.bone,
+.hero-bone {
+    background: transparent;
+}
+
+.bone :deep(.v-skeleton-loader__text),
+.bone :deep(.v-skeleton-loader__heading),
+.bone :deep(.v-skeleton-loader__image) {
+    margin: 0;
+    max-width: none;
+    width: 100%;
+    background: rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.hero-bone :deep(.v-skeleton-loader__chip),
+.hero-bone :deep(.v-skeleton-loader__heading),
+.hero-bone :deep(.v-skeleton-loader__text),
+.hero-bone :deep(.v-skeleton-loader__image) {
+    margin: 0;
+    max-width: none;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hero-bone :deep(.v-skeleton-loader__chip) {
+    height: 24px;
+}
+
+.hero-bone--title :deep(.v-skeleton-loader__heading) {
+    height: 36px;
+    border-radius: 8px;
+}
+
+.hero-bone--line :deep(.v-skeleton-loader__text) {
+    height: 14px;
+}
+
+.hero-bone--stat {
+    width: 64px;
+}
+
+.hero-bone--stat :deep(.v-skeleton-loader__heading) {
+    height: 44px;
+    border-radius: 8px;
+}
+
+.hero-bone--field :deep(.v-skeleton-loader__image) {
+    height: 56px;
+    border-radius: 12px;
+}
+
+.bone--bar :deep(.v-skeleton-loader__text) {
+    height: 10px;
+    border-radius: 999px;
+}
+
+.bone--caption :deep(.v-skeleton-loader__text) {
+    height: 10px;
+}
+
+.bone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.bone--card :deep(.v-skeleton-loader__image) {
+    height: 96px;
+    border-radius: 12px;
+}
+
+.bone--stat {
+    width: 110px;
+}
+
+.bone--stat :deep(.v-skeleton-loader__heading) {
+    height: 52px;
+    border-radius: 8px;
+}
+
+.bone--heatmap {
+    width: 212px;
+}
+
+.bone--heatmap :deep(.v-skeleton-loader__image) {
+    height: 150px;
+    border-radius: 8px;
+}
+
+.bone-day {
+    margin-left: 6px;
+    padding-left: 1.75rem;
+    padding-bottom: 2rem;
     border-left: 1px solid rgb(var(--v-theme-lightest-navy));
 }
 
-.repo-stats > div:first-child {
-    padding-left: 0;
-    border-left: none;
-}
-
-.topic-chip {
-    transition: border-color 0.2s ease, color 0.2s ease;
-}
-
-.topic-chip:hover {
-    border-color: rgb(var(--v-theme-primary));
-    color: rgb(var(--v-theme-primary));
-}
-
-@media (max-width: 600px) {
-    .repo-stats {
-        gap: 1.5rem !important;
-    }
-
-    .repo-stats > div {
-        padding-left: 0;
-        border-left: none;
-        min-width: 40%;
-    }
+.bone--commit :deep(.v-skeleton-loader__image) {
+    height: 72px;
+    border-radius: 12px;
 }
 </style>

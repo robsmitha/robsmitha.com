@@ -29,7 +29,8 @@ export const useBudgetStore = defineStore('budget', {
     },
     async fetchAccessItems(): Promise<void> {
       const response = await accessItemService.getUserAccessItems()
-      this.accessItems = response.data
+      // Fall back to an empty list on failure so pages show their empty state instead of loading forever.
+      this.accessItems = response.data ?? []
     },
     async fetchBudget(budgetId: number){
         this.loadingBudget = true

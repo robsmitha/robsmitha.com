@@ -44,54 +44,102 @@
             aria-label="LinkedIn"
           ></v-btn>
         </template>
-        <v-btn v-if="!auth.signedIn" variant="outlined" color="white" href="/.auth/login/aad" class="ml-2">
-          Sign In
+        <v-btn
+          v-if="!auth.signedIn"
+          variant="outlined"
+          color="white"
+          rounded="pill"
+          class="text-none ml-2"
+          prepend-icon="mdi-login"
+          href="/.auth/login/aad"
+        >
+          Sign in
         </v-btn>
+
+        <!-- Account menu: who's signed in, admin tools, and sign out. -->
         <v-menu
+          v-else
           v-model="menu"
-          location="bottom"
+          location="bottom end"
+          offset="10"
         >
           <template v-slot:activator="{ props }">
-            <v-avatar
-              v-if="auth.signedIn"
-              size="35"
-              color="blue-darken-4"
-              class="mx-2"
+            <button
               v-bind="props"
-              >
-              <v-btn icon variant="text">
-                <span class="text-h5 font-weight-bold">
-                  {{ auth.userDetails?.charAt(0)?.toUpperCase() }}
-                </span>
-              </v-btn>
-            </v-avatar>
+              type="button"
+              class="account-trigger d-flex align-center ga-2 ml-2"
+              :class="{ 'account-trigger--open': menu, 'account-trigger--wide': !isMobile }"
+              :aria-label="`Account menu for ${auth.userDetails}`"
+            >
+              <span class="account-avatar account-avatar--small font-weight-bold">{{ initials }}</span>
+              <v-icon v-if="!isMobile" size="16" class="account-chevron">mdi-chevron-down</v-icon>
+            </button>
           </template>
 
-          <v-card min-width="300" color="surface">
-            <v-list bg-color="surface">
-              <v-list-item>
-                <v-list-item-subtitle class="text-slate">
-                  {{ auth.userDetails }}
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-list>
+          <v-card class="account-menu" color="surface" rounded="lg" width="320">
+            <div class="account-header d-flex align-center ga-3 pa-4">
+              <span class="account-avatar font-weight-bold flex-shrink-0">{{ initials }}</span>
+              <div class="min-width-0">
+                <span class="text-lightest-slate font-weight-bold d-block text-truncate">{{ auth.userDetails }}</span>
+                <span class="font-mono text-caption text-slate d-flex align-center ga-1">
+                  <v-icon size="12">{{ providerIcon }}</v-icon>
+                  Signed in with {{ providerName }}
+                </span>
+              </div>
+            </div>
 
-            <v-divider color="lightest-navy"></v-divider>
+            <v-divider color="lightest-navy" />
 
-            <v-list density="compact" bg-color="surface">
-              <v-list-item prepend-icon="mdi-account-group" title="Users" to="/users"></v-list-item>
-              <v-list-item prepend-icon="mdi-tag-multiple" title="Products" to="/products"></v-list-item>
-              <v-list-item prepend-icon="mdi-bank" title="Accounts" to="/accounts"></v-list-item>
-              <v-list-item prepend-icon="mdi-currency-usd" title="Spending" to="/spending"></v-list-item>
-            </v-list>
+            <p class="menu-label font-mono text-caption text-uppercase px-4 pt-3 pb-1 mb-0">Admin</p>
+            <nav class="px-2 pb-2" aria-label="Admin">
+              <router-link
+                v-for="link in adminLinks"
+                :key="link.to"
+                :to="link.to"
+                class="menu-link d-flex align-center ga-3 px-2 py-2"
+                active-class="menu-link--active"
+                :style="{ '--accent': `var(--v-theme-${link.color})` }"
+                @click="menu = false"
+              >
+                <span class="menu-icon flex-shrink-0"><v-icon size="18">{{ link.icon }}</v-icon></span>
+                <span class="min-width-0">
+                  <span class="text-lightest-slate text-body-2 d-block">{{ link.title }}</span>
+                  <span class="text-slate text-caption d-block">{{ link.description }}</span>
+                </span>
+              </router-link>
+            </nav>
 
-            <v-divider color="lightest-navy"></v-divider>
+            <v-divider color="lightest-navy" />
 
-            <v-card-actions>
-              <v-btn block variant="outlined" color="primary" href="/.auth/logout">
-                Logout
+            <!-- A GitHub token raises the code search rate limit. -->
+            <div class="d-flex align-center ga-3 px-4 py-3">
+              <v-icon size="18" class="text-slate">mdi-github</v-icon>
+              <span class="flex-grow-1 min-width-0">
+                <span class="text-light-slate text-body-2 d-block">GitHub</span>
+                <span class="font-mono text-caption" :class="auth.hasValidAccessToken ? 'text-green' : 'text-slate'">
+                  {{ auth.hasValidAccessToken ? 'Connected for code search' : 'Not connected' }}
+                </span>
+              </span>
+              <v-btn
+                v-if="!auth.hasValidAccessToken"
+                size="small"
+                variant="outlined"
+                color="primary"
+                rounded="pill"
+                class="text-none"
+                :loading="connecting"
+                @click="connectGitHub"
+              >
+                Connect
               </v-btn>
-            </v-card-actions>
+            </div>
+
+            <v-divider color="lightest-navy" />
+
+            <a href="/.auth/logout" class="menu-link menu-link--signout d-flex align-center ga-3 px-4 py-3">
+              <v-icon size="18">mdi-logout</v-icon>
+              <span class="text-body-2">Sign out</span>
+            </a>
           </v-card>
         </v-menu>
       </template>
@@ -150,6 +198,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useGoTo } from 'vuetify'
 import { useGithubStore } from "@/store/github"
 import { useDisplay } from 'vuetify'
+import elysianClient from '@/api/elysianClient'
 
 const { mobile } = useDisplay()
 const route = useRoute()
@@ -170,6 +219,41 @@ const transparency = ref(false)
 const menu = ref(false)
 
 const isMobile = computed(() => mobile.value)
+
+const adminLinks = [
+  { title: 'Users', description: 'Access control and permissions', icon: 'mdi-account-group-outline', to: '/users', color: 'info' },
+  { title: 'Products', description: 'Merchant catalog', icon: 'mdi-tag-multiple-outline', to: '/products', color: 'violet' },
+  { title: 'Accounts', description: 'Linked banks and income', icon: 'mdi-bank-outline', to: '/accounts', color: 'green' },
+  { title: 'Spending', description: 'Budgets and estimates', icon: 'mdi-wallet-outline', to: '/spending', color: 'primary' },
+]
+
+const initials = computed(() => {
+  const name = auth.userDetails ?? ''
+  const parts = name.split(/[\s@._-]+/).filter(Boolean)
+  return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?'
+})
+
+const providerName = computed(() => {
+  switch (auth.identityProvider) {
+    case 'aad': return 'Microsoft'
+    case 'github': return 'GitHub'
+    default: return auth.identityProvider ?? 'your account'
+  }
+})
+
+const providerIcon = computed(() => auth.identityProvider === 'github' ? 'mdi-github' : 'mdi-microsoft')
+
+const connecting = ref(false)
+
+async function connectGitHub() {
+  connecting.value = true
+  const response = await elysianClient.getData('/api/GitHubOAuthUrl')
+  if (response?.success && response.data?.oAuthUrl) {
+    window.location = response.data.oAuthUrl
+    return
+  }
+  connecting.value = false
+}
 
 // const navLinks = [
 //   { text: 'Projects', to: { path: '/', hash: '#projects' } },
@@ -201,6 +285,110 @@ function onBrandClick(){
   background-color: rgb(var(--v-theme-background)) !important;
   border-bottom: 1px solid rgb(var(--v-theme-lightest-navy));
   box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.5) !important;
+}
+
+.account-trigger {
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--v-theme-lightest-navy));
+  background: rgba(var(--v-theme-surface), 0.6);
+  color: rgb(var(--v-theme-slate));
+  transition: border-color 0.15s ease;
+}
+
+.account-trigger--wide {
+  padding-right: 8px;
+}
+
+.account-trigger:hover,
+.account-trigger:focus-visible,
+.account-trigger--open {
+  border-color: rgb(var(--v-theme-primary));
+  outline: none;
+}
+
+.account-chevron {
+  transition: transform 0.2s ease;
+}
+
+.account-trigger--open .account-chevron {
+  transform: rotate(180deg);
+}
+
+/* Initials on a Darcula-colored gradient ring. */
+.account-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(var(--v-theme-lightest-slate));
+  background:
+    linear-gradient(rgb(var(--v-theme-surface-bright)), rgb(var(--v-theme-surface-bright))) padding-box,
+    linear-gradient(135deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-violet)), rgb(var(--v-theme-info))) border-box;
+  border: 2px solid transparent;
+}
+
+.account-avatar--small {
+  width: 30px;
+  height: 30px;
+  font-size: 0.75rem;
+}
+
+.account-menu {
+  border: 1px solid rgb(var(--v-theme-lightest-navy));
+  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.7) !important;
+}
+
+.account-header {
+  background: radial-gradient(120% 140% at 0% 0%, rgba(var(--v-theme-violet), 0.14), transparent 60%);
+}
+
+.min-width-0 {
+  min-width: 0;
+}
+
+.menu-label {
+  color: rgb(var(--v-theme-slate));
+  letter-spacing: 0.08em;
+}
+
+.menu-link {
+  text-decoration: none;
+  border-radius: 8px;
+  color: rgb(var(--v-theme-light-slate));
+  transition: background-color 0.15s ease;
+}
+
+.menu-link:hover,
+.menu-link:focus-visible {
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  outline: none;
+}
+
+.menu-link--active {
+  background: rgba(var(--accent), 0.1);
+}
+
+.menu-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(var(--accent));
+  background: rgba(var(--accent), 0.14);
+}
+
+.menu-link--signout {
+  border-radius: 0;
+  color: rgb(var(--v-theme-error));
+}
+
+.menu-link--signout:hover {
+  background: rgba(var(--v-theme-error), 0.08);
 }
 
 .cursor-pointer {

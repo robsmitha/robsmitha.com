@@ -30,17 +30,20 @@ export const useIncomeStore = defineStore('income', {
     async fetchIncomeSources(institutionAccessItemId: number){
         this.loadingIncome = true
         const response = await incomeService.getIncomeSources(institutionAccessItemId, this.selectedMonthlyTimeline?.month, this.selectedMonthlyTimeline?.year)
+        this.loadingIncome = false
+        // Leave the previous data in place if the request fails instead of throwing on a missing response.
+        if (!response?.success || !response.data) return
         this.incomeSourceResponse = response.data
         if(!this.selectedMonthlyTimeline){
           this.selectedMonthlyTimeline = this.incomeSourceResponse!.monthlyTimeline
         }
-        this.loadingIncome = false
     },
     async fetchTransactions(institutionAccessItemId: number){
         this.loadingTransactions = true
         const response = await incomeService.getTransactions(institutionAccessItemId)
-        this.transactionsResponse = response.data
         this.loadingTransactions = false
+        if (!response?.success || !response.data) return
+        this.transactionsResponse = response.data
     },
   }
 })

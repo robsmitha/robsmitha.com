@@ -2,6 +2,7 @@
     <v-breadcrumbs :items="breadcrumbs" class="px-4 pt-4 font-mono text-caption"></v-breadcrumbs>
     <ProductList
         :items="products"
+        :loading="listLoading"
         @view="viewProduct"
         @edit="editProduct"
         @delete="deleteProduct"
@@ -68,6 +69,7 @@ const snackbar = ref(false)
 const errorMessage = ref('')
 
 const products = ref([])
+const listLoading = ref(false)
 
 onMounted(() => {
     getProducts()
@@ -80,7 +82,9 @@ watch(dialog, (newValue) => {
 })
 
 async function getProducts(){
+    listLoading.value = true
     const response = await apiClient.getData('/api/GetProducts')
+    listLoading.value = false
     
     if(!response.success){
         if(response.errorMessage){
@@ -91,7 +95,7 @@ async function getProducts(){
         snackbar.value = true
     }
 
-    products.value = response.data
+    products.value = response.data ?? []
 }
 
 function viewProduct(serialNumber: string) {

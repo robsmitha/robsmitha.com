@@ -103,7 +103,7 @@ async function getRepo(repo: string): Promise<GithubRepo | null> {
 }
 
 async function getCommits(repo: string): Promise<GithubCommit[] | null> {
-  return get<GithubCommit[]>(`${endpoint}/repos/${login}/${repo}/commits`);
+  return get<GithubCommit[]>(`${endpoint}/repos/${login}/${repo}/commits?per_page=100`);
 }
 
 async function getCommit(repo: string, sha: string): Promise<GithubCommit | null> {
