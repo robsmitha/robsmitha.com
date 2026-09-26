@@ -12,10 +12,6 @@
       <div class="hero-layout">
         <!-- Copy -->
         <div class="hero-copy">
-          <!-- <span v-if="props.badge" class="hero-badge font-mono text-caption mb-6">
-            <span class="hero-badge-dot"></span>{{ props.badge }}
-          </span> -->
-
           <h1 class="hero-name font-weight-bold mb-2">
             Rob Smitha<span class="hero-name-dot">.</span>
           </h1>
