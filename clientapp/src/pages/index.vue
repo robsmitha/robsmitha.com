@@ -6,7 +6,8 @@ meta:
 <template>
   <HelloWorld
     title="Code Fast. Dad Faster."
-    subtitle="Full-stack software engineer building fast, accessible web applications for the public sector. Currently a Senior Software Engineer at JustFOIA."
+    badge="Senior Software Engineer at JustFOIA"
+    subtitle="Full-stack engineer building fast, accessible web applications for the public sector, from C# and SQL Server on the back end to Vue in the browser."
     :actions="actions"
   />
 
@@ -75,7 +76,9 @@ const goTo = useGoTo()
 
 const resumeUrl = 'https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/files/Rob+Smitha+Resume.pdf'
 
+// The first action is the primary (filled) button.
 const actions = [
+  { text: 'See my work', icon: 'mdi-arrow-down', to: '/#projects' },
   { text: 'Resume', icon: 'mdi-file-document-outline', href: resumeUrl },
   { text: 'GitHub', icon: 'mdi-github', href: 'https://github.com/robsmitha' },
 ]

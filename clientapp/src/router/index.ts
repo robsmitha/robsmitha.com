@@ -100,7 +100,14 @@ const router = createRouter({
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   scrollBehavior(to: RouteLocationNormalized, from: RouteLocationNormalized, savedPosition: null | { left: number, top: number }) {
-    // always scroll to top
+    // Back/forward returns to where the reader was.
+    if (savedPosition) {
+      return savedPosition
+    }
+    // Links like /#projects scroll to that section, clearing the fixed 64px app bar.
+    if (to.hash) {
+      return { el: to.hash, top: 64, behavior: 'smooth' }
+    }
     return { top: 0 }
   },
 })
