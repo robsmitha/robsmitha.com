@@ -519,27 +519,14 @@ onBeforeUnmount(() => window.clearTimeout(timer))
   }
 }
 
+/* The editor needs more width than a phone has, so phones get the copy only. */
 @media (max-width: 600px) {
   .hero-section {
     min-height: auto;
   }
 
-  .ide-tab:not(.ide-tab--active) {
+  .hero-ide-wrap {
     display: none;
-  }
-
-  .ide-body {
-    min-height: 0;
-    font-size: 0.6875rem;
-  }
-
-  .ide-gutter {
-    flex-basis: 32px;
-    padding-right: 10px;
-  }
-
-  .ide-code {
-    overflow: hidden;
   }
 }
 
