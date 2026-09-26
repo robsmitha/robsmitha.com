@@ -10,10 +10,12 @@
             <v-skeleton-loader type="heading" class="hero-bone hero-bone--title mb-4" style="width: 55%" />
             <v-skeleton-loader type="text" class="hero-bone hero-bone--line mb-2" style="width: 85%" />
             <v-skeleton-loader type="text" class="hero-bone hero-bone--line mb-8" style="width: 60%" />
-            <div class="d-flex ga-8 mb-8">
+            <div class="d-flex ga-8 mb-6">
                 <v-skeleton-loader v-for="i in 4" :key="i" type="heading" class="hero-bone hero-bone--stat" />
             </div>
-            <v-skeleton-loader type="image" class="hero-bone hero-bone--field" />
+            <div class="d-flex ga-3">
+                <v-skeleton-loader v-for="w in [150, 110]" :key="w" type="chip" class="hero-bone hero-bone--button" :style="{ width: `${w}px` }" />
+            </div>
         </div>
 
         <div v-else-if="!repo.success">
@@ -63,7 +65,7 @@
                 </div>
             </div>
 
-            <div class="d-flex flex-wrap ga-3 mb-8">
+            <div class="d-flex flex-wrap ga-3">
                 <v-btn color="white" variant="flat" rounded="pill" class="text-none" prepend-icon="mdi-github" :href="repo.data.html_url" target="_blank" rel="noopener noreferrer">
                     View on GitHub
                 </v-btn>
@@ -71,20 +73,29 @@
                     Live site
                 </v-btn>
             </div>
-
-            <SearchField
-                :label="`Search ${repo.data.name}`"
-                :term="term"
-                :rate-limited="rateLimited"
-                :dark="true"
-                :show-details="true"
-                :loading="loading"
-                @input="term = $event"
-                @search="searchGitHub"
-                @clear="clearSearch"
-                @authorize="authorizeGitHubApp" />
         </template>
     </PageHero>
+
+    <!-- Search bar pinned under the app bar, like the tab strips on other pages. -->
+    <div v-if="repo.success" class="repo-toolbar">
+        <v-container class="repo-toolbar-inner d-flex align-center ga-4 py-3">
+            <div class="flex-grow-1 min-width-0">
+                <SearchField
+                    :label="`Search code in ${repo.data.name}`"
+                    :term="term"
+                    :rate-limited="rateLimited"
+                    :loading="loading"
+                    compact
+                    @input="term = $event"
+                    @search="searchGitHub"
+                    @clear="clearSearch"
+                    @authorize="authorizeGitHubApp" />
+            </div>
+            <span class="shortcut-hint font-mono text-caption d-none d-md-inline-flex align-center ga-2">
+                Press <kbd>enter</kbd> to search
+            </span>
+        </v-container>
+    </div>
 
     <v-container class="repo-body py-12">
         <section class="mb-14">
@@ -146,7 +157,7 @@
 <script setup lang="ts">
 import githubClient from '@/api/githubClient'
 import elysianClient from '@/api/elysianClient'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { SearchItem } from '@/components/Code/CodeSearch.types'
 import moment from 'moment'
 
@@ -218,7 +229,22 @@ onMounted(() => {
     getRepo()
     getLanguages()
     getCommits()
+    window.addEventListener('keydown', focusSearchOnSlash)
 })
+
+onBeforeUnmount(() => window.removeEventListener('keydown', focusSearchOnSlash))
+
+// "/" jumps to the repo search, like on GitHub, unless the reader is already typing somewhere.
+function focusSearchOnSlash(e: KeyboardEvent) {
+    const target = e.target as HTMLElement | null
+    const typing = target?.closest('input, textarea, [contenteditable="true"]')
+    if (e.key !== '/' || typing || e.ctrlKey || e.metaKey || e.altKey) return
+    const input = document.querySelector<HTMLInputElement>('.repo-toolbar input')
+    if (input) {
+        e.preventDefault()
+        input.focus()
+    }
+}
 
 async function getRepo() {
     const data = await githubClient.getRepo(repoName)
@@ -360,6 +386,39 @@ function getWords(str: string){
 </script>
 
 <style scoped>
+/* Stays pinned under the 64px app bar while scrolling the repo. */
+.repo-toolbar {
+    position: sticky;
+    top: 64px;
+    z-index: 5;
+    border-bottom: 1px solid rgb(var(--v-theme-lightest-navy));
+    background: rgba(var(--v-theme-background), 0.85);
+    backdrop-filter: blur(10px);
+}
+
+.repo-toolbar-inner {
+    max-width: 1100px;
+}
+
+.min-width-0 {
+    min-width: 0;
+}
+
+.shortcut-hint {
+    color: rgb(var(--v-theme-slate));
+    white-space: nowrap;
+}
+
+.shortcut-hint kbd {
+    font-family: var(--font-mono);
+    padding: 1px 7px;
+    border-radius: 4px;
+    color: rgb(var(--v-theme-lightest-slate));
+    background: rgb(var(--v-theme-surface));
+    border: 1px solid rgb(var(--v-theme-lightest-navy));
+    box-shadow: inset 0 -1px 0 rgb(var(--v-theme-lightest-navy));
+}
+
 .repo-body {
     max-width: 1100px;
 }
@@ -465,9 +524,9 @@ function getWords(str: string){
     border-radius: 8px;
 }
 
-.hero-bone--field :deep(.v-skeleton-loader__image) {
-    height: 56px;
-    border-radius: 12px;
+.hero-bone--button :deep(.v-skeleton-loader__chip) {
+    height: 36px;
+    border-radius: 999px;
 }
 
 .bone--bar :deep(.v-skeleton-loader__text) {

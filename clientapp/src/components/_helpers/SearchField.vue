@@ -25,6 +25,9 @@
         color="primary"
         base-color="slate"
         class="font-mono search-field"
+        :class="{ 'search-field--compact': compact }"
+        :density="compact ? 'compact' : 'default'"
+        :hide-details="compact"
         rounded="lg"
         :readonly="loading"
         @keypress.enter="emit('search', search)"
@@ -66,7 +69,7 @@ import { watch, computed } from 'vue'
 import { useAuthStore } from "@/store/auth"
 
 
-const props = defineProps(['rateLimited', 'loading', 'term', 'dark', 'label', 'showDetails'])
+const props = defineProps(['rateLimited', 'loading', 'term', 'dark', 'label', 'showDetails', 'compact'])
 const emit = defineEmits(['input', 'search', 'authorize', 'clear'])
 
 const auth = useAuthStore()
@@ -96,6 +99,11 @@ watch(search, async (newSearch: string) => {
 .search-field :deep(.v-field__append-inner) {
     align-items: center;
     padding-top: 0;
+}
+
+/* Compact fields sit on the page background (e.g. a toolbar), not a colored hero. */
+.search-field--compact :deep(.v-field) {
+    background: rgb(var(--v-theme-surface));
 }
 
 .search-button {
