@@ -22,12 +22,21 @@
                 &middot; {{ ordinal(bill.congress) }} Congress
             </p>
 
-            <div v-if="bill.latestAction" class="latest-action mb-8">
+            <div v-if="bill.latestAction" class="latest-action" :class="trackedBill ? 'mb-3' : 'mb-8'">
                 <span class="font-mono text-caption text-uppercase d-block mb-1 latest-action-label">
                     Latest action &middot; {{ moment(bill.latestAction.actionDate).startOf('day').fromNow() }}
                 </span>
                 <p class="mb-0" v-html="bill.latestAction.text"></p>
             </div>
+
+            <!-- The reader's own note, once they've saved this bill. -->
+            <TrackedBillNotes
+                v-if="trackedBill"
+                v-model:editing="editingNotes"
+                :bill="trackedBill"
+                variant="hero"
+                class="mb-8"
+            />
 
             <div class="d-flex flex-wrap ga-8 mb-8">
                 <div v-for="s in stats" :key="s.label">
@@ -43,6 +52,7 @@
                 <v-btn color="white" variant="outlined" rounded="pill" class="text-none" append-icon="mdi-open-in-new" :href="`${publicUrl}/text`" target="_blank">
                     Read the text
                 </v-btn>
+                <SaveBillButton variant="hero" :congress="bill.congress" :bill-type="bill.type" :bill-number="bill.number" />
             </div>
         </template>
 
@@ -411,7 +421,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
+import { useCongressStore } from '@/store/congress'
 import { Bill } from '@/components/Congress/types/BillDetailsResponse.types'
 import { Action } from '@/components/Congress/types/BillActionsResponse.types'
 import { Cosponsor } from '@/components/Congress/types/BillCosponsorsResponse.types'
@@ -451,6 +462,19 @@ const relatedLimit = 6
 onMounted(() => {
     getBill()
 })
+
+// Opening a saved bill clears its new activity badge. Saved bills load after sign in,
+// which can finish after this page, so wait for this one to turn up.
+const congressStore = useCongressStore()
+const trackedBill = computed(() => congressStore.findTracked(props.congress!, props.billType!, props.billNumber!))
+const editingNotes = ref(false)
+
+let markedViewed = false
+watch(trackedBill, t => {
+    if (!t || markedViewed) return
+    markedViewed = true
+    congressStore.markViewed(t.billTrackingId)
+}, { immediate: true })
 
 async function getBill(){
     const response = await apiClient?.getData(`/api/CongressGetBill?congress=${props.congress}&billType=${props.billType}&billNumber=${props.billNumber}`)

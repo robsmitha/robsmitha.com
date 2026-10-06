@@ -125,6 +125,7 @@
                 <v-infinite-scroll
                     :mode="items.length > 20 ? 'manual' : 'intersect'"
                     color="primary"
+                    class="feed-scroll"
                     @load="load"
                 >
                     <div v-for="group in groupedItems" :key="group.key" class="day-group">
@@ -164,6 +165,7 @@
                                         </div>
                                     </div>
 
+                                    <SaveBillButton :congress="congressNumber!" :bill-type="i.type" :bill-number="i.number" />
                                     <v-icon color="slate" size="18" class="flex-shrink-0 bill-chevron">mdi-arrow-right</v-icon>
                                 </div>
                             </div>
@@ -555,6 +557,14 @@ onMounted(() => {
 .day-label {
     color: rgb(var(--v-theme-light-slate));
     letter-spacing: 0.08em;
+}
+
+/* The infinite scroll is a scroll container, so it clips anything past its edges,
+   including a row's hover nudge and glow. Pad it out for room and pull the margin
+   back in so the rows stay where they were. */
+.feed-scroll {
+    padding: 0 16px 32px;
+    margin: 0 -16px -32px;
 }
 
 .bill-row {

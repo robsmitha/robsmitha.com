@@ -19,6 +19,13 @@ namespace ElysianFunctions.Middleware
             var inputData = featureType.GetProperties().SingleOrDefault(p => p.Name == "InputData")?.GetValue(featureInstance) as IReadOnlyDictionary<string, object>;
             var requestData = inputData?.Values.SingleOrDefault(obj => obj is HttpRequestData) as HttpRequestData;
 
+            // Timer jobs have no request to read a tenant header from; they pick their tenants themselves.
+            if (requestData == null)
+            {
+                await next(context);
+                return;
+            }
+
             context.InstanceServices.GetRequiredService<IMultiTenantContextAccessor>();
             var multiTenantContextSetter = context.InstanceServices.GetRequiredService<IMultiTenantContextSetter>();
 

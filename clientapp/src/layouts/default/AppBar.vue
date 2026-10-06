@@ -71,7 +71,10 @@
               :class="{ 'account-trigger--open': menu, 'account-trigger--wide': !isMobile }"
               :aria-label="`Account menu for ${auth.userDetails}`"
             >
-              <span class="account-avatar account-avatar--small font-weight-bold">{{ initials }}</span>
+              <span class="account-avatar account-avatar--small font-weight-bold position-relative">
+                {{ initials }}
+                <span v-if="congressStore.unseenCount" class="account-activity-dot" aria-hidden="true"></span>
+              </span>
               <v-icon v-if="!isMobile" size="16" class="account-chevron">mdi-chevron-down</v-icon>
             </button>
           </template>
@@ -87,6 +90,30 @@
                 </span>
               </div>
             </div>
+
+            <v-divider color="lightest-navy" />
+
+            <p class="menu-label font-mono text-caption text-uppercase px-4 pt-3 pb-1 mb-0">Your activity</p>
+            <nav class="px-2 pb-2" aria-label="Your activity">
+              <router-link
+                to="/saved-bills"
+                class="menu-link d-flex align-center ga-3 px-2 py-2"
+                active-class="menu-link--active"
+                style="--accent: var(--v-theme-amber)"
+                @click="menu = false"
+              >
+                <span class="menu-icon flex-shrink-0"><v-icon size="18">mdi-bookmark-multiple-outline</v-icon></span>
+                <span class="min-width-0 flex-grow-1">
+                  <span class="text-lightest-slate text-body-2 d-block">Saved bills</span>
+                  <span class="text-slate text-caption d-block">{{ savedBillsDescription }}</span>
+                </span>
+                <span
+                  v-if="congressStore.unseenCount"
+                  class="activity-count font-mono text-caption flex-shrink-0"
+                  :aria-label="`${congressStore.unseenCount} with new activity`"
+                >{{ congressStore.unseenCount }}</span>
+              </router-link>
+            </nav>
 
             <v-divider color="lightest-navy" />
 
@@ -159,6 +186,7 @@
         <v-list-item prepend-icon="mdi-magnify" title="Search Code" value="code" to="/code"></v-list-item>
         <v-list-item prepend-icon="mdi-rocket-launch-outline" title="Generate Code" value="generate-code" to="/generate-code"></v-list-item>
         <v-list-item prepend-icon="mdi-rss" title="Congress Feed" value="congress" to="/congress"></v-list-item>
+        <v-list-item v-if="auth.signedIn" prepend-icon="mdi-bookmark-multiple-outline" title="Saved Bills" value="saved-bills" to="/saved-bills"></v-list-item>
 
         <v-list-item subtitle="External Links"></v-list-item>
         <v-list-item prepend-icon="mdi-github" title="GitHub" href="https://github.com/robsmitha" target="_blank"></v-list-item>
@@ -194,6 +222,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useAppStore } from "@/store/app"
 import { useAuthStore } from "@/store/auth"
+import { useCongressStore } from "@/store/congress"
 import { useRoute, useRouter } from 'vue-router'
 import { useGoTo } from 'vuetify'
 import { useGithubStore } from "@/store/github"
@@ -212,7 +241,15 @@ const gitHubStore = useGithubStore()
 gitHubStore.fetchRepos()
 
 const auth = useAuthStore()
+const congressStore = useCongressStore()
 auth.fetchAuth()
+
+// Saved bills drive the bookmark buttons, the menu badge and the saved page, so load them on sign in.
+watch(() => auth.signedIn, signedIn => {
+  if (signedIn) {
+    congressStore.fetchTrackedBills()
+  }
+}, { immediate: true })
 
 const drawer = ref(false)
 const transparency = ref(false)
@@ -226,6 +263,14 @@ const adminLinks = [
   { title: 'Accounts', description: 'Linked banks and income', icon: 'mdi-bank-outline', to: '/accounts', color: 'green' },
   { title: 'Spending', description: 'Budgets and estimates', icon: 'mdi-wallet-outline', to: '/spending', color: 'primary' },
 ]
+
+const savedBillsDescription = computed(() => {
+  const count = congressStore.trackedBills.length
+  if (!congressStore.loaded) return 'Bills you follow in Congress'
+  if (count === 0) return 'Bookmark bills from the Congress feed'
+  const unseen = congressStore.unseenCount
+  return `${count} saved` + (unseen ? `, ${unseen} with new activity` : '')
+})
 
 const initials = computed(() => {
   const name = auth.userDetails ?? ''
@@ -334,6 +379,28 @@ function onBrandClick(){
   width: 30px;
   height: 30px;
   font-size: 0.75rem;
+}
+
+/* Saved bills with activity the reader hasn't seen yet. */
+.account-activity-dot {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgb(var(--v-theme-amber));
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-background));
+}
+
+.activity-count {
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  text-align: center;
+  font-weight: 700;
+  color: rgb(var(--v-theme-amber));
+  background: rgba(var(--v-theme-amber), 0.16);
 }
 
 .account-menu {

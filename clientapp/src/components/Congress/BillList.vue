@@ -74,6 +74,9 @@
                             <template v-else-if="header.key === 'congress'">
                                 <span class="font-mono text-caption text-slate">{{ item.congress }}</span>
                             </template>
+                            <template v-else-if="header.key === 'actions'">
+                                <SaveBillButton :congress="item.congress" :bill-type="item.type" :bill-number="item.number" />
+                            </template>
                             <template v-else>
                                 {{ getNestedValue(item, header.key) }}
                             </template>

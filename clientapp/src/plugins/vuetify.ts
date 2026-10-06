@@ -39,6 +39,8 @@ const portfolio: ThemeDefinition = {
     'on-surface': '#eaeaef',
     'on-primary': '#0a0a0c',
     'on-secondary': '#0a0a0c',
+    // Tooltips use surface-variant; without this, Vuetify's dark default (#424242) puts dark grey text on it.
+    'on-surface-variant': '#eaeaef',
 
     navy: '#0a0a0c',
     'light-navy': '#151517',

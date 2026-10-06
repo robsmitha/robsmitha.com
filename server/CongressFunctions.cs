@@ -5,15 +5,63 @@ using CapitolSharp.Congress.Enums;
 using CapitolSharp.Congress.Laws;
 using CapitolSharp.Congress.Nominations;
 using CapitolSharp.Congress.Summaries;
+using Elysian.Application.Features.Congress.Commands;
+using Elysian.Application.Features.Congress.Queries;
 using ElysianFunctions.Middleware;
+using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
 namespace ElysianFunctions
 {
-    public class CongressFunctions(ILogger<CongressFunctions> logger, CapitolSharpCongress congressClient)
+    public class CongressFunctions(ILogger<CongressFunctions> logger, CapitolSharpCongress congressClient, IMediator mediator)
     {
+        #region Tracked Bills
+
+        [Function("CongressTrackedBills")]
+        public async Task<HttpResponseData> TrackedBills([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+        {
+            return await req.WriteJsonResponseAsync(await mediator.Send(new GetTrackedBillsQuery()));
+        }
+
+        [Function("CongressTrackBill")]
+        public async Task<HttpResponseData> TrackBill([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+        {
+            // A missing body falls through to the validator, which answers 400.
+            var model = await req.DeserializeBodyAsync<BillKeyModel>() ?? new();
+
+            return await req.WriteJsonResponseAsync(await mediator.Send(new TrackBillCommand(model.Congress, model.BillType, model.BillNumber)));
+        }
+
+        [Function("CongressUntrackBill")]
+        public async Task<HttpResponseData> UntrackBill([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+        {
+            var model = await req.DeserializeBodyAsync<BillKeyModel>() ?? new();
+
+            await mediator.Send(new UntrackBillCommand(model.Congress, model.BillType, model.BillNumber));
+            return req.CreateResponse(System.Net.HttpStatusCode.NoContent);
+        }
+
+        [Function("CongressSaveTrackedBillNotes")]
+        public async Task<HttpResponseData> SaveTrackedBillNotes([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+        {
+            var model = await req.DeserializeBodyAsync<TrackedBillNotesModel>() ?? new();
+
+            return await req.WriteJsonResponseAsync(await mediator.Send(new SaveTrackedBillNotesCommand(model.BillTrackingId, model.Notes)));
+        }
+
+        [Function("CongressMarkTrackedBillViewed")]
+        public async Task<HttpResponseData> MarkTrackedBillViewed([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+        {
+            _ = int.TryParse(req.Query["billTrackingId"], out var billTrackingId);
+
+            await mediator.Send(new MarkTrackedBillViewedCommand(billTrackingId));
+            return req.CreateResponse(System.Net.HttpStatusCode.NoContent);
+        }
+
+        #endregion
+
         [Function("CongressGetBills")]
         public async Task<HttpResponseData> GetBills([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
         {
@@ -280,6 +328,19 @@ namespace ElysianFunctions
     // CapitolSharp 0.0.8 sends sort as "updateDate%2Bdesc", an encoded plus the API doesn't
     // recognize, so it silently returns bills unsorted. A space ("updateDate desc", sent as %20)
     // is what "updateDate+desc" means in a query string, and the API sorts on it.
+    public class BillKeyModel
+    {
+        public int Congress { get; set; }
+        public string BillType { get; set; } = "";
+        public int BillNumber { get; set; }
+    }
+
+    public class TrackedBillNotesModel
+    {
+        public int BillTrackingId { get; set; }
+        public string? Notes { get; set; }
+    }
+
     internal class SortedBillListByCongressRequest : BillListByCongressRequest
     {
         public override Dictionary<string, string> QueryStringParameters

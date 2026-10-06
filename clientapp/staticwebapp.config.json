@@ -4,6 +4,10 @@
     },
     "routes": [
         {
+            "route": "/saved-bills",
+            "allowedRoles": ["authenticated"]
+        },
+        {
             "route": "/spending",
             "allowedRoles": ["authenticated"]
         },

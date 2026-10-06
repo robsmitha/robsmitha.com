@@ -68,6 +68,10 @@ namespace ElysianFunctions.Middleware
                         case ForbiddenAccessException _:
                             code = HttpStatusCode.Forbidden;
                             break;
+                        // Thrown by Elysian's [Authorize] behavior when nobody is signed in.
+                        case UnauthorizedAccessException _:
+                            code = HttpStatusCode.Unauthorized;
+                            break;
                     }
 
                     if (string.IsNullOrEmpty(result))

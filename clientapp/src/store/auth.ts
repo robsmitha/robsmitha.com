@@ -6,14 +6,17 @@ import apiClient from '@/api/elysianClient'
 type State = {
   userDetails: string | undefined,
   identityProvider: string | undefined,
-  hasGitHubAccessToken: boolean | undefined
+  hasGitHubAccessToken: boolean | undefined,
+  // True once /.auth/me has answered, so pages can tell signed out from not checked yet.
+  checked: boolean
 }
 
 export const useAuthStore = defineStore('auth', {
   state: (): State => ({
     userDetails: undefined,
     identityProvider: undefined,
-    hasGitHubAccessToken: undefined
+    hasGitHubAccessToken: undefined,
+    checked: false
   }),
   getters: {
     // auth
@@ -26,6 +29,7 @@ export const useAuthStore = defineStore('auth', {
 
       if (!response?.success){
         console.error("Failed to get auth me.")
+        this.checked = true
         return
       }
 
@@ -33,6 +37,11 @@ export const useAuthStore = defineStore('auth', {
       if (identity?.clientPrincipal) {
         this.userDetails = identity.clientPrincipal.userDetails
         this.identityProvider = identity.clientPrincipal.identityProvider
+      }
+      // Set before the GitHub check below, which pages don't need to wait for.
+      this.checked = true
+
+      if (identity?.clientPrincipal) {
         
         const tokenResponse = await apiClient?.getData('/api/GitHubAuthMe')
         if (tokenResponse?.success){
