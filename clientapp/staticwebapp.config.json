@@ -5,27 +5,63 @@
     "routes": [
         {
             "route": "/saved-bills",
-            "allowedRoles": ["authenticated"]
+            "allowedRoles": [
+                "authenticated"
+            ]
         },
         {
-            "route": "/spending",
-            "allowedRoles": ["authenticated"]
+            "route": "/dashboard",
+            "allowedRoles": [
+                "authenticated"
+            ]
         },
         {
-            "route": "/budget/*",
-            "allowedRoles": ["authenticated"]
+            "route": "/budget",
+            "allowedRoles": [
+                "authenticated"
+            ]
+        },
+        {
+            "route": "/debt",
+            "allowedRoles": [
+                "authenticated"
+            ]
+        },
+        {
+            "route": "/goals",
+            "allowedRoles": [
+                "authenticated"
+            ]
         },
         {
             "route": "/accounts",
-            "allowedRoles": ["authenticated"]
+            "allowedRoles": [
+                "authenticated"
+            ]
+        },
+        {
+            "route": "/transactions",
+            "allowedRoles": [
+                "authenticated"
+            ]
         },
         {
             "route": "/users",
-            "allowedRoles": ["authenticated"]
+            "allowedRoles": [
+                "authenticated"
+            ]
         },
         {
             "route": "/products",
-            "allowedRoles": ["authenticated"]
+            "allowedRoles": [
+                "authenticated"
+            ]
+        },
+        {
+            "route": "/plaid-oauth",
+            "allowedRoles": [
+                "authenticated"
+            ]
         }
     ],
     "responseOverrides": {

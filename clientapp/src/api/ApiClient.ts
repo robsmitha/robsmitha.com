@@ -44,11 +44,31 @@ class ApiClient {
         return this.createErrorMap('FORBIDDEN', ['Access Denied']);
       case 404:
         return this.createErrorMap('NOT_FOUND', ['Not found']);
-      case 429:
-        return this.createErrorMap('RATE_LIMIT', ['Rate limit exceeded']);
+      // 409 (a bank that's already linked) and 429 ("Sync now" too soon) carry a message for the page
+      case 409:
+      case 429: {
+        const parsed = this.parseErrorBody(data)
+        if (parsed) return parsed
+        return status === 409
+          ? this.createErrorMap('CONFLICT', ['That conflicts with something that already exists'])
+          : this.createErrorMap('RATE_LIMIT', ['Rate limit exceeded']);
+      }
       default:
         return this.createErrorMap('ERROR', ['An unhandled error occurred']);
     }
+  }
+
+  // The server sends `{ "KEY": ["message"] }`, sometimes as a JSON string
+  private parseErrorBody(data: any): Map<string, string[]> | undefined {
+    try {
+      const value = typeof data === 'string' ? JSON.parse(data) : data
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        return new Map(Object.entries(value as ValidationResponse))
+      }
+    } catch {
+      // not JSON
+    }
+    return undefined
   }
 
   private createApiResponse(success: boolean, status: number, data?: any, errors?: Map<string, string[]>): ApiResponse {

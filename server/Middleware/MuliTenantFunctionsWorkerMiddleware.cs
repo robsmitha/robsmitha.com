@@ -47,13 +47,20 @@ namespace ElysianFunctions.Middleware
                     new ArgumentException($"\"{nameof(context)}\" type must be of type HttpRequestData", nameof(context)));
             }
 
-            if (!httpRequestData.Headers.TryGetValues(headerKey, out var values) || values?.Any() != true)
+            if (httpRequestData.Headers.TryGetValues(headerKey, out var values) && values?.Any() == true)
             {
-                throw new MultiTenantException(null,
-                    new ArgumentException($"\"{headerKey}\" header not found in HttpRequestData", nameof(context)));
+                return Task.FromResult(values.FirstOrDefault());
             }
 
-            return Task.FromResult(values.FirstOrDefault());
+            // Callers that can't send headers (Plaid's webhooks) name the tenant in the URL: ?tenant=robsmitha
+            var fromQuery = httpRequestData.Query["tenant"];
+            if (!string.IsNullOrWhiteSpace(fromQuery))
+            {
+                return Task.FromResult<string?>(fromQuery);
+            }
+
+            throw new MultiTenantException(null,
+                new ArgumentException($"\"{headerKey}\" header not found in HttpRequestData", nameof(context)));
         }
     }
 }

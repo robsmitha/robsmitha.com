@@ -39,7 +39,7 @@
                             <v-list-item :subtitle="auth.userDetails" class="text-light-slate"></v-list-item>
                             <v-list-item title="Users" to="/users" class="text-light-slate"></v-list-item>
                             <v-list-item title="Products" to="/products" class="text-light-slate"></v-list-item>
-                            <v-list-item title="Spending" to="/spending" class="text-light-slate"></v-list-item>
+                            <v-list-item title="Dashboard" to="/dashboard" class="text-light-slate"></v-list-item>
                             <v-list-item title="Accounts" to="/accounts" class="text-light-slate"></v-list-item>
                         </template>
                     </v-list>

@@ -38,6 +38,7 @@ namespace ElysianFunctions.Middleware
                     var code = HttpStatusCode.InternalServerError;
 
                     var result = string.Empty;
+                    int? retryAfterSeconds = null;
 
                     switch (ex)
                     {
@@ -65,6 +66,21 @@ namespace ElysianFunctions.Middleware
                         case NotFoundException _:
                             code = HttpStatusCode.NotFound;
                             break;
+                        // A bank that's already linked, or one that has to be reconnected first
+                        case ConflictException conflict:
+                            code = HttpStatusCode.Conflict;
+                            result = JsonConvert.SerializeObject(new Dictionary<string, string[]> { { "CONFLICT", [conflict.Message] } });
+                            break;
+                        // "Sync now" inside its cooldown
+                        case TooManyRequestsException tooMany:
+                            code = HttpStatusCode.TooManyRequests;
+                            retryAfterSeconds = Math.Max(1, (int)Math.Ceiling((tooMany.RetryAt - DateTimeOffset.UtcNow).TotalSeconds));
+                            result = JsonConvert.SerializeObject(new Dictionary<string, string[]>
+                            {
+                                { "RATE_LIMIT", [tooMany.Message] },
+                                { "RETRY_AT", [tooMany.RetryAt.ToString("o")] }
+                            });
+                            break;
                         case ForbiddenAccessException _:
                             code = HttpStatusCode.Forbidden;
                             break;
@@ -80,6 +96,10 @@ namespace ElysianFunctions.Middleware
                     }
 
                     var newHttpResponse = httpReqData.CreateResponse(code);
+                    if (retryAfterSeconds is int seconds)
+                    {
+                        newHttpResponse.Headers.Add("Retry-After", seconds.ToString());
+                    }
                     // You need to explicitly pass the status code in WriteAsJsonAsync method.
                     // https://github.com/Azure/azure-functions-dotnet-worker/issues/776
                     await newHttpResponse.WriteAsJsonAsync(result, newHttpResponse.StatusCode);

@@ -3,8 +3,9 @@
       id="navTop"
       :color="!drawer && transparency ? 'transparent' : 'background'"
       :class="[
-        'text-lightest-slate',
-        { 'nav-solid': drawer || !transparency }
+        // See-through with hero text colors over the home hero in dark mode; otherwise a solid bar
+        onHero ? 'text-hero-ink' : 'text-high-emphasis',
+        { 'nav-solid': !onHero }
       ]"
       flat
       fixed
@@ -15,7 +16,7 @@
 
       <v-app-bar-title>
         <span class="font-mono text-subtitle-1 cursor-pointer" @click="onBrandClick">
-          <span :class="{ 'text-white': transparency, 'text-primary': !transparency }">rob</span><span class="text-lightest-slate">smitha.com</span>
+          <span :class="onHero ? 'text-hero-ink' : 'text-primary'">rob</span><span :class="onHero ? 'text-hero-ink' : 'text-high-emphasis'">smitha.com</span>
         </span>
       </v-app-bar-title>
 
@@ -44,10 +45,38 @@
             aria-label="LinkedIn"
           ></v-btn>
         </template>
+
+        <!-- Site-wide light/dark setting; every page follows it through Vuetify's theme -->
+        <v-menu location="bottom end" offset="10">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              v-bind="props"
+              :icon="themeOptions.find(o => o.value === themeStore.preference)?.icon"
+              variant="text"
+              :aria-label="`Theme: ${themeOptions.find(o => o.value === themeStore.preference)?.title}`"
+            ></v-btn>
+          </template>
+          <v-list density="compact" bg-color="surface" min-width="180" aria-label="Theme">
+            <v-list-item
+              v-for="option in themeOptions"
+              :key="option.value"
+              :prepend-icon="option.icon"
+              :title="option.title"
+              :active="themeStore.preference === option.value"
+              color="primary"
+              @click="themeStore.setPreference(option.value)"
+            >
+              <template v-slot:append>
+                <v-icon v-if="themeStore.preference === option.value" size="16">mdi-check</v-icon>
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
         <v-btn
           v-if="!auth.signedIn"
           variant="outlined"
-          color="white"
+          :color="onHero ? 'hero-ink' : 'primary'"
           rounded="pill"
           class="text-none ml-2"
           prepend-icon="mdi-login"
@@ -224,10 +253,12 @@ import { useAppStore } from "@/store/app"
 import { useAuthStore } from "@/store/auth"
 import { useCongressStore } from "@/store/congress"
 import { useRoute, useRouter } from 'vue-router'
-import { useGoTo } from 'vuetify'
+import { useGoTo, useTheme } from 'vuetify'
 import { useGithubStore } from "@/store/github"
 import { useDisplay } from 'vuetify'
 import elysianClient from '@/api/elysianClient'
+import { useThemeStore } from '@/store/theme'
+import type { ThemePreference } from '@/plugins/theme'
 
 const { mobile } = useDisplay()
 const route = useRoute()
@@ -255,13 +286,29 @@ const drawer = ref(false)
 const transparency = ref(false)
 const menu = ref(false)
 
+// The bar is see-through over the home page's hero until you scroll. That hero is dark only in the dark theme, so the
+// bar uses hero colors then; in light it keeps its normal text colors.
+const theme = useTheme()
+const onHero = computed(() => transparency.value && !drawer.value && theme.global.current.value.dark)
+
+const themeStore = useThemeStore()
+const themeOptions: { value: ThemePreference, title: string, icon: string }[] = [
+  { value: 'system', title: 'System', icon: 'mdi-theme-light-dark' },
+  { value: 'light', title: 'Light', icon: 'mdi-weather-sunny' },
+  { value: 'dark', title: 'Dark', icon: 'mdi-weather-night' },
+]
+
 const isMobile = computed(() => mobile.value)
 
 const adminLinks = [
   { title: 'Users', description: 'Access control and permissions', icon: 'mdi-account-group-outline', to: '/users', color: 'info' },
   { title: 'Products', description: 'Merchant catalog', icon: 'mdi-tag-multiple-outline', to: '/products', color: 'violet' },
-  { title: 'Accounts', description: 'Linked banks and income', icon: 'mdi-bank-outline', to: '/accounts', color: 'green' },
-  { title: 'Spending', description: 'Budgets and estimates', icon: 'mdi-wallet-outline', to: '/spending', color: 'primary' },
+  { title: 'Accounts', description: 'Linked banks and sync status', icon: 'mdi-bank-outline', to: '/accounts', color: 'green' },
+  { title: 'Transactions', description: 'Categories, rules and splits', icon: 'mdi-swap-horizontal', to: '/transactions', color: 'amber' },
+  { title: 'Dashboard', description: 'Safe to spend, paychecks, bills', icon: 'mdi-view-dashboard-outline', to: '/dashboard', color: 'primary' },
+  { title: 'Budget', description: 'Monthly targets and pace', icon: 'mdi-wallet-outline', to: '/budget', color: 'violet' },
+  { title: 'Debt', description: 'Payoff roadmap', icon: 'mdi-credit-card-clock-outline', to: '/debt', color: 'orange' },
+  { title: 'Goals', description: 'Savings for known bills', icon: 'mdi-piggy-bank-outline', to: '/goals', color: 'green' },
 ]
 
 const savedBillsDescription = computed(() => {

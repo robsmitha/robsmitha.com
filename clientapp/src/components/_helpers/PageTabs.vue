@@ -81,6 +81,6 @@ defineProps({
 }
 
 .page-tab--active .page-tab-count {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(var(--v-theme-on-primary), 0.2);
 }
 </style>

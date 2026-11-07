@@ -26,8 +26,11 @@ defineProps({
 
 <style scoped>
 .page-hero {
-    color: #fff;
+    color: rgb(var(--v-theme-hero-ink));
 }
+
+/* Decorative gradients, the same in light and dark: the band is always dark, like the landing page art.
+   Text and controls on it use the hero-ink and hero-shade theme colors. (theme-colors: allow) */
 
 .page-hero--navy {
     background: linear-gradient(120deg, #07101f 0%, #0b1a33 55%, #1a1433 100%);
