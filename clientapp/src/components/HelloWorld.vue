@@ -24,7 +24,7 @@
               v-for="(b, i) in props.actions"
               :key="b.text"
               :variant="i === 0 ? 'flat' : 'outlined'"
-              color="white"
+              color="lightest-slate"
               size="large"
               rounded="pill"
               class="text-none hero-cta"
@@ -193,7 +193,7 @@ onBeforeUnmount(() => window.clearTimeout(timer))
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(var(--v-theme-on-background), 0.07) 1px, transparent 1px);
   background-size: 28px 28px;
   -webkit-mask-image: radial-gradient(ellipse at 60% 45%, #000 20%, transparent 75%);
   mask-image: radial-gradient(ellipse at 60% 45%, #000 20%, transparent 75%);
@@ -294,7 +294,8 @@ onBeforeUnmount(() => window.clearTimeout(timer))
   font-size: clamp(2.75rem, 5vw + 1rem, 5.5rem);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: #fff;
+  /* Near-white in dark, near-black in light: the hero sits on the page background */
+  color: rgb(var(--v-theme-lightest-slate));
 }
 
 .hero-name-dot {

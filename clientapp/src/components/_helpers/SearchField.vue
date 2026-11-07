@@ -25,9 +25,7 @@
         color="primary"
         base-color="slate"
         class="font-mono search-field"
-        :class="{ 'search-field--compact': compact }"
-        :density="compact ? 'compact' : 'default'"
-        :hide-details="compact"
+        :class="{ 'search-field--compact': compact, 'search-field--light': compact && !theme.global.current.value.dark }"
         rounded="lg"
         :readonly="loading"
         @keypress.enter="emit('search', search)"
@@ -40,7 +38,7 @@
         </template>
         <template v-slot:append-inner>
             <v-btn
-                color="white"
+                :color="compact ? 'lightest-slate' : 'white'"
                 variant="flat"
                 rounded="pill"
                 size="small"
@@ -66,13 +64,24 @@
 <script setup lang="ts">
 
 import { watch, computed } from 'vue'
+import { useTheme } from 'vuetify'
 import { useAuthStore } from "@/store/auth"
 
 
-const props = defineProps(['rateLimited', 'loading', 'term', 'dark', 'label', 'showDetails', 'compact'])
+// Typed so flags like `compact` written without a value count as true
+const props = defineProps<{
+    rateLimited?: boolean
+    loading?: boolean
+    term?: string
+    dark?: boolean
+    label?: string
+    showDetails?: boolean
+    compact?: boolean
+}>()
 const emit = defineEmits(['input', 'search', 'authorize', 'clear'])
 
 const auth = useAuthStore()
+const theme = useTheme()
 
 const search = computed({
   get() {
@@ -83,7 +92,7 @@ const search = computed({
   }
 })
 
-watch(search, async (newSearch: string) => {
+watch(search, async (newSearch: string | undefined) => {
     if(!newSearch || newSearch.length === 0){
         emit('clear')
     }
@@ -101,8 +110,9 @@ watch(search, async (newSearch: string) => {
     padding-top: 0;
 }
 
-/* Compact fields sit on the page background (e.g. a toolbar), not a colored hero. */
-.search-field--compact :deep(.v-field) {
+/* Compact fields sit on the page background (e.g. a toolbar), not a colored hero.
+   In light mode the dark tint above reads as grey, so they get the white surface instead; dark mode keeps the tint. */
+.search-field--light :deep(.v-field) {
     background: rgb(var(--v-theme-surface));
 }
 
