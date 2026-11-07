@@ -46,6 +46,22 @@
           ></v-btn>
         </template>
 
+        <!-- The budget assistant: signed-in people with budget access, when it's switched on -->
+        <v-btn
+          v-if="auth.signedIn && assistant.available"
+          variant="outlined"
+          :color="onHero ? 'hero-ink' : 'primary'"
+          rounded="pill"
+          class="text-none mr-1"
+          :icon="isMobile ? 'mdi-star-four-points-outline' : undefined"
+          :prepend-icon="isMobile ? undefined : 'mdi-star-four-points-outline'"
+          :aria-label="isMobile ? 'Ask the assistant' : undefined"
+          :aria-expanded="assistant.open"
+          @click="assistant.toggle()"
+        >
+          <template v-if="!isMobile">Ask</template>
+        </v-btn>
+
         <!-- Site-wide light/dark setting; every page follows it through Vuetify's theme -->
         <v-menu location="bottom end" offset="10">
           <template v-slot:activator="{ props }">
@@ -252,6 +268,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { useAppStore } from "@/store/app"
 import { useAuthStore } from "@/store/auth"
 import { useCongressStore } from "@/store/congress"
+import { useAssistantStore } from "@/store/assistant"
 import { useRoute, useRouter } from 'vue-router'
 import { useGoTo, useTheme } from 'vuetify'
 import { useGithubStore } from "@/store/github"
@@ -273,6 +290,7 @@ gitHubStore.fetchRepos()
 
 const auth = useAuthStore()
 const congressStore = useCongressStore()
+const assistant = useAssistantStore()
 auth.fetchAuth()
 
 // Saved bills drive the bookmark buttons, the menu badge and the saved page, so load them on sign in.

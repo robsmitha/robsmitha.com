@@ -28,6 +28,8 @@ var host = new HostBuilder()
 
         services.AddFinancialFeatures(hostContext.Configuration);
 
+        services.AddAssistantFeatures(hostContext.Configuration);
+
         services.AddAzureStorageFeatures(hostContext.Configuration);
 
         services.AddApplication();

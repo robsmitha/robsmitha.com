@@ -11,7 +11,7 @@ import transactionService, {
   type Treatment,
 } from '@/services/transaction.service'
 
-/** yyyy-mm for the month filter; '' means all time */
+/** yyyy-mm for the month filter; '' means all time; "yyyy-mm-dd..yyyy-mm-dd" is a date range (from the assistant's links) */
 function thisMonth () {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
@@ -19,6 +19,10 @@ function thisMonth () {
 
 function monthRange (month: string): { from?: string, to?: string } {
   if (!month) return {}
+  if (month.includes('..')) {
+    const [from, to] = month.split('..')
+    return { from, to }
+  }
   const [y, m] = month.split('-').map(Number)
   const last = new Date(y, m, 0).getDate()
   return { from: `${month}-01`, to: `${month}-${String(last).padStart(2, '0')}` }

@@ -126,7 +126,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import moment from 'moment'
 import { useTransactionsStore } from '@/store/transactions'
 import { useConnectionsStore } from '@/store/connections'
@@ -145,13 +145,25 @@ const manageOpen = ref<'rules' | 'categories' | null>(null)
 const checked = ref<number[]>([])
 const bulkCategory = ref<number | null>(null)
 
-// A link like ?month=2026-11&category=12 (from the budget page) starts with just those transactions
+// A link like ?month=2026-11&category=12&q=starbucks (from the budget page or the assistant) starts with just those
+// transactions; month=all means all time, and from=&to= (dates) a range. It's applied again when a link is followed while this page is open.
 const route = useRoute()
 const router = useRouter()
-const linkedMonth = /^\d{4}-\d{2}$/.test(String(route.query.month ?? '')) ? String(route.query.month) : null
-const linkedCategory = Number.isInteger(Number(route.query.category)) && route.query.category !== undefined ? Number(route.query.category) : null
-if (linkedMonth || linkedCategory !== null) {
-    Object.assign(store, { q: '', accountId: null, view: 'all', page: 1, month: linkedMonth ?? store.month, categoryId: linkedCategory })
+function linkedFilters (q: LocationQuery) {
+    const month = String(q.month ?? '')
+    const isDate = (v: unknown) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)
+    const linkedMonth = isDate(q.from) && isDate(q.to) ? `${q.from}..${q.to}`
+        : month === 'all' ? '' : /^\d{4}-\d{2}$/.test(month) ? month : null
+    const linkedCategory = q.category !== undefined && Number.isInteger(Number(q.category)) ? Number(q.category) : null
+    const linkedText = typeof q.q === 'string' ? q.q.slice(0, 80) : null
+    // The assistant's totals count spending only, so its links open that view and the counts agree
+    const linkedView: TransactionView = q.view === 'spending' ? 'spending' : 'all'
+    if (linkedMonth === null && linkedCategory === null && linkedText === null) return null
+    return { q: linkedText ?? '', accountId: null, view: linkedView, page: 1, month: linkedMonth ?? store.month, categoryId: linkedCategory }
+}
+const initial = linkedFilters(route.query)
+if (initial) {
+    Object.assign(store, initial)
     router.replace({ query: {} })
 }
 
@@ -164,7 +176,17 @@ const query = ref(store.q)
 let typing: ReturnType<typeof setTimeout> | undefined
 watch(query, value => {
     clearTimeout(typing)
+    if ((value ?? '') === store.q) return
     typing = setTimeout(() => store.setFilters({ q: value ?? '' }), 350)
+})
+
+watch(() => route.query, async q => {
+    const filters = linkedFilters(q)
+    if (!filters) return
+    Object.assign(store, filters)
+    query.value = filters.q
+    router.replace({ query: {} })
+    await store.search()
 })
 
 const month = computed({ get: () => store.month, set: v => store.setFilters({ month: v }) })
@@ -180,8 +202,11 @@ const months = computed(() => {
         items.push({ title: d.format('MMMM YYYY'), value: d.format('YYYY-MM') })
         d.subtract(1, 'month')
     }
-    // A linked month outside that range (a future budget, an old one) still gets a name
-    if (store.month && !items.some(i => i.value === store.month)) {
+    // A linked date range, or a month outside that list (a future budget, an old one), still gets a name
+    if (store.month.includes('..')) {
+        const [from, to] = store.month.split('..')
+        items.splice(1, 0, { title: `${moment(from).format('MMM D, YYYY')} – ${moment(to).format('MMM D, YYYY')}`, value: store.month })
+    } else if (store.month && !items.some(i => i.value === store.month)) {
         items.splice(1, 0, { title: moment(`${store.month}-01`).format('MMMM YYYY'), value: store.month })
     }
     return items
