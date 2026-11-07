@@ -1,14 +1,12 @@
 <template>
-    <v-dialog :model-value="open" max-width="640" scrollable @update:model-value="v => { if (!v) $emit('close') }">
+    <v-dialog :model-value="!!open" max-width="640" scrollable @update:model-value="v => { if (!v) $emit('close') }">
         <v-card color="surface" rounded="lg">
-            <v-tabs v-model="tab" color="primary" class="px-2">
-                <v-tab value="rules" class="text-none">Rules ({{ store.rules.length }})</v-tab>
-                <v-tab value="categories" class="text-none">Categories</v-tab>
-            </v-tabs>
-            <v-divider />
+            <v-card-title class="text-subtitle-1 font-weight-bold pt-4 px-6">
+                {{ shown === 'rules' ? `Rules (${store.rules.length})` : 'Categories' }}
+            </v-card-title>
 
             <v-card-text style="max-height: 60vh">
-                <template v-if="tab === 'rules'">
+                <template v-if="shown === 'rules'">
                     <p class="text-body-2 text-muted mb-4">Rules run on every new transaction. Changes you make by hand always win.</p>
                     <p v-if="!store.rules.length" class="text-body-2 text-subtle">No rules yet. Tick “Always do this” on a transaction to make one.</p>
                     <ul class="list">
@@ -72,11 +70,11 @@ import { ref, watch } from 'vue'
 import transactionService, { type Category } from '@/services/transaction.service'
 import { useTransactionsStore } from '@/store/transactions'
 
-const props = defineProps<{ open: boolean }>()
+/** Which list to show; null when closed */
+const props = defineProps<{ open: 'rules' | 'categories' | null }>()
 defineEmits<{ close: [] }>()
 
 const store = useTransactionsStore()
-const tab = ref<'rules' | 'categories'>('rules')
 const editing = ref<number | null>(null)
 const editName = ref('')
 const archiving = ref<number | null>(null)
@@ -85,11 +83,16 @@ const newName = ref('')
 const busy = ref(false)
 const error = ref<string | null>(null)
 
+// Keeps the last list while the dialog fades out, so it doesn't flip to the other one on close
+const shown = ref<'rules' | 'categories'>('categories')
+
 watch(() => props.open, open => {
-    if (open) {
-        store.fetchRules()
-        store.fetchCategories()
-    }
+    if (open) shown.value = open
+    if (open === 'rules') store.fetchRules()
+    if (open === 'categories') store.fetchCategories()
+    editing.value = null
+    archiving.value = null
+    error.value = null
 })
 
 const fieldLabel: Record<string, string> = { Merchant: 'Merchant', Description: 'Description', PlaidCategory: 'Plaid category' }

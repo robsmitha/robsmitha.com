@@ -8,9 +8,14 @@
                 <span class="font-mono text-h6 font-weight-bold d-block" :class="s.warn ? 'text-warning' : ''">{{ s.value }}</span>
                 <span class="font-mono text-caption hero-label">{{ s.label }}</span>
             </div>
-            <v-btn color="hero-ink" variant="outlined" rounded="pill" class="text-none" prepend-icon="mdi-format-list-checks" @click="manageOpen = true">
-                Rules &amp; categories
-            </v-btn>
+            <div class="d-flex flex-wrap ga-2">
+                <v-btn color="hero-ink" variant="outlined" rounded="pill" class="text-none" prepend-icon="mdi-tag-multiple-outline" @click="manageOpen = 'categories'">
+                    Categories
+                </v-btn>
+                <v-btn color="hero-ink" variant="outlined" rounded="pill" class="text-none" prepend-icon="mdi-format-list-checks" @click="manageOpen = 'rules'">
+                    Rules
+                </v-btn>
+            </div>
         </div>
     </PageHero>
 
@@ -45,7 +50,9 @@
                     <v-btn size="small" variant="text" class="text-none" @click="checked = []">Clear</v-btn>
                 </div>
 
-                <div class="list" role="table" aria-label="Transactions">
+                <div class="list" :class="{ 'list--refreshing': store.loading && store.result }" role="table" aria-label="Transactions" :aria-busy="store.loading">
+                    <!-- Shown on every load; the rows stay put (faded) while new results come in -->
+                    <v-progress-linear :active="store.loading" indeterminate color="primary" height="3" absolute location="top" aria-label="Loading transactions" />
                     <div v-if="store.loading && !store.result" class="pa-4">
                         <v-skeleton-loader v-for="i in 6" :key="i" type="list-item-two-line" />
                     </div>
@@ -92,22 +99,34 @@
             </div>
 
             <div v-if="store.selected && lgAndUp" class="detail-col">
-                <TransactionDetail :transaction="store.selected" :categories="store.categories" @close="store.selectedId = null" />
+                <TransactionDetail :transaction="store.selected" :categories="store.categories" @close="store.selectedId = null" @saved="notify" />
             </div>
         </div>
     </v-container>
 
     <!-- On smaller screens the details open as a sheet -->
     <v-bottom-sheet :model-value="!!store.selected && !lgAndUp" scrollable @update:model-value="v => { if (!v) store.selectedId = null }">
-        <TransactionDetail v-if="store.selected" :transaction="store.selected" :categories="store.categories" @close="store.selectedId = null" />
+        <TransactionDetail v-if="store.selected" :transaction="store.selected" :categories="store.categories" @close="store.selectedId = null" @saved="notify" />
     </v-bottom-sheet>
 
-    <RulesAndCategoriesDialog :open="manageOpen" @close="manageOpen = false" />
+    <!-- Confirms each change, e.g. "Zaxby's assigned to Restaurants" -->
+    <v-snackbar v-model="snack.open" location="top" :timeout="3500" rounded="lg" role="status">
+        <span class="d-flex align-center ga-2">
+            <v-icon color="success" size="18">mdi-check-circle</v-icon>
+            {{ snack.text }}
+        </span>
+        <template #actions>
+            <v-btn variant="text" class="text-none" @click="snack.open = false">OK</v-btn>
+        </template>
+    </v-snackbar>
+
+    <RulesAndCategoriesDialog :open="manageOpen" @close="manageOpen = null" />
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useRoute, useRouter } from 'vue-router'
 import moment from 'moment'
 import { useTransactionsStore } from '@/store/transactions'
 import { useConnectionsStore } from '@/store/connections'
@@ -122,9 +141,19 @@ const breadcrumbs = [
     { title: 'TRANSACTIONS', disabled: true },
 ]
 
-const manageOpen = ref(false)
+const manageOpen = ref<'rules' | 'categories' | null>(null)
 const checked = ref<number[]>([])
 const bulkCategory = ref<number | null>(null)
+
+// A link like ?month=2026-11&category=12 (from the budget page) starts with just those transactions
+const route = useRoute()
+const router = useRouter()
+const linkedMonth = /^\d{4}-\d{2}$/.test(String(route.query.month ?? '')) ? String(route.query.month) : null
+const linkedCategory = Number.isInteger(Number(route.query.category)) && route.query.category !== undefined ? Number(route.query.category) : null
+if (linkedMonth || linkedCategory !== null) {
+    Object.assign(store, { q: '', accountId: null, view: 'all', page: 1, month: linkedMonth ?? store.month, categoryId: linkedCategory })
+    router.replace({ query: {} })
+}
 
 onMounted(async () => {
     await Promise.all([store.search(), store.fetchCategories(), connections.connections ? Promise.resolve() : connections.fetch()])
@@ -150,6 +179,10 @@ const months = computed(() => {
     for (let i = 0; i < 13; i++) {
         items.push({ title: d.format('MMMM YYYY'), value: d.format('YYYY-MM') })
         d.subtract(1, 'month')
+    }
+    // A linked month outside that range (a future budget, an old one) still gets a name
+    if (store.month && !items.some(i => i.value === store.month)) {
+        items.splice(1, 0, { title: moment(`${store.month}-01`).format('MMMM YYYY'), value: store.month })
     }
     return items
 })
@@ -208,8 +241,18 @@ function toggleChecked (id: number, on: boolean) {
     checked.value = on ? [...checked.value, id] : checked.value.filter(x => x !== id)
 }
 
+const snack = reactive({ open: false, text: '' })
+
+function notify (text: string) {
+    snack.text = text
+    snack.open = true
+}
+
 async function applyBulk (category: number | null, treatment: Treatment | null) {
-    await store.bulkUpdate(checked.value, category, treatment)
+    const count = checked.value.length
+    const what = `${count} transaction${count === 1 ? '' : 's'}`
+    const target = treatment === 'Hidden' ? 'hidden' : `assigned to ${store.categories.find(c => c.financialCategoryId === category)?.name ?? 'a category'}`
+    if (await store.bulkUpdate(checked.value, category, treatment)) notify(`${what} ${target}`)
     checked.value = []
     bulkCategory.value = null
 }
@@ -271,6 +314,13 @@ function money (amount: number) {
     border: 1px solid rgb(var(--v-theme-border));
     background: rgb(var(--v-theme-surface));
     overflow: hidden;
+    position: relative;
+}
+
+.list--refreshing .row {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
 }
 
 .row {

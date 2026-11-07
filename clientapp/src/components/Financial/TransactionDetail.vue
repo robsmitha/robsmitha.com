@@ -96,7 +96,7 @@ import transactionService, { type Category, type Source, type Transaction, type 
 import { useTransactionsStore } from '@/store/transactions'
 
 const props = defineProps<{ transaction: Transaction, categories: Category[] }>()
-const emit = defineEmits<{ close: [], saved: [] }>()
+const emit = defineEmits<{ close: [], saved: [message: string] }>()
 
 const store = useTransactionsStore()
 
@@ -191,15 +191,40 @@ async function save () {
     if (draft.always) {
         update.createRule = { field: 'Merchant', value: merchant.value, applyToPast: draft.applyToPast }
     }
+    const message = savedMessage(update)
     error.value = await store.update(update)
     saving.value = false
-    if (!error.value) emit('saved')
+    if (!error.value) emit('saved', message)
+}
+
+/** What the snackbar says after a save, e.g. "Zaxby's assigned to Restaurants" */
+function savedMessage (update: TransactionUpdate) {
+    const name = merchant.value
+    const categoryName = (id: number | null) => props.categories.find(c => c.financialCategoryId === id)?.name ?? 'a category'
+    const treatmentName = treatments.find(t => t.value === draft.treatment)?.title ?? draft.treatment
+    let text: string
+    if (!counted.value) {
+        text = draft.treatment === 'Hidden' ? `${name} hidden` : `${name} counted as ${treatmentName}`
+    } else if (update.splits?.length) {
+        text = `${name} split across ${[...new Set(update.splits.map(s => categoryName(s.categoryId)))].join(', ')}`
+    } else if (update.clearCategory) {
+        text = `${name} no longer has a category`
+    } else if (draft.categoryId) {
+        text = `${name} assigned to ${categoryName(draft.categoryId)}${draft.treatment === 'Refund' ? ' (refund)' : ''}`
+    } else {
+        text = `${name} saved`
+    }
+    if (update.createRule) {
+        text += draft.applyToPast && pastMatches.value ? ` · rule saved, ${pastMatches.value} past updated` : ' · rule saved for next time'
+    }
+    return text
 }
 
 async function resetToAutomatic () {
     saving.value = true
     error.value = await store.update({ id: props.transaction.id, resetTreatment: true, resetCategory: true })
     saving.value = false
+    if (!error.value) emit('saved', `${merchant.value} is back to automatic`)
 }
 
 function money (amount: number) {
@@ -230,6 +255,11 @@ function money (amount: number) {
 .treatments {
     flex-wrap: wrap;
     height: auto !important;
+}
+
+.treatments :deep(.v-btn) {
+    min-height: 36px;
+    padding: 0 14px;
 }
 
 .amount-input {

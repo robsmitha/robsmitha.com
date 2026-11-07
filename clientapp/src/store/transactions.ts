@@ -24,6 +24,8 @@ function monthRange (month: string): { from?: string, to?: string } {
   return { from: `${month}-01`, to: `${month}-${String(last).padStart(2, '0')}` }
 }
 
+let searchTicket = 0
+
 type State = {
   month: string
   q: string
@@ -72,7 +74,10 @@ export const useTransactionsStore = defineStore('transactions', {
         page: this.page,
         pageSize: this.pageSize,
       }
+      // When searches overlap (typing, quick filter changes) only the latest one's results count
+      const ticket = ++searchTicket
       const response = await transactionService.search(s)
+      if (ticket !== searchTicket) return
       this.loading = false
       // Anything that isn't a page of results (an error page, a proxy's HTML) is treated as a failed load
       if (!response.success || !Array.isArray(response.data?.items) || !response.data?.counts) {
@@ -112,10 +117,12 @@ export const useTransactionsStore = defineStore('transactions', {
       return null
     },
 
+    /** True when the changes were saved */
     async bulkUpdate (ids: number[], categoryId: number | null, treatment: Treatment | null) {
       const response = await transactionService.bulkUpdate(ids, categoryId, treatment)
       if (!response.success) this.error = 'Those changes couldn’t be saved.'
       await this.search()
+      return response.success
     },
 
     async deleteRule (id: number) {

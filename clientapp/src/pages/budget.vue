@@ -70,8 +70,11 @@
                     <ul class="plain">
                         <li v-for="l in g.lines" :key="l.categoryId" class="line px-5 py-3">
                             <span class="d-flex align-center ga-2 min-width-0">
-                                <v-icon size="18" class="text-subtle">{{ l.icon ?? 'mdi-tag-outline' }}</v-icon>
-                                <span class="text-body-2 text-high-emphasis text-truncate">{{ l.name }}</span>
+                                <router-link :to="transactionsLink(l)" class="cat-link d-flex align-center ga-2 min-width-0" :title="`See ${l.name} transactions for ${title}`">
+                                    <v-icon size="18" class="text-subtle">{{ l.icon ?? 'mdi-tag-outline' }}</v-icon>
+                                    <span class="text-body-2 text-high-emphasis text-truncate cat-name">{{ l.name }}</span>
+                                    <v-icon size="14" class="text-subtle cat-arrow" aria-hidden="true">mdi-arrow-right</v-icon>
+                                </router-link>
                                 <v-tooltip v-if="l.rollover" location="top" :text="carryText(l)">
                                     <template #activator="{ props: tip }"><v-icon v-bind="tip" size="16" class="text-subtle" :aria-label="carryText(l)">mdi-autorenew</v-icon></template>
                                 </v-tooltip>
@@ -258,6 +261,11 @@ function carryText (l: BudgetLine) {
     return l.carry > 0 ? `Rolls over: +${money(l.carry)} from last month` : `Rolls over: ${money(-l.carry)} overspent last month`
 }
 
+/** The transactions page, filtered to this category and month */
+function transactionsLink (l: BudgetLine) {
+    return { path: '/transactions', query: { month: `${store.year}-${String(store.month).padStart(2, '0')}`, category: String(l.categoryId) } }
+}
+
 function cadence (r: Recurring) {
     return r.cadence === 'Biweekly' ? 'every 2 weeks' : r.cadence.toLowerCase()
 }
@@ -357,6 +365,32 @@ async function addTarget () {
 
 .amounts {
     white-space: nowrap;
+}
+
+.cat-link {
+    text-decoration: none;
+    color: inherit;
+    border-radius: 4px;
+}
+
+.cat-arrow {
+    flex: none;
+    transition: transform 0.15s ease;
+}
+
+.cat-link:hover .cat-name {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.cat-link:hover .cat-arrow {
+    transform: translateX(2px);
+    color: rgb(var(--v-theme-primary)) !important;
+}
+
+.cat-link:focus-visible {
+    outline: 2px solid rgb(var(--v-theme-primary));
+    outline-offset: 2px;
 }
 
 .target-btn {
