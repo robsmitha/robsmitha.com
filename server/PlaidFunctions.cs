@@ -47,7 +47,7 @@ namespace ElysianFunctions
             }
         }
 
-        /// <summary>Every night (09:00 UTC, early morning in the US): catch up anything a webhook missed.</summary>
+        /// <summary>Every night (09:00 UTC, early morning in the US): catch up anything a webhook missed, and tidy old assistant actions.</summary>
         [Function("NightlyPlaidSync")]
         public async Task NightlyPlaidSync([TimerTrigger("0 0 9 * * *")] TimerInfo timer, CancellationToken cancellationToken)
         {
@@ -67,6 +67,13 @@ namespace ElysianFunctions
                 if (due.Count > 0)
                 {
                     logger.LogInformation("Queued {Count} nightly sync(s) for {Tenant}", due.Count, tenant.Identifier);
+                }
+
+                // The assistant's proposals and finished changes are kept a week (docs/assistant-actions-plan.md §3)
+                var removed = await scope.ServiceProvider.GetRequiredService<IAssistantActionService>().CleanupAsync(7, cancellationToken);
+                if (removed > 0)
+                {
+                    logger.LogInformation("Removed {Count} old assistant action(s) for {Tenant}", removed, tenant.Identifier);
                 }
             }
         }

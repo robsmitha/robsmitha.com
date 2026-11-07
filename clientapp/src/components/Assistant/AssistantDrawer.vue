@@ -1,6 +1,6 @@
 <template>
     <v-navigation-drawer
-        v-if="store.available"
+        v-if="store.available || store.messages.length"
         :model-value="store.open"
         location="right"
         temporary
@@ -19,7 +19,7 @@
                         {{ store.usage.remainingToday }} of {{ store.usage.dailyLimit }} questions left today
                     </p>
                 </div>
-                <v-btn v-if="store.messages.length" icon="mdi-square-edit-outline" variant="text" aria-label="New conversation" :disabled="store.sending" @click="store.newConversation()" />
+                <v-btn v-if="store.messages.length" icon="mdi-square-edit-outline" variant="text" aria-label="New conversation" :disabled="store.sending || !!store.busyActionId" @click="store.newConversation()" />
                 <v-btn icon="mdi-close" variant="text" aria-label="Close assistant" @click="store.toggle(false)" />
             </header>
 
@@ -86,9 +86,14 @@
                         aria-label="Send" :disabled="!draft.trim() || store.sending || store.outOfQuestions"
                     />
                 </div>
-                <p class="text-caption text-subtle text-center mt-2 mb-0">Reads only your linked accounts. It can’t change anything, and it isn’t financial advice.</p>
+                <p class="text-caption text-subtle text-center mt-2 mb-0">Reads only your linked accounts. Changes happen only when you confirm them. Not financial advice.</p>
             </form>
         </div>
+
+        <!-- What a confirm or undo did, like the pages' own snackbars -->
+        <v-snackbar :model-value="!!store.snack" location="top" :timeout="3500" rounded="lg" role="status" @update:model-value="v => { if (!v) store.snack = null }">
+            <span class="d-flex align-center ga-2"><v-icon color="success" size="18">mdi-check-circle</v-icon>{{ store.snack }}</span>
+        </v-snackbar>
     </v-navigation-drawer>
 </template>
 

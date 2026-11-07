@@ -21,6 +21,33 @@ namespace ElysianFunctions
             return await req.WriteJsonResponseAsync(await mediator.Send(command!, context.CancellationToken));
         }
 
+        /// <summary>
+        /// The person tapped Confirm on a proposal card (docs/assistant-actions-plan.md §4): { actionId, includeRule }.
+        /// Needs budget write. Expired or cancelled is a 409; someone else's id is a 404. Claude never calls these.
+        /// </summary>
+        [Function("ConfirmAssistantAction")]
+        public async Task<HttpResponseData> ConfirmAssistantAction([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req, FunctionContext context)
+        {
+            var command = await req.DeserializeBodyAsync<ConfirmAssistantActionCommand>();
+            return await req.WriteJsonResponseAsync(await mediator.Send(command!, context.CancellationToken));
+        }
+
+        /// <summary>{ actionId }</summary>
+        [Function("CancelAssistantAction")]
+        public async Task<HttpResponseData> CancelAssistantAction([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req, FunctionContext context)
+        {
+            var command = await req.DeserializeBodyAsync<CancelAssistantActionCommand>();
+            return await req.WriteJsonResponseAsync(await mediator.Send(command!, context.CancellationToken));
+        }
+
+        /// <summary>{ actionId }. Within 24 hours of confirming; a merge can't be undone.</summary>
+        [Function("UndoAssistantAction")]
+        public async Task<HttpResponseData> UndoAssistantAction([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req, FunctionContext context)
+        {
+            var command = await req.DeserializeBodyAsync<UndoAssistantActionCommand>();
+            return await req.WriteJsonResponseAsync(await mediator.Send(command!, context.CancellationToken));
+        }
+
         /// <summary>Questions left today, and whether the assistant is on (the drawer hides its button when it isn't)</summary>
         [Function("GetAssistantUsage")]
         public async Task<HttpResponseData> GetAssistantUsage([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)

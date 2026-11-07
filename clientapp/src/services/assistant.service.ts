@@ -25,6 +25,42 @@ export type AssistantUsage = {
   resetsOn: string
 }
 
+/** A transaction a proposal would change */
+export type AssistantActionRow = { date: string, merchant: string, amount: number, from: string, to: string }
+
+export type AssistantActionStatus = 'proposed' | 'confirmed' | 'cancelled' | 'expired' | 'undone' | 'failed'
+
+/**
+ * A change the assistant proposed (docs/assistant-actions-plan.md §5). Everything on it comes from the server; nothing
+ * changes until the person taps Confirm.
+ */
+export type AssistantAction = {
+  id: string
+  kind: 'Recategorize' | 'SetTreatment' | 'Rule' | 'Target' | 'Category'
+  status: AssistantActionStatus
+  title: string
+  subtitle: string | null
+  rows: AssistantActionRow[]
+  moreRows: number
+  changes: { label: string, before: string, after: string }[]
+  facts: AssistantHighlight[]
+  warnings: string[]
+  ruleOffer: { label: string, ticked: boolean } | null
+  confirmLabel: string
+  destructive: boolean
+  canUndo: boolean
+  canConfirm: boolean
+  expiresAt: string
+  undoUntil: string | null
+  result: string | null
+  link: AssistantLink | null
+  /** Pages whose data changed: transactions, budget, categories, rules */
+  refresh: string[]
+}
+
+/** done, stale (changed since it was proposed: confirm the fresh one), cancelled or undone */
+export type AssistantActionResult = { outcome: 'done' | 'stale' | 'cancelled' | 'undone', message: string, action: AssistantAction }
+
 export type AssistantReply = {
   status: AssistantStatus
   answer: string
@@ -34,6 +70,7 @@ export type AssistantReply = {
   followUps: string[]
   steps: string[]
   usage: AssistantUsage
+  action: AssistantAction | null
 }
 
 export type AssistantTurn = { role: 'user' | 'assistant', text: string }
@@ -48,4 +85,8 @@ export type AssistantAsk = {
 export default {
   ask: (ask: AssistantAsk) => elysianClient.postData('/api/AskAssistant', { ...ask, today: localToday() }),
   usage: () => elysianClient.getData(`/api/GetAssistantUsage?today=${localToday()}`),
+  // Only the card's buttons call these; the assistant itself can't
+  confirm: (actionId: string, includeRule: boolean | null) => elysianClient.postData('/api/ConfirmAssistantAction', { actionId, includeRule }),
+  cancel: (actionId: string) => elysianClient.postData('/api/CancelAssistantAction', { actionId }),
+  undo: (actionId: string) => elysianClient.postData('/api/UndoAssistantAction', { actionId }),
 }

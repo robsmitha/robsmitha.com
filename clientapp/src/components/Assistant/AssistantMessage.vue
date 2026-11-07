@@ -14,6 +14,17 @@
 
         <AssistantChart v-if="reply.chart" :chart="reply.chart" />
 
+        <AssistantActionCard
+            v-if="reply.action"
+            :action="reply.action"
+            :busy="store.busyActionId === reply.action.id"
+            :note="store.notes[reply.action.id] ?? null"
+            @confirm="(rule: boolean | null) => store.act(reply.action!, 'confirm', rule)"
+            @cancel="store.act(reply.action!, 'cancel')"
+            @undo="store.act(reply.action!, 'undo')"
+            @navigate="$emit('navigate')"
+        />
+
         <details v-if="reply.steps.length" class="text-caption text-subtle how">
             <summary>How I got this</summary>
             <ul class="mt-1 mb-0">
@@ -39,9 +50,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AssistantReply } from '@/services/assistant.service'
+import { useAssistantStore } from '@/store/assistant'
 
 const props = defineProps<{ reply: AssistantReply, last: boolean, disabled: boolean }>()
 defineEmits<{ ask: [question: string], navigate: [] }>()
+const store = useAssistantStore()
 
 const parts = computed(() => props.reply.answer.split(/\*\*(.+?)\*\*/g).map((text, i) => ({ text, bold: i % 2 === 1 })).filter(p => p.text))
 </script>

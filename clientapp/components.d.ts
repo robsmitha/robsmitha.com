@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     About: typeof import('./src/components/Home/About.vue')['default']
     AboutMe: typeof import('./src/components/AboutMe.vue')['default']
+    AssistantActionCard: typeof import('./src/components/Assistant/AssistantActionCard.vue')['default']
     AssistantChart: typeof import('./src/components/Assistant/AssistantChart.vue')['default']
     AssistantDrawer: typeof import('./src/components/Assistant/AssistantDrawer.vue')['default']
     AssistantMessage: typeof import('./src/components/Assistant/AssistantMessage.vue')['default']
