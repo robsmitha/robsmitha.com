@@ -14,17 +14,6 @@
         <a href="/" class="brand font-display" @click.prevent="onBrandClick">Rob Smitha<span class="text-primary">.</span></a>
       </v-app-bar-title>
 
-      <!-- The public features, underlined in the accent color when you're on one -->
-      <nav v-if="!isMobile" aria-label="Features">
-        <ul class="d-flex align-center ga-7 nav-links pl-0 mr-6">
-          <li v-for="link in navLinks" :key="link.text">
-            <router-link :to="link.to" class="nav-link text-body-2" active-class="nav-link--active">
-              {{ link.text }}
-            </router-link>
-          </li>
-        </ul>
-      </nav>
-
       <template #append>
         <template v-if="!isMobile">
           <v-btn
@@ -48,16 +37,16 @@
           v-if="auth.signedIn && assistant.available"
           variant="outlined"
           color="rule"
-
           class="text-none mr-1"
           :icon="isMobile ? 'mdi-star-four-points-outline' : undefined"
           :prepend-icon="isMobile ? undefined : 'mdi-star-four-points-outline'"
+          :text="isMobile ? undefined : 'Ask'"
           :aria-label="isMobile ? 'Ask the assistant' : undefined"
           :aria-expanded="assistant.open"
           @click="assistant.toggle()"
-        >
-          <template v-if="!isMobile">Ask</template>
-        </v-btn>
+        ></v-btn>
+        <!-- No default slot above on purpose: VBtn shows any slot, even an empty one, instead of its icon. -->
+
 
         <!-- Site-wide light/dark setting; every page follows it through Vuetify's theme -->
         <v-menu location="bottom end" offset="10">
@@ -355,12 +344,6 @@ async function connectGitHub() {
   connecting.value = false
 }
 
-const navLinks = [
-  { text: 'Search Code', to: '/code' },
-  { text: 'Generate Code', to: '/generate-code' },
-  { text: 'Congress', to: '/congress' },
-]
-
 function onBrandClick(){
   if(route.path === '/'){
       goTo('#navTop', { duration: 300, easing: 'easeInCubic' })
@@ -505,23 +488,5 @@ function onBrandClick(){
 
 .cursor-pointer {
   cursor: pointer;
-}
-
-.nav-links {
-  list-style: none;
-}
-
-.nav-link {
-  font-weight: 500;
-  color: inherit;
-  text-decoration: none;
-  padding-bottom: 2px;
-  border-bottom: 2px solid transparent;
-  transition: border-color 0.15s ease;
-}
-
-.nav-link:hover,
-.nav-link--active {
-  border-color: rgb(var(--v-theme-primary));
 }
 </style>

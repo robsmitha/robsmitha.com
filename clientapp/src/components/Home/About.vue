@@ -22,7 +22,7 @@
                     </li>
                 </ul>
 
-                <div class="d-flex">
+                <div class="d-flex justify-center ga-3">
                     <v-btn
                         v-for="l in links"
                         :key="l.label"
@@ -33,7 +33,7 @@
                         rel="noopener noreferrer"
                         variant="outlined"
                         color="rule"
-                        class="profile-link"
+                        rounded="0"
                     ></v-btn>
                 </div>
             </div>
@@ -44,7 +44,7 @@
             <div class="about-copy mb-12">
                 <p class="mb-4">
                     I'm a full-stack software engineer who has been building enterprise web applications
-                    since 2017, mostly SaaS products used by state and local governments, law enforcement,
+                    since 2016, mostly SaaS products used by state and local governments, law enforcement,
                     and education clients.
                 </p>
                 <p class="mb-4">
@@ -77,7 +77,7 @@
 const facts = [
     { icon: 'mdi-briefcase-outline', text: 'Senior Software Engineer at JustFOIA' },
     { icon: 'mdi-school-outline', text: 'B.A. Computer Science, Florida State' },
-    { icon: 'mdi-code-braces', text: 'Building for the web since 2017' },
+    { icon: 'mdi-code-braces', text: 'Building for the web since 2016' },
 ]
 
 const links = [
@@ -126,10 +126,6 @@ const skills = [
     gap: 0.75rem;
 }
 
-/* Icon buttons sit flush, sharing borders */
-.profile-link + .profile-link {
-    margin-left: -1px;
-}
 
 .about-copy {
     font-size: 1.0625rem;
