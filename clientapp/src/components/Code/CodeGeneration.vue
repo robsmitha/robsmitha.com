@@ -175,10 +175,10 @@
             title="Generating clients from Swagger, too."
             text="ApiContractor reads swagger.json files and generates a C# API client and TypeScript response DTOs for different API providers."
         >
-            <v-btn color="white" variant="flat" rounded="pill" size="large" class="text-none" to="/repo/ApiContractor">
+            <v-btn color="inverse-ink" variant="flat" rounded="pill" size="large" class="text-none" to="/repo/ApiContractor">
                 Explore ApiContractor
             </v-btn>
-            <v-btn color="white" variant="outlined" rounded="pill" size="large" class="text-none" to="/code">
+            <v-btn color="inverse-ink" variant="outlined" rounded="pill" size="large" class="text-none" to="/code">
                 Search my code
             </v-btn>
         </CtaPanel>
@@ -377,8 +377,8 @@ namespace MyNamespace.MyResponse
 }
 
 .hero-title {
-    font-size: clamp(1.8rem, 2vw + 1rem, 2.6rem);
-    line-height: 1.1;
+    font-size: clamp(2.75rem, 6vw + 1rem, 6rem);
+    line-height: 0.95;
 }
 
 .hero-text {
@@ -388,16 +388,16 @@ namespace MyNamespace.MyResponse
 
 .hero-pill {
     padding: 2px 10px;
-    border-radius: 999px;
+    border-radius: 0;
     color: rgb(var(--v-theme-amber));
     border: 1px solid rgba(var(--v-theme-amber), 0.5);
 }
 
 .hero-step {
     padding: 3px 10px;
-    border-radius: 999px;
-    color: rgba(255, 255, 255, 0.85);
-    background: rgba(0, 0, 0, 0.25);
+    border-radius: 0;
+    color: rgba(var(--v-theme-hero-ink), 0.85);
+    background: rgba(var(--v-theme-hero-ink), 0.06);
 }
 
 .workspace {

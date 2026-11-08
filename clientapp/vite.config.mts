@@ -52,6 +52,10 @@ export default defineConfig({
             styles: 'wght@300;400;500;600;700;800',
           },
           {
+            name: 'Inter Tight',
+            styles: 'wght@500;600;700;800',
+          },
+          {
             name: 'JetBrains Mono',
             styles: 'wght@400;500;600;700',
           },

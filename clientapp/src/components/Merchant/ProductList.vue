@@ -7,7 +7,7 @@
                 <span class="font-mono text-h6 font-weight-bold d-block">{{ s.value }}</span>
                 <span class="font-mono text-caption hero-label">{{ s.label }}</span>
             </div>
-            <v-btn color="white" variant="flat" rounded="pill" class="text-none" prepend-icon="mdi-plus" @click="$emit('create')">
+            <v-btn color="hero-ink" variant="flat" rounded="pill" class="text-none" prepend-icon="mdi-plus" @click="$emit('create')">
                 New product
             </v-btn>
         </div>

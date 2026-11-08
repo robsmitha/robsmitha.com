@@ -46,10 +46,10 @@
             </div>
 
             <div class="d-flex flex-wrap ga-3">
-                <v-btn color="white" variant="flat" rounded="pill" class="text-none" append-icon="mdi-open-in-new" :href="publicUrl" target="_blank">
+                <v-btn color="hero-ink" variant="flat" rounded="pill" class="text-none" append-icon="mdi-open-in-new" :href="publicUrl" target="_blank">
                     View on Congress.gov
                 </v-btn>
-                <v-btn color="white" variant="outlined" rounded="pill" class="text-none" append-icon="mdi-open-in-new" :href="`${publicUrl}/text`" target="_blank">
+                <v-btn color="hero-ink" variant="outlined" rounded="pill" class="text-none" append-icon="mdi-open-in-new" :href="`${publicUrl}/text`" target="_blank">
                     Read the text
                 </v-btn>
                 <SaveBillButton variant="hero" :congress="bill.congress" :bill-type="bill.type" :bill-number="bill.number" />
@@ -408,10 +408,10 @@
             title="See what else is moving."
             text="The feed shows the latest bill activity from both chambers, updated as Congress acts."
         >
-            <v-btn color="white" variant="flat" rounded="pill" size="large" class="text-none" to="/congress">
+            <v-btn color="inverse-ink" variant="flat" rounded="pill" size="large" class="text-none" to="/congress">
                 Latest activity
             </v-btn>
-            <v-btn color="white" variant="outlined" rounded="pill" size="large" class="text-none" prepend-icon="mdi-github" href="https://github.com/robsmitha/CapitolSharp" target="_blank">
+            <v-btn color="inverse-ink" variant="outlined" rounded="pill" size="large" class="text-none" prepend-icon="mdi-github" href="https://github.com/robsmitha/CapitolSharp" target="_blank">
                 How it's built
             </v-btn>
         </CtaPanel>
@@ -657,14 +657,14 @@ const seat = (p: { state: string, district?: number }) =>
 
 /* Hero */
 .hero-title {
-    font-size: clamp(1.4rem, 1.2vw + 1rem, 2.1rem);
-    line-height: 1.2;
+    font-size: clamp(2rem, 2.5vw + 1rem, 3.5rem);
+    line-height: 1.05;
     text-wrap: balance;
 }
 
 .hero-badge {
     padding: 3px 10px;
-    border-radius: 6px;
+    border-radius: 0;
     font-weight: 700;
     color: rgb(var(--chamber));
     background: rgba(var(--chamber), 0.18);
@@ -675,9 +675,9 @@ const seat = (p: { state: string, district?: number }) =>
     align-items: center;
     gap: 6px;
     padding: 3px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.85);
+    border-radius: 0;
+    border: 1px solid rgba(var(--v-theme-hero-ink), 0.2);
+    color: rgba(var(--v-theme-hero-ink), 0.85);
 }
 
 .status-dot {
@@ -693,9 +693,9 @@ const seat = (p: { state: string, district?: number }) =>
 
 .latest-action {
     padding: 0.9rem 1.1rem;
-    border-radius: 10px;
+    border-radius: 0;
     border-left: 3px solid rgb(var(--v-theme-primary));
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(var(--v-theme-hero-ink), 0.06);
     max-width: 60ch;
     font-size: 0.9375rem;
 }
@@ -976,7 +976,7 @@ a.link-card:hover {
     margin: 0;
     max-width: none;
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--v-theme-hero-ink), 0.1);
 }
 
 .hero-bone :deep(.v-skeleton-loader__chip) {
@@ -985,7 +985,7 @@ a.link-card:hover {
 
 .hero-bone--title :deep(.v-skeleton-loader__heading) {
     height: 28px;
-    border-radius: 8px;
+    border-radius: 0;
 }
 
 .hero-bone--box {
@@ -994,7 +994,7 @@ a.link-card:hover {
 
 .hero-bone--box :deep(.v-skeleton-loader__image) {
     height: 72px;
-    border-radius: 10px;
+    border-radius: 0;
 }
 
 .hero-bone--stat {
@@ -1003,7 +1003,7 @@ a.link-card:hover {
 
 .hero-bone--stat :deep(.v-skeleton-loader__heading) {
     height: 40px;
-    border-radius: 8px;
+    border-radius: 0;
 }
 
 @media (max-width: 960px) {

@@ -243,8 +243,8 @@ function editNotes(b: TrackedBill) {
 }
 
 .hero-title {
-    font-size: clamp(1.8rem, 2vw + 1rem, 2.6rem);
-    line-height: 1.1;
+    font-size: clamp(2.75rem, 6vw + 1rem, 6rem);
+    line-height: 0.95;
 }
 
 .hero-text {
@@ -313,7 +313,7 @@ function editNotes(b: TrackedBill) {
     gap: 6px;
     padding: 2px 10px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--v-theme-hero-ink), 0.05);
 }
 
 .status-dot {

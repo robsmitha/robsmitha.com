@@ -23,7 +23,7 @@
             <p class="hero-text mb-6">
                 This repository couldn't be loaded from GitHub. It may be private or renamed, or GitHub's rate limit may have been reached.
             </p>
-            <v-btn color="white" variant="flat" rounded="pill" class="text-none" to="/">Back to all projects</v-btn>
+            <v-btn color="hero-ink" variant="flat" rounded="pill" class="text-none" to="/">Back to all projects</v-btn>
         </div>
 
         <template v-else>
@@ -66,10 +66,10 @@
             </div>
 
             <div class="d-flex flex-wrap ga-3">
-                <v-btn color="white" variant="flat" rounded="pill" class="text-none" prepend-icon="mdi-github" :href="repo.data.html_url" target="_blank" rel="noopener noreferrer">
+                <v-btn color="hero-ink" variant="flat" rounded="pill" class="text-none" prepend-icon="mdi-github" :href="repo.data.html_url" target="_blank" rel="noopener noreferrer">
                     View on GitHub
                 </v-btn>
-                <v-btn v-if="repo.data.homepage" color="white" variant="outlined" rounded="pill" class="text-none" append-icon="mdi-open-in-new" :href="repo.data.homepage" target="_blank" rel="noopener noreferrer">
+                <v-btn v-if="repo.data.homepage" color="hero-ink" variant="outlined" rounded="pill" class="text-none" append-icon="mdi-open-in-new" :href="repo.data.homepage" target="_blank" rel="noopener noreferrer">
                     Live site
                 </v-btn>
             </div>
@@ -142,10 +142,10 @@
             title="Search across every repo."
             text="Code search looks through all of my public repositories at once, with GitHub's full query syntax."
         >
-            <v-btn color="white" variant="flat" rounded="pill" size="large" class="text-none" to="/code">
+            <v-btn color="inverse-ink" variant="flat" rounded="pill" size="large" class="text-none" to="/code">
                 Search code
             </v-btn>
-            <v-btn color="white" variant="outlined" rounded="pill" size="large" class="text-none" to="/">
+            <v-btn color="inverse-ink" variant="outlined" rounded="pill" size="large" class="text-none" to="/">
                 All projects
             </v-btn>
         </CtaPanel>
@@ -424,8 +424,8 @@ function getWords(str: string){
 }
 
 .hero-title {
-    font-size: clamp(1.8rem, 2vw + 1rem, 2.6rem);
-    line-height: 1.1;
+    font-size: clamp(2.75rem, 6vw + 1rem, 6rem);
+    line-height: 1;
     word-break: break-word;
 }
 
@@ -443,9 +443,9 @@ function getWords(str: string){
     align-items: center;
     gap: 6px;
     padding: 3px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.85);
+    border-radius: 0;
+    border: 1px solid rgba(var(--v-theme-hero-ink), 0.2);
+    color: rgba(var(--v-theme-hero-ink), 0.85);
 }
 
 /* Devicon renders its own 40px avatar; shrink it to fit the pill. */
@@ -499,7 +499,7 @@ function getWords(str: string){
     margin: 0;
     max-width: none;
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--v-theme-hero-ink), 0.1);
 }
 
 .hero-bone :deep(.v-skeleton-loader__chip) {
@@ -508,7 +508,7 @@ function getWords(str: string){
 
 .hero-bone--title :deep(.v-skeleton-loader__heading) {
     height: 36px;
-    border-radius: 8px;
+    border-radius: 0;
 }
 
 .hero-bone--line :deep(.v-skeleton-loader__text) {
@@ -521,12 +521,12 @@ function getWords(str: string){
 
 .hero-bone--stat :deep(.v-skeleton-loader__heading) {
     height: 44px;
-    border-radius: 8px;
+    border-radius: 0;
 }
 
 .hero-bone--button :deep(.v-skeleton-loader__chip) {
     height: 36px;
-    border-radius: 999px;
+    border-radius: 0;
 }
 
 .bone--bar :deep(.v-skeleton-loader__text) {

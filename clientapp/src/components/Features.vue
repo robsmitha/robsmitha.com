@@ -1,24 +1,15 @@
 <template>
-    <v-row>
-        <v-col v-for="f in enabledFeatures" :key="f.title" cols="12" md="4">
-            <v-card
-                :to="f.to"
-                color="surface"
-                flat
-                rounded="lg"
-                class="feature-card d-flex flex-column h-100 pa-6"
-                :style="{ '--accent': `var(--v-theme-${f.accent})` }"
-            >
-                <div class="d-flex align-center justify-space-between mb-6">
-                    <v-icon :color="f.accent" size="32">{{ f.icon }}</v-icon>
-                    <v-icon color="slate" size="20">mdi-arrow-right</v-icon>
-                </div>
-                <h3 class="text-lightest-slate text-subtitle-1 font-weight-bold mb-2">{{ f.title }}</h3>
-                <p class="text-slate text-body-2 flex-grow-1">{{ f.text }}</p>
-                <span class="font-mono text-caption mt-6" :class="`text-${f.accent}`">{{ f.subtitle }}</span>
-            </v-card>
-        </v-col>
-    </v-row>
+    <!-- A ruled grid of the site's live features: letter and package name on top, big title at the bottom. -->
+    <div class="features">
+        <router-link v-for="(f, i) in enabledFeatures" :key="f.title" :to="f.to" class="feature">
+            <span class="d-flex justify-space-between ga-3 font-mono text-caption text-subtle">
+                <span>{{ String.fromCharCode(65 + i) }}</span>
+                <span>{{ f.subtitle }}</span>
+            </span>
+            <span class="feature-title font-display">{{ f.title }} <span class="feature-arrow" aria-hidden="true">&rarr;</span></span>
+            <span class="text-muted">{{ f.text }}</span>
+        </router-link>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -68,20 +59,53 @@ const enabledFeatures = computed(() => features.filter(f => f.enabled))
 </script>
 
 <style scoped>
-/* Each card is tinted with its own accent, like the colored product cards on jetbrains.com. */
-.feature-card {
-    position: relative;
-    overflow: hidden;
-    background:
-        radial-gradient(120% 90% at 100% 0%, rgba(var(--accent), 0.28), transparent 55%),
-        linear-gradient(180deg, rgba(var(--accent), 0.08), rgb(var(--v-theme-surface)) 70%) !important;
-    border: 1px solid rgba(var(--accent), 0.3);
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    border-top: 1px solid rgb(var(--v-theme-rule));
+    border-left: 1px solid rgb(var(--v-theme-rule));
 }
 
-.feature-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(var(--accent), 0.8);
-    box-shadow: 0 18px 40px -18px rgba(var(--accent), 0.55);
+.feature {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    min-height: 280px;
+    padding: 1.75rem;
+    border-right: 1px solid rgb(var(--v-theme-rule));
+    border-bottom: 1px solid rgb(var(--v-theme-rule));
+    color: rgb(var(--v-theme-on-background));
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.feature:hover,
+.feature:focus-visible {
+    background: rgb(var(--v-theme-surface-raised));
+    outline: none;
+}
+
+.feature-title {
+    margin-top: auto;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+
+.feature-arrow {
+    display: inline-block;
+    color: rgb(var(--v-theme-primary));
+    transition: transform 0.15s ease;
+}
+
+.feature:hover .feature-arrow {
+    transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .feature-arrow {
+        transition: none;
+    }
 }
 </style>

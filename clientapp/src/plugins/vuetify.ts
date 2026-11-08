@@ -16,14 +16,16 @@ import { THEMES, initialThemeName } from './theme'
 // (`color="primary"`, `bg-surface`, `text-muted`, `rgb(var(--v-theme-border))`) works in both. Components never
 // hard-code colors; change the look here. The light/dark choice lives in store/theme.ts.
 //
-// Dark is the original near-black developer-portfolio theme. Accents come from JetBrains' Darcula syntax colors
-// (keyword orange, function blue, field purple, string green), all clearing 4.5:1 on the near-black background.
+// The look is "Swiss": near-black ink on white, hairline rules, square corners (src/styles/settings.scss) and one
+// signal-orange accent. Dark is the same idea inverted. Text colors clear 4.5:1 on background and surface.
 //
 // Keys:
-// - Semantic keys for new code: background, surface, surface-raised, border, muted (secondary text), subtle (captions,
-//   axis labels), primary, success / warning / error / info, chart-1..3 (chart series, checked for colorblind-safe
-//   separation in both themes), hero-ink / hero-shade (on the PageHero band, which stays dark in both themes).
-//   Main text uses Vuetify's own `text-high-emphasis` (on-background).
+// - Semantic keys for new code: background, surface, surface-raised (the grey bands), border (hairlines), rule (the
+//   strong ink-colored rules), muted (secondary text), subtle (captions, axis labels), primary, success / warning /
+//   error / info, chart-1..3 (chart series, checked for colorblind-safe separation in both themes), inverse /
+//   inverse-ink / inverse-muted / inverse-accent (the solid black blocks: footer, call-to-action panels), hero-ink
+//   (text and controls in the PageHero header: the page's ink in both themes). Main text uses Vuetify's own
+//   `text-high-emphasis` (on-background).
 // - Vuetify makes only a bare class (`.on-surface`) for keys that start with "on-", never `text-on-*` or `bg-on-*`,
 //   so new text colors get plain names like `muted`.
 // - Older keys named after literal colors (navy, slate, ...) are kept so existing pages keep working. They map to the
@@ -32,49 +34,53 @@ import { THEMES, initialThemeName } from './theme'
 const portfolioDark: ThemeDefinition = {
   dark: true,
   colors: {
-    background: '#0a0a0c',
-    surface: '#151517',
-    'surface-bright': '#2a2a2e',
-    'surface-light': '#1c1c1f',
-    'surface-variant': '#2a2a2e',
-    'surface-raised': '#1c1c1f',
-    border: '#2a2a2e',
-    muted: '#aeaeb6',
-    subtle: '#8a8a93',
-    primary: '#CF8E6D',
-    secondary: '#8a8a93',
-    accent: '#CF8E6D',
-    error: '#ff6b6b',
-    info: '#56A8F5',
-    success: '#64ffda',
-    warning: '#f6c177',
+    background: '#0a0a0a',
+    surface: '#141414',
+    'surface-bright': '#262626',
+    'surface-light': '#1c1c1c',
+    'surface-variant': '#262626',
+    'surface-raised': '#1c1c1c',
+    border: '#2e2e2e',
+    rule: '#f5f5f4',
+    muted: '#d4d4d4',
+    subtle: '#a3a3a3',
+    primary: '#fb923c',
+    secondary: '#a3a3a3',
+    accent: '#fb923c',
+    error: '#f87171',
+    info: '#60a5fa',
+    success: '#4ade80',
+    warning: '#facc15',
     'chart-1': '#3F8FDB',
     'chart-2': '#CC7340',
     'chart-3': '#A86BC4',
-    // The PageHero band is dark in both themes: hero-ink is its text, hero-shade darkens controls on it
-    'hero-ink': '#ffffff',
-    'hero-shade': '#07090c',
+    inverse: '#1c1c1c',
+    'inverse-ink': '#f5f5f4',
+    'inverse-muted': '#a3a3a3',
+    'inverse-accent': '#fb923c',
+    // Text and controls in the PageHero header, which sits on the page background
+    'hero-ink': '#f5f5f4',
 
-    'on-background': '#eaeaef',
-    'on-surface': '#eaeaef',
-    'on-primary': '#0a0a0c',
-    'on-secondary': '#0a0a0c',
+    'on-background': '#f5f5f4',
+    'on-surface': '#f5f5f4',
+    'on-primary': '#111111',
+    'on-secondary': '#111111',
     // Tooltips use surface-variant; without this, Vuetify's dark default (#424242) puts dark grey text on it.
-    'on-surface-variant': '#eaeaef',
+    'on-surface-variant': '#f5f5f4',
 
-    navy: '#0a0a0c',
-    'light-navy': '#151517',
-    'lightest-navy': '#2a2a2e',
-    slate: '#8a8a93',
-    'light-slate': '#aeaeb6',
-    'lightest-slate': '#eaeaef',
-    green: '#6AAB73',
-    violet: '#C77DBB',
-    amber: '#f6c177',
-    orange: '#f78c6c',
+    navy: '#0a0a0a',
+    'light-navy': '#141414',
+    'lightest-navy': '#2e2e2e',
+    slate: '#a3a3a3',
+    'light-slate': '#d4d4d4',
+    'lightest-slate': '#f5f5f4',
+    green: '#4ade80',
+    violet: '#c4b5fd',
+    amber: '#facc15',
+    orange: '#fb923c',
   },
   variables: {
-    'border-color': '#2a2a2e',
+    'border-color': '#2e2e2e',
     'border-opacity': 1,
     'high-emphasis-opacity': 1,
     'medium-emphasis-opacity': 0.85,
@@ -82,53 +88,57 @@ const portfolioDark: ThemeDefinition = {
   },
 }
 
-// Same keys, light values. Accents are darkened versions of the dark theme's so text and marks keep 4.5:1 on white.
+// Same keys, light values. Accents are darker than the dark theme's so text and marks keep 4.5:1 on white.
 const portfolioLight: ThemeDefinition = {
   dark: false,
   colors: {
-    background: '#f6f6f8',
+    background: '#ffffff',
     surface: '#ffffff',
     'surface-bright': '#ffffff',
-    'surface-light': '#f1f1f4',
+    'surface-light': '#f2f2f0',
     // Tooltips stay dark in both themes
-    'surface-variant': '#2a2a2e',
-    'surface-raised': '#f1f1f4',
-    border: '#e2e2e7',
-    muted: '#3f3f46',
-    subtle: '#62626c',
-    primary: '#A65A34',
-    secondary: '#62626c',
-    accent: '#A65A34',
-    error: '#C42626',
-    info: '#1F67B8',
-    success: '#0F7A65',
-    warning: '#966200',
+    'surface-variant': '#262626',
+    'surface-raised': '#f2f2f0',
+    border: '#d4d4d4',
+    rule: '#111111',
+    muted: '#404040',
+    subtle: '#525252',
+    primary: '#c2410c',
+    secondary: '#525252',
+    accent: '#c2410c',
+    error: '#b91c1c',
+    info: '#1d4ed8',
+    success: '#15803d',
+    warning: '#a16207',
     'chart-1': '#2F6FB8',
     'chart-2': '#B0663F',
     'chart-3': '#8C4A9E',
-    // The PageHero band is dark in both themes: hero-ink is its text, hero-shade darkens controls on it
-    'hero-ink': '#ffffff',
-    'hero-shade': '#07090c',
+    inverse: '#111111',
+    'inverse-ink': '#ffffff',
+    'inverse-muted': '#a3a3a3',
+    'inverse-accent': '#fb923c',
+    // Text and controls in the PageHero header, which sits on the page background
+    'hero-ink': '#111111',
 
-    'on-background': '#18181b',
-    'on-surface': '#18181b',
+    'on-background': '#111111',
+    'on-surface': '#111111',
     'on-primary': '#ffffff',
     'on-secondary': '#ffffff',
-    'on-surface-variant': '#eaeaef',
+    'on-surface-variant': '#f5f5f4',
 
-    navy: '#f6f6f8',
+    navy: '#ffffff',
     'light-navy': '#ffffff',
-    'lightest-navy': '#e2e2e7',
-    slate: '#62626c',
-    'light-slate': '#3f3f46',
-    'lightest-slate': '#18181b',
-    green: '#28783A',
-    violet: '#8C3C80',
-    amber: '#966200',
-    orange: '#B4532A',
+    'lightest-navy': '#d4d4d4',
+    slate: '#525252',
+    'light-slate': '#404040',
+    'lightest-slate': '#111111',
+    green: '#15803d',
+    violet: '#6d28d9',
+    amber: '#a16207',
+    orange: '#c2410c',
   },
   variables: {
-    'border-color': '#e2e2e7',
+    'border-color': '#d4d4d4',
     'border-opacity': 1,
     'high-emphasis-opacity': 1,
     'medium-emphasis-opacity': 0.85,
@@ -143,9 +153,15 @@ export default createVuetify({
     defaultTheme: initialThemeName(),
     themes: { [THEMES.dark]: portfolioDark, [THEMES.light]: portfolioLight },
   },
+  // Corners are square everywhere through $rounded in src/styles/settings.scss. Buttons are flat and keep their
+  // label's case, like the Swiss mockups.
   defaults: {
     VBtn: {
-      rounded: 'sm',
+      class: 'text-none',
+      elevation: 0,
+    },
+    VCard: {
+      flat: true,
     },
   },
 })

@@ -5,22 +5,39 @@
  */
 
 // https://vuetifyjs.com/features/sass-variables/`
+// Swiss look: Inter for text, Inter Tight for headings, and square corners on everything. 'pill' is zeroed too so
+// older rounded="pill" buttons go square; 'circle' (avatars) stays round.
 @use 'vuetify/settings' with (
   $body-font-family: ('Inter', 'Roboto', sans-serif),
-  $heading-font-family: ('Inter', 'Roboto', sans-serif)
+  $heading-font-family: ('Inter Tight', 'Inter', 'Roboto', sans-serif),
+  $border-radius-root: 0,
+  $rounded: (
+    'pill': 0,
+  ),
 );
 
 :root {
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  --font-display: 'Inter Tight', 'Inter', 'Roboto', sans-serif;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-mono {
   font-family: var(--font-mono);
 }
 
+// Big, tight headings (page titles, section titles, large figures)
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+}
+
 ::selection {
   background-color: rgba(var(--v-theme-primary), 0.2);
-  color: rgb(var(--v-theme-lightest-slate));
+  color: rgb(var(--v-theme-on-background));
 }
 
 ::-webkit-scrollbar {
@@ -32,8 +49,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(var(--v-theme-lightest-navy));
-  border-radius: 10px;
+  background: rgb(var(--v-theme-border));
 }
 
 // Shared code-preview treatment for every <highlightjs> block on the site

@@ -2,8 +2,7 @@
     <div class="tech-strip">
         <v-container class="landing-width">
             <figure class="quote">
-                <span class="quote-mark" aria-hidden="true">&ldquo;</span>
-                <blockquote class="quote-text">
+                <blockquote class="quote-text font-display">
                     I work across the stack, from SQL Server and .NET on the back end to Vue and TypeScript in the browser.
                 </blockquote>
             </figure>
@@ -12,7 +11,7 @@
             <ul class="marquee-track">
                 <!-- The list is rendered twice so the scroll can loop seamlessly. -->
                 <li v-for="(t, i) in [...tech, ...tech]" :key="`${t.name}-${i}`" :aria-hidden="i >= tech.length">
-                    <img :src="iconUrl(t.icon)" alt="" width="40" height="40" loading="lazy" />
+                    <img :src="iconUrl(t.icon)" alt="" width="32" height="32" loading="lazy" />
                     <span class="font-mono text-caption">{{ t.name }}</span>
                 </li>
             </ul>
@@ -45,61 +44,34 @@ const iconUrl = (path: string) => `https://cdn.jsdelivr.net/gh/devicons/devicon@
 
 <style scoped>
 .tech-strip {
-    padding: 3.5rem 0 1rem;
+    border-bottom: 1px solid rgb(var(--v-theme-rule));
 }
 
 .landing-width {
-    max-width: 1100px;
+    max-width: 1280px;
+    padding: 4rem 2rem 3rem;
 }
 
-/* A short pull quote that introduces the logo strip below it. */
+/* A large pull quote across the full content width. */
 .quote {
-    max-width: 62ch;
-    margin: 0 auto 2.25rem;
-    text-align: center;
-}
-
-.quote-mark {
-    display: block;
-    height: 2.2rem;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 4rem;
-    line-height: 1;
-    background: linear-gradient(135deg, #FC801D, #FE2857 55%, #6B57FF);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    margin: 0;
 }
 
 .quote-text {
     margin: 0;
-    font-size: clamp(1.1rem, 0.6vw + 0.95rem, 1.3rem);
-    line-height: 1.55;
-    font-weight: 500;
-    color: rgb(var(--v-theme-lightest-slate));
+    font-size: clamp(1.75rem, 3vw + 0.75rem, 3.5rem);
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: rgb(var(--v-theme-on-background));
     text-wrap: balance;
-}
-
-.quote-cite {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 0.75rem;
-    color: rgb(var(--v-theme-slate));
-    letter-spacing: 0.04em;
-}
-
-.quote-rule {
-    width: 24px;
-    height: 2px;
-    border-radius: 2px;
-    background: rgb(var(--v-theme-primary));
 }
 
 .marquee {
     overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    border-top: 1px solid rgb(var(--v-theme-border));
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 
 .marquee-track {
@@ -107,7 +79,8 @@ const iconUrl = (path: string) => `https://cdn.jsdelivr.net/gh/devicons/devicon@
     gap: 3.5rem;
     width: max-content;
     list-style: none;
-    padding: 0.5rem 0;
+    padding: 1.5rem 0;
+    margin: 0;
     animation: marquee 50s linear infinite;
 }
 
@@ -117,20 +90,33 @@ const iconUrl = (path: string) => `https://cdn.jsdelivr.net/gh/devicons/devicon@
 
 .marquee-track li {
     display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 0.6rem;
-    min-width: 72px;
-    color: rgb(var(--v-theme-light-slate));
+    color: rgb(var(--v-theme-subtle));
 }
 
+/* Logos are greyscale to keep the page to one accent; they get their color back on hover */
 .marquee-track img {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
+    filter: grayscale(1);
+    opacity: 0.75;
+    transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.marquee-track li:hover img {
+    filter: none;
+    opacity: 1;
 }
 
 @keyframes marquee {
     to { transform: translateX(calc(-50% - 1.75rem)); }
+}
+
+@media (max-width: 600px) {
+    .landing-width {
+        padding: 3rem 1rem 2rem;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

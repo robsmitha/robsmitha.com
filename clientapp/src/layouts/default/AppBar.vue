@@ -1,12 +1,8 @@
 <template>
     <v-app-bar
       id="navTop"
-      :color="!drawer && transparency ? 'transparent' : 'background'"
-      :class="[
-        // See-through with hero text colors over the home hero in dark mode; otherwise a solid bar
-        onHero ? 'text-hero-ink' : 'text-high-emphasis',
-        { 'nav-solid': !onHero }
-      ]"
+      color="background"
+      class="text-high-emphasis nav-bar"
       flat
       fixed
     >
@@ -15,18 +11,19 @@
       </template>
 
       <v-app-bar-title>
-        <span class="font-mono text-subtitle-1 cursor-pointer" @click="onBrandClick">
-          <span :class="onHero ? 'text-hero-ink' : 'text-primary'">rob</span><span :class="onHero ? 'text-hero-ink' : 'text-high-emphasis'">smitha.com</span>
-        </span>
+        <a href="/" class="brand font-display" @click.prevent="onBrandClick">Rob Smitha<span class="text-primary">.</span></a>
       </v-app-bar-title>
 
-      <!-- <ul v-if="!isMobile" class="d-flex align-center ga-6 nav-links pl-0 mr-6">
-        <li v-for="(link, i) in navLinks" :key="link.text">
-          <router-link :to="link.to" class="font-mono text-body-2 text-lightest-slate nav-link">
-            <span class="text-primary">{{ String(i + 1).padStart(2, '0') }}.</span> {{ link.text }}
-          </router-link>
-        </li>
-      </ul> -->
+      <!-- The public features, underlined in the accent color when you're on one -->
+      <nav v-if="!isMobile" aria-label="Features">
+        <ul class="d-flex align-center ga-7 nav-links pl-0 mr-6">
+          <li v-for="link in navLinks" :key="link.text">
+            <router-link :to="link.to" class="nav-link text-body-2" active-class="nav-link--active">
+              {{ link.text }}
+            </router-link>
+          </li>
+        </ul>
+      </nav>
 
       <template #append>
         <template v-if="!isMobile">
@@ -50,8 +47,8 @@
         <v-btn
           v-if="auth.signedIn && assistant.available"
           variant="outlined"
-          :color="onHero ? 'hero-ink' : 'primary'"
-          rounded="pill"
+          color="rule"
+
           class="text-none mr-1"
           :icon="isMobile ? 'mdi-star-four-points-outline' : undefined"
           :prepend-icon="isMobile ? undefined : 'mdi-star-four-points-outline'"
@@ -92,8 +89,8 @@
         <v-btn
           v-if="!auth.signedIn"
           variant="outlined"
-          :color="onHero ? 'hero-ink' : 'primary'"
-          rounded="pill"
+          color="rule"
+
           class="text-none ml-2"
           prepend-icon="mdi-login"
           href="/.auth/login/aad"
@@ -197,7 +194,7 @@
                 size="small"
                 variant="outlined"
                 color="primary"
-                rounded="pill"
+      
                 class="text-none"
                 :loading="connecting"
                 @click="connectGitHub"
@@ -239,7 +236,6 @@
         <v-list-item prepend-icon="mdi-file-pdf-box" title="Resume" href="https://smitha-cdn.s3.us-east-2.amazonaws.com/Content/files/Rob+Smitha+Resume.pdf" target="_blank"></v-list-item>
         <!-- <v-list-item prepend-icon="mdi-desktop-classic" title="robsmitha.github.io" href="https://robsmitha.github.io/" target="_blank"></v-list-item> -->
 
-
         <!-- <template v-if="!auth.signedIn">
           <v-list-item subtitle="Sign in"></v-list-item>
           <v-list-item prepend-icon="mdi-github" title="Github" href="/.auth/login/github"></v-list-item>
@@ -270,7 +266,7 @@ import { useAuthStore } from "@/store/auth"
 import { useCongressStore } from "@/store/congress"
 import { useAssistantStore } from "@/store/assistant"
 import { useRoute, useRouter } from 'vue-router'
-import { useGoTo, useTheme } from 'vuetify'
+import { useGoTo } from 'vuetify'
 import { useGithubStore } from "@/store/github"
 import { useDisplay } from 'vuetify'
 import elysianClient from '@/api/elysianClient'
@@ -301,13 +297,7 @@ watch(() => auth.signedIn, signedIn => {
 }, { immediate: true })
 
 const drawer = ref(false)
-const transparency = ref(false)
 const menu = ref(false)
-
-// The bar is see-through over the home page's hero until you scroll. That hero is dark only in the dark theme, so the
-// bar uses hero colors then; in light it keeps its normal text colors.
-const theme = useTheme()
-const onHero = computed(() => transparency.value && !drawer.value && theme.global.current.value.dark)
 
 const themeStore = useThemeStore()
 const themeOptions: { value: ThemePreference, title: string, icon: string }[] = [
@@ -365,20 +355,11 @@ async function connectGitHub() {
   connecting.value = false
 }
 
-// const navLinks = [
-//   { text: 'Projects', to: { path: '/', hash: '#projects' } },
-//   { text: 'Features', to: { path: '/', hash: '#features' } },
-// ]
-
-watch(route, (newVal) => {
-    transparency.value = newVal.path === '/'
-}, { immediate: true })
-
-onMounted(() =>{
-  window.addEventListener('scroll', () => {
-    transparency.value = route.path === '/' && window.scrollY <= 75
-  })
-})
+const navLinks = [
+  { text: 'Search Code', to: '/code' },
+  { text: 'Generate Code', to: '/generate-code' },
+  { text: 'Congress', to: '/congress' },
+]
 
 function onBrandClick(){
   if(route.path === '/'){
@@ -391,18 +372,23 @@ function onBrandClick(){
 </script>
 
 <style scoped>
-:deep(.nav-solid) {
-  background-color: rgb(var(--v-theme-background)) !important;
-  border-bottom: 1px solid rgb(var(--v-theme-lightest-navy));
-  box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.5) !important;
+:deep(.nav-bar) {
+  border-bottom: 1px solid rgb(var(--v-theme-rule)) !important;
+}
+
+.brand {
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: inherit;
+  text-decoration: none;
 }
 
 .account-trigger {
   padding: 3px;
-  border-radius: 999px;
-  border: 1px solid rgb(var(--v-theme-lightest-navy));
-  background: rgba(var(--v-theme-surface), 0.6);
-  color: rgb(var(--v-theme-slate));
+  border: 1px solid rgb(var(--v-theme-rule));
+  background: rgb(var(--v-theme-surface));
+  color: rgb(var(--v-theme-subtle));
   transition: border-color 0.15s ease;
 }
 
@@ -425,19 +411,15 @@ function onBrandClick(){
   transform: rotate(180deg);
 }
 
-/* Initials on a Darcula-colored gradient ring. */
+/* Initials in a solid ink square, Swiss style. */
 .account-avatar {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgb(var(--v-theme-lightest-slate));
-  background:
-    linear-gradient(rgb(var(--v-theme-surface-bright)), rgb(var(--v-theme-surface-bright))) padding-box,
-    linear-gradient(135deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-violet)), rgb(var(--v-theme-info))) border-box;
-  border: 2px solid transparent;
+  color: rgb(var(--v-theme-background));
+  background: rgb(var(--v-theme-rule));
 }
 
 .account-avatar--small {
@@ -469,12 +451,12 @@ function onBrandClick(){
 }
 
 .account-menu {
-  border: 1px solid rgb(var(--v-theme-lightest-navy));
-  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgb(var(--v-theme-rule));
+  box-shadow: none !important;
 }
 
 .account-header {
-  background: radial-gradient(120% 140% at 0% 0%, rgba(var(--v-theme-violet), 0.14), transparent 60%);
+  border-bottom: 1px solid rgb(var(--v-theme-border));
 }
 
 .min-width-0 {
@@ -488,8 +470,7 @@ function onBrandClick(){
 
 .menu-link {
   text-decoration: none;
-  border-radius: 8px;
-  color: rgb(var(--v-theme-light-slate));
+  color: rgb(var(--v-theme-muted));
   transition: background-color 0.15s ease;
 }
 
@@ -506,7 +487,6 @@ function onBrandClick(){
 .menu-icon {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -532,15 +512,16 @@ function onBrandClick(){
 }
 
 .nav-link {
+  font-weight: 500;
+  color: inherit;
   text-decoration: none;
   padding-bottom: 2px;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s ease, opacity 0.2s ease;
-  opacity: 0.85;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.15s ease;
 }
 
-.nav-link:hover {
-  opacity: 1;
+.nav-link:hover,
+.nav-link--active {
   border-color: rgb(var(--v-theme-primary));
 }
 </style>

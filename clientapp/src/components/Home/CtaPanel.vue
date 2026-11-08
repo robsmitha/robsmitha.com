@@ -1,103 +1,87 @@
 <template>
-    <section class="cta-panel" :class="`cta-panel--${tone}`">
-        <div class="cta-copy">
-            <p v-if="eyebrow" class="font-mono text-caption text-uppercase cta-eyebrow mb-3">{{ eyebrow }}</p>
-            <h2 class="cta-title font-weight-bold mb-4">{{ title }}</h2>
-            <p class="cta-text mb-8">{{ text }}</p>
-            <div class="d-flex flex-wrap ga-3">
+    <!-- A solid inverse block (black in light mode) with a big headline, like the Swiss mockups' contact section.
+         Buttons go in the default slot; white flat/outlined buttons read well on it. -->
+    <section class="cta-panel">
+        <p v-if="eyebrow" class="cta-eyebrow font-mono mb-4">{{ eyebrow }}</p>
+        <h2 class="cta-title font-display mb-6">{{ titleParts.text }}<span class="cta-dot">{{ titleParts.end }}</span></h2>
+        <div class="cta-row">
+            <p class="cta-text">{{ text }}</p>
+            <div class="cta-actions">
                 <slot />
             </div>
-        </div>
-        <div class="cta-art" :class="`cta-art--${art}`">
-            <GradientArt :variant="art" />
         </div>
     </section>
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
     title: { type: String, required: true },
     text: { type: String, required: true },
     eyebrow: { type: String, default: '' },
+    // Kept so existing pages don't need changing; the Swiss panel has a single look.
     tone: { type: String as () => 'teal' | 'plum', default: 'plum' },
     art: { type: String as () => 'ribbon' | 'arcs' | 'capitol' | 'editor', default: 'arcs' }
+})
+
+// The title's closing punctuation is drawn in the accent color, Swiss style.
+const titleParts = computed(() => {
+    const match = props.title.match(/^(.*?)([.!?])$/s)
+    return match ? { text: match[1], end: match[2] } : { text: props.title, end: '' }
 })
 </script>
 
 <style scoped>
 .cta-panel {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    align-items: center;
-    min-height: 320px;
-    border-radius: 16px;
-    overflow: hidden;
-    color: #fff;
-}
-
-.cta-panel--teal {
-    background: linear-gradient(135deg, #04262a 0%, #03161b 55%, #07090c 100%);
-    border: 1px solid rgba(42, 172, 184, 0.25);
-}
-
-.cta-panel--plum {
-    background: linear-gradient(115deg, #1f0719 0%, #3d0c33 50%, #5c1240 100%);
-    border: 1px solid rgba(254, 40, 87, 0.25);
-}
-
-.cta-copy {
-    position: relative;
-    z-index: 1;
-    padding: 3rem;
+    padding: 4.5rem 3rem 3.5rem;
+    background: rgb(var(--v-theme-inverse));
+    color: rgb(var(--v-theme-inverse-ink));
 }
 
 .cta-eyebrow {
-    letter-spacing: 0.08em;
-    opacity: 0.75;
+    font-size: 0.8125rem;
+    color: rgb(var(--v-theme-inverse-accent));
 }
 
 .cta-title {
-    font-size: clamp(1.6rem, 1.5vw + 1.1rem, 2.4rem);
-    line-height: 1.15;
+    margin: 0;
+    font-size: clamp(2.5rem, 5vw + 1rem, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    font-weight: 800;
     text-wrap: balance;
 }
 
-.cta-text {
-    max-width: 46ch;
-    line-height: 1.6;
-    opacity: 0.82;
+.cta-dot {
+    color: rgb(var(--v-theme-inverse-accent));
 }
 
-.cta-art {
-    align-self: stretch;
+.cta-row {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 240px;
-}
-
-.cta-art--ribbon {
-    padding: 1.5rem 2rem 1.5rem 0;
-}
-
-.cta-art--arcs {
+    flex-wrap: wrap;
     align-items: flex-end;
-    justify-content: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
 }
 
-@media (max-width: 960px) {
+.cta-text {
+    margin: 0;
+    max-width: 36rem;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: rgb(var(--v-theme-inverse-muted));
+}
+
+.cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+@media (max-width: 600px) {
     .cta-panel {
-        grid-template-columns: 1fr;
-    }
-
-    .cta-copy {
-        padding: 2rem 1.5rem 0.5rem;
-    }
-
-    .cta-art {
-        min-height: 180px;
-        max-height: 220px;
+        padding: 3rem 1.25rem 2.5rem;
     }
 }
 </style>

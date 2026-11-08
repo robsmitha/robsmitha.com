@@ -3,13 +3,12 @@
       class="repo-card d-flex flex-column h-100 pa-6"
       color="surface"
       flat
-      rounded="lg"
       :ripple="true"
       :hover="true"
       @click="emit('repo-selected', repo.name)"
     >
       <div class="d-flex align-start justify-space-between ga-3 mb-2">
-        <h3 class="text-lightest-slate text-subtitle-1 font-weight-bold repo-card-title">
+        <h3 class="font-display text-h6 font-weight-bold repo-card-title">
           {{ props.repo.name }}
         </h3>
         <div class="d-flex align-center ga-3 flex-shrink-0 repo-card-meta">
@@ -30,7 +29,7 @@
               </span>
             </template>
           </v-tooltip>
-          <v-icon color="slate" size="20">mdi-arrow-top-right</v-icon>
+          <v-icon color="primary" size="20">mdi-arrow-top-right</v-icon>
         </div>
       </div>
 
@@ -112,14 +111,12 @@ const ashParticles = computed(() => {
 <style scoped>
 .repo-card {
   cursor: pointer;
-  border: 1px solid rgb(var(--v-theme-lightest-navy));
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid rgb(var(--v-theme-rule));
+  transition: background-color 0.15s ease;
 }
 
 .repo-card:hover {
-  transform: translateY(-6px);
-  border-color: rgb(var(--v-theme-primary));
-  box-shadow: 0 20px 30px -15px rgba(2, 12, 27, 0.7);
+  background: rgb(var(--v-theme-surface-raised)) !important;
 }
 
 .repo-card-title {

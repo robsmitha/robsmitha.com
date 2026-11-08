@@ -431,7 +431,7 @@ async function addTarget () {
     background: rgb(var(--v-theme-subtle));
 }
 
-/* The hero band is dark in both themes */
+/* Page header (PageHero) */
 .hero-title {
     font-size: clamp(1.6rem, 1.5vw + 1rem, 2.2rem);
     line-height: 1.1;
@@ -460,7 +460,7 @@ async function addTarget () {
 .hero-track {
     position: relative;
     height: 10px;
-    border-radius: 999px;
+    border-radius: 0;
     background: rgba(var(--v-theme-hero-ink), 0.18);
 }
 
@@ -472,7 +472,7 @@ async function addTarget () {
 .hero-track span {
     position: absolute;
     inset: 0 auto 0 0;
-    border-radius: 999px;
+    border-radius: 0;
 }
 
 .key {

@@ -11,9 +11,8 @@ export type ThemePreference = 'system' | 'light' | 'dark'
 
 const STORAGE_KEY = 'theme-preference'
 
-// The site was dark-only, so visitors without a saved choice keep the dark look until every page has been checked in
-// light. Change this to 'system' once that's done (docs/budget-plan.md §6.1).
-export const DEFAULT_PREFERENCE: ThemePreference = 'dark'
+// Visitors without a saved choice follow their device's light/dark setting.
+export const DEFAULT_PREFERENCE: ThemePreference = 'system'
 
 export function readPreference (): ThemePreference {
   try {

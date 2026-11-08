@@ -1,10 +1,8 @@
 <template>
-    <div class="d-flex align-center mb-8 section-heading">
-        <span class="font-mono text-primary text-h6 mr-3">{{ index }}.</span>
-        <h2 class="text-lightest-slate text-h4 font-weight-bold text-nowrap">
-            {{ title }}
-        </h2>
-        <span class="heading-rule ml-6 flex-grow-1" aria-hidden="true"></span>
+    <!-- Swiss section heading: a strong rule, the section number in mono, then a tight display title. -->
+    <div class="section-heading mb-10">
+        <span class="section-index font-mono text-primary">{{ index }}</span>
+        <h2 class="section-title font-display">{{ title }}</h2>
     </div>
 </template>
 
@@ -16,11 +14,23 @@ defineProps({
 </script>
 
 <style scoped>
-.heading-rule {
-    height: 1px;
-    background: linear-gradient(90deg,
-        rgba(var(--v-theme-primary), 0.7),
-        rgba(var(--v-theme-violet), 0.35) 40%,
-        rgba(var(--v-theme-lightest-navy), 1) 75%);
+.section-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 2px solid rgb(var(--v-theme-rule));
+}
+
+.section-index {
+    font-size: 0.8125rem;
+}
+
+.section-title {
+    margin: 0;
+    font-size: clamp(2rem, 2vw + 1.25rem, 2.75rem);
+    line-height: 1.05;
+    font-weight: 700;
+    color: rgb(var(--v-theme-on-background));
 }
 </style>

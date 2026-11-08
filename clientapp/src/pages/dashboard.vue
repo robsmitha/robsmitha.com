@@ -332,7 +332,7 @@ const comingUp = computed(() => {
     text-decoration: underline;
 }
 
-/* The hero band is dark in both themes */
+/* Page header (PageHero) */
 .hero-row {
     gap: 24px 40px;
 }
@@ -367,14 +367,14 @@ const comingUp = computed(() => {
 .hero-track {
     position: relative;
     height: 8px;
-    border-radius: 999px;
+    border-radius: 0;
     background: rgba(var(--v-theme-hero-ink), 0.18);
 }
 
 .hero-track span {
     position: absolute;
     inset: 0 auto 0 0;
-    border-radius: 999px;
+    border-radius: 0;
     background: rgba(var(--v-theme-hero-ink), 0.75);
 }
 

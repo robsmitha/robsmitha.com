@@ -271,10 +271,10 @@
             title="Powered by CapitolSharp."
             text="This feed runs on CapitolSharp, my open-source .NET wrapper for the Congress.gov API. Browse the code or use it in your own project."
         >
-            <v-btn color="white" variant="flat" rounded="pill" size="large" class="text-none" prepend-icon="mdi-github" href="https://github.com/robsmitha/CapitolSharp" target="_blank">
+            <v-btn color="inverse-ink" variant="flat" rounded="pill" size="large" class="text-none" prepend-icon="mdi-github" href="https://github.com/robsmitha/CapitolSharp" target="_blank">
                 View on GitHub
             </v-btn>
-            <v-btn color="white" variant="outlined" rounded="pill" size="large" class="text-none" to="/repo/CapitolSharp">
+            <v-btn color="inverse-ink" variant="outlined" rounded="pill" size="large" class="text-none" to="/repo/CapitolSharp">
                 Explore the repo
             </v-btn>
         </CtaPanel>
@@ -468,14 +468,14 @@ onMounted(() => {
 }
 
 .hero-title {
-    font-size: clamp(1.8rem, 2vw + 1rem, 2.6rem);
-    line-height: 1.1;
+    font-size: clamp(2.75rem, 6vw + 1rem, 6rem);
+    line-height: 0.95;
 }
 
 .hero-picker {
     color: inherit;
     text-align: left;
-    border-radius: 8px;
+    border-radius: 0;
 }
 
 .hero-picker-icon {
@@ -496,8 +496,8 @@ onMounted(() => {
 
 .hero-years {
     padding: 3px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 0;
+    border: 1px solid rgba(var(--v-theme-hero-ink), 0.35);
 }
 
 .hero-years-bone {
@@ -510,7 +510,7 @@ onMounted(() => {
     height: 24px;
     max-width: none;
     width: 100%;
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(var(--v-theme-hero-ink), 0.12);
 }
 
 .hero-text {
@@ -607,7 +607,7 @@ onMounted(() => {
     gap: 6px;
     padding: 2px 10px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(var(--v-theme-hero-ink), 0.05);
 }
 
 .status-dot {

@@ -195,7 +195,7 @@ summary {
     cursor: pointer;
 }
 
-/* The hero band is dark in both themes */
+/* Page header (PageHero) */
 .hero-title {
     font-size: clamp(1.6rem, 1.5vw + 1rem, 2.2rem);
     line-height: 1.1;
