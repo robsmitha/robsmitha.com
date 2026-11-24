@@ -10,10 +10,12 @@
     "lint:theme": "node scripts/check-theme-colors.mjs"
   },
   "dependencies": {
+    "@azure/msal-browser": "^5.30.0",
     "@azure/storage-blob": "^12.24.0",
     "@gtm-support/vue-gtm": "^3.2.0",
     "@highlightjs/vue-plugin": "^2.1.0",
     "@mdi/font": "7.0.96",
+    "@robsmitha/elysian-ui": "^0.2.0",
     "@types/axios": "^0.14.0",
     "axios": "^1.7.5",
     "core-js": "^3.34.0",

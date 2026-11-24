@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import { auth } from '@/services/auth';
 
 type ApiResponse = {
   data: any | undefined,
@@ -19,10 +20,14 @@ class ApiClient {
     this.tenant = tenant;
   }
 
-  private getHeaders(): { [key: string]: string } {
+  // The signed-in person's token goes with every call; the backend decides from it what they may do.
+  // Someone who isn't signed in sends none, and gets what a visitor may see.
+  private async getHeaders(): Promise<{ [key: string]: string }> {
+    const token = await auth.accessToken();
     return {
       '___tenant___': this.tenant,
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
   }
 
@@ -105,7 +110,7 @@ class ApiClient {
 
   async getData(endpoint: string): Promise<ApiResponse> {
     try {
-      const response = await axios.get(endpoint, { headers: this.getHeaders() });
+      const response = await axios.get(endpoint, { headers: await this.getHeaders() });
       return this.handleAxiosResponse(response);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -115,7 +120,7 @@ class ApiClient {
 
   async postData(endpoint: string, data: any): Promise<ApiResponse> {
     try {
-      const response = await axios.post(endpoint, data, { headers: this.getHeaders() });
+      const response = await axios.post(endpoint, data, { headers: await this.getHeaders() });
       return this.handleAxiosResponse(response);
     } catch (error) {
       console.error('Error posting data:', error);

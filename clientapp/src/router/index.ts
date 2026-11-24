@@ -12,6 +12,7 @@ import repo from '@/pages/repo.vue'
 import search from '@/pages/search.vue'
 
 import { RouteLocationNormalized } from 'vue-router';
+import { auth, isProtected, signInPath } from '@/services/auth'
 const routes = [
   {
     path: '/bill/:congress/:billType/:billNumber',
@@ -53,6 +54,15 @@ const router = createRouter({
     }
     return { top: 0 }
   },
+})
+
+// A page for signed-in people sends anyone else to sign in, and brings them back afterwards. This replaces
+// the Static Web App's allowedRoles; the API's own rules are what protect the data.
+router.beforeEach(async to => {
+  if (!isProtected(to.path) || await auth.currentUser()) {
+    return true
+  }
+  return signInPath(to.fullPath)
 })
 
 export default router

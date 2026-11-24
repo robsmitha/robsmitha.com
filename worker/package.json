@@ -1,0 +1,17 @@
+{
+  "name": "site-robsmitha",
+  "private": true,
+  "type": "module",
+  "description": "The Cloudflare Worker that serves robsmitha.com: the app from ../clientapp/dist, /api forwarded to the shared backend.",
+  "scripts": {
+    "build:site": "yarn --cwd ../clientapp build",
+    "deploy": "npm run build:site && wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "dependencies": {
+    "@robsmitha/site-edge": "^0.2.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

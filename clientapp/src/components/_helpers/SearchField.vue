@@ -4,7 +4,7 @@
         <template v-if="!auth.signedIn">
             <span class="text-body-2 text-muted">
                 Sign in with
-                <a href="/.auth/login/aad">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
+                <a href="/auth/sign-in">Microsoft</a> and authorize robsmitha.com to access a higher rate limit.
             </span>
         </template>
         <template v-else-if="!auth.hasValidAccessToken">

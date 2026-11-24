@@ -1,13 +1,13 @@
 // Utilities
 import { defineStore } from 'pinia'
-import { ClaimsIdentity } from './types'
 import apiClient from '@/api/elysianClient'
+import { auth } from '@/services/auth'
 
 type State = {
   userDetails: string | undefined,
   identityProvider: string | undefined,
   hasGitHubAccessToken: boolean | undefined,
-  // True once /.auth/me has answered, so pages can tell signed out from not checked yet.
+  // True once sign-in has been checked, so pages can tell signed out from not checked yet.
   checked: boolean
 }
 
@@ -25,23 +25,14 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async fetchAuth(): Promise<void> {
-      const response = await apiClient?.getData('/.auth/me')
-
-      if (!response?.success){
-        console.error("Failed to get auth me.")
-        this.checked = true
-        return
-      }
-
-      const identity: ClaimsIdentity = response.data
-      if (identity?.clientPrincipal) {
-        this.userDetails = identity.clientPrincipal.userDetails
-        this.identityProvider = identity.clientPrincipal.identityProvider
-      }
+      // Their name or email, or null. Nobody who has never signed in downloads the sign-in library for this.
+      const user = await auth.currentUser()
+      this.userDetails = user ?? undefined
+      this.identityProvider = user ? 'aad' : undefined
       // Set before the GitHub check below, which pages don't need to wait for.
       this.checked = true
 
-      if (identity?.clientPrincipal) {
+      if (user) {
         
         const tokenResponse = await apiClient?.getData('/api/GitHubAuthMe')
         if (tokenResponse?.success){

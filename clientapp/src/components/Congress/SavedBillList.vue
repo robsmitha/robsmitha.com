@@ -165,7 +165,7 @@ const congressStore = useCongressStore()
 const route = useRoute()
 const router = useRouter()
 
-const signInUrl = computed(() => `/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(route.fullPath)}`)
+const signInUrl = computed(() => `/auth/sign-in?returnTo=${encodeURIComponent(route.fullPath)}`)
 
 // The stored law number is exact; otherwise read the status from the latest action, like the feed does.
 function status(b: TrackedBill): BillStatus {

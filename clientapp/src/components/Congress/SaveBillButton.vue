@@ -66,7 +66,7 @@ const saved = computed(() => congressStore.isTracked(props.congress, props.billT
 // Signed out, the button is a link to sign in that comes back to this page.
 const signInUrl = computed(() => auth.signedIn
     ? undefined
-    : `/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(route.fullPath)}`)
+    : `/auth/sign-in?returnTo=${encodeURIComponent(route.fullPath)}`)
 
 const icon = computed(() => {
     if (failed.value) return 'mdi-bookmark-remove-outline'
