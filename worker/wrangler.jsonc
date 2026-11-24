@@ -20,8 +20,9 @@
   "assets": {
     "directory": "../clientapp/dist",
     "binding": "ASSETS",
-    // The API always runs the Worker; files that exist are served without it
-    "run_worker_first": ["/api/*"],
+    // The API always runs the Worker, and so does the home page, so that www.robsmitha.com/ is redirected
+    // like every other www path. Other files that exist are served without it.
+    "run_worker_first": ["/api/*", "/"],
     "html_handling": "auto-trailing-slash",
     // A path with no file reaches the Worker, which tells an app route from a missing script (src/index.ts)
     "not_found_handling": "none"

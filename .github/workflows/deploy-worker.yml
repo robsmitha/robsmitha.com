@@ -1,19 +1,16 @@
 name: Deploy the site Worker
 
-# Builds the app and deploys the Cloudflare Worker that serves it. Until the cutover the Worker is only
-# reachable at https://site-robsmitha.smithadigital.workers.dev; the live site is still the Static Web App,
-# which its own workflow deploys from main.
+# Builds the app and deploys the Cloudflare Worker that serves robsmitha.com (and its test address,
+# https://site-robsmitha.smithadigital.workers.dev). The backend is the shared one, deployed from the
+# elysian-platform repository.
 on:
   push:
-    # feature/shared-platform until the cutover: main still deploys the Static Web App, and this version of
-    # the app can't sign in against the old backend, so it is not merged there yet. Take the branch out of
-    # this list when it is.
-    branches: [main, feature/shared-platform]
+    branches: [main]
     paths:
       - 'clientapp/**'
       - 'worker/**'
       - '.github/workflows/deploy-worker.yml'
-  # Run by hand from any branch, which is how it is tried before the cutover
+  # Run by hand from any branch, to try a change on the live Worker
   workflow_dispatch:
 
 concurrency:
