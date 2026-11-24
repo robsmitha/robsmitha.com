@@ -5,16 +5,17 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-09-01",
 
-  // Until the cutover this is the only address: https://site-robsmitha.smithadigital.workers.dev
+  // The test address stays on: https://site-robsmitha.smithadigital.workers.dev
   "workers_dev": true,
   "preview_urls": false,
 
-  // The cutover: uncomment once robsmitha.com's DNS is in Cloudflare, in the same sitting as the triggers
-  // are handed over (docs: aspensmitha.com/docs/plans/phase-6-robsmitha.md, "The cutover").
-  // "routes": [
-  //   { "pattern": "robsmitha.com/*", "zone_name": "robsmitha.com" },
-  //   { "pattern": "www.robsmitha.com/*", "zone_name": "robsmitha.com" }
-  // ],
+  // The site's own address. A route only takes effect while the DNS record for its name is Proxied in
+  // Cloudflare, so switching the two records between "Proxied" and "DNS only" is the cutover and its undo
+  // (docs: aspensmitha.com/docs/plans/phase-6-robsmitha.md, "The cutover").
+  "routes": [
+    { "pattern": "robsmitha.com/*", "zone_name": "robsmitha.com" },
+    { "pattern": "www.robsmitha.com/*", "zone_name": "robsmitha.com" }
+  ],
 
   "assets": {
     "directory": "../clientapp/dist",
