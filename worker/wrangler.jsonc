@@ -1,0 +1,37 @@
+{
+  // The Worker that serves robsmitha.com. It answers with the built app (../clientapp/dist) and forwards
+  // /api/* to the shared backend as the robsmitha tenant, with its own edge credential.
+  "name": "site-robsmitha",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-01",
+
+  // Until the cutover this is the only address: https://site-robsmitha.smithadigital.workers.dev
+  "workers_dev": true,
+  "preview_urls": false,
+
+  // The cutover: uncomment once robsmitha.com's DNS is in Cloudflare, in the same sitting as the triggers
+  // are handed over (docs: aspensmitha.com/docs/plans/phase-6-robsmitha.md, "The cutover").
+  // "routes": [
+  //   { "pattern": "robsmitha.com/*", "zone_name": "robsmitha.com" },
+  //   { "pattern": "www.robsmitha.com/*", "zone_name": "robsmitha.com" }
+  // ],
+
+  "assets": {
+    "directory": "../clientapp/dist",
+    "binding": "ASSETS",
+    // The API always runs the Worker; files that exist are served without it
+    "run_worker_first": ["/api/*"],
+    "html_handling": "auto-trailing-slash",
+    // A path with no file reaches the Worker, which tells an app route from a missing script (src/index.ts)
+    "not_found_handling": "none"
+  },
+
+  "vars": {
+    "ELYSIAN_ORIGIN": "https://elysian-sites.azurewebsites.net"
+  },
+
+  // Set once by hand, never in this file:  npx wrangler secret put ELYSIAN_EDGE_CREDENTIAL
+  // Its value is "site-robsmitha.<key>", the key shown once when the edge client is made.
+
+  "observability": { "enabled": true }
+}

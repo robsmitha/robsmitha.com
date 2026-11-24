@@ -1,0 +1,58 @@
+name: Deploy the site Worker
+
+# Builds the app and deploys the Cloudflare Worker that serves it. Until the cutover the Worker is only
+# reachable at https://site-robsmitha.smithadigital.workers.dev; the live site is still the Static Web App,
+# which its own workflow deploys from main.
+on:
+  push:
+    # feature/shared-platform until the cutover: main still deploys the Static Web App, and this version of
+    # the app can't sign in against the old backend, so it is not merged there yet. Take the branch out of
+    # this list when it is.
+    branches: [main, feature/shared-platform]
+    paths:
+      - 'clientapp/**'
+      - 'worker/**'
+      - '.github/workflows/deploy-worker.yml'
+  # Run by hand from any branch, which is how it is tried before the cutover
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # READ_REPO_TOKEN and the Cloudflare secrets live in this environment
+    environment: Production
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # Also points the @robsmitha scope at GitHub Packages, reading the token from NODE_AUTH_TOKEN
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@robsmitha'
+
+      # Both the app and the Worker use packages from another repository, which this one's own token can't read
+      - name: Install the app's dependencies
+        run: yarn --cwd clientapp install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.READ_REPO_TOKEN }}
+
+      - name: Install the Worker's dependencies
+        working-directory: worker
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.READ_REPO_TOKEN }}
+
+      # The edge credential is a Worker secret set once by hand and is not touched by a deploy
+      - name: Build and deploy
+        working-directory: worker
+        run: npm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

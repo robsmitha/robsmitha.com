@@ -17,6 +17,9 @@
     "paths": {
       "@/*": [
        "src/*"
+      ],
+      "@robsmitha/elysian-ui/auth": [
+       "node_modules/@robsmitha/elysian-ui/src/auth/index.ts"
       ]
      }
   },

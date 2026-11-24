@@ -21,7 +21,7 @@
                 <nav :aria-label="auth.signedIn ? 'Admin' : 'Sign in'">
                     <template v-if="!auth.signedIn">
                         <p class="footer-label font-mono">Sign in</p>
-                        <a href="/.auth/login/aad" class="footer-link">Microsoft</a>
+                        <a href="/auth/sign-in" class="footer-link">Microsoft</a>
                     </template>
                     <template v-else>
                         <p class="footer-label font-mono text-truncate">{{ auth.userDetails }}</p>

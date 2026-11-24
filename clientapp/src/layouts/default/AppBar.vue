@@ -82,7 +82,7 @@
 
           class="text-none ml-2"
           prepend-icon="mdi-login"
-          href="/.auth/login/aad"
+          href="/auth/sign-in"
         >
           Sign in
         </v-btn>
@@ -194,7 +194,7 @@
 
             <v-divider color="lightest-navy" />
 
-            <a href="/.auth/logout" class="menu-link menu-link--signout d-flex align-center ga-3 px-4 py-3">
+            <a href="/auth/sign-out" class="menu-link menu-link--signout d-flex align-center ga-3 px-4 py-3">
               <v-icon size="18">mdi-logout</v-icon>
               <span class="text-body-2">Sign out</span>
             </a>
@@ -227,8 +227,8 @@
 
         <!-- <template v-if="!auth.signedIn">
           <v-list-item subtitle="Sign in"></v-list-item>
-          <v-list-item prepend-icon="mdi-github" title="Github" href="/.auth/login/github"></v-list-item>
-          <v-list-item prepend-icon="mdi-microsoft" title="Microsoft" href="/.auth/login/aad"></v-list-item>
+          <v-list-item prepend-icon="mdi-github" title="Github" href="/auth/sign-in"></v-list-item>
+          <v-list-item prepend-icon="mdi-microsoft" title="Microsoft" href="/auth/sign-in"></v-list-item>
         </template> -->
         <!-- <template v-else>
           <v-list-item :subtitle="auth.userDetails"></v-list-item>
@@ -240,7 +240,7 @@
       </v-list>
       <!-- <template v-slot:append>
         <div v-if="auth.signedIn" class="pa-2">
-          <v-btn block color="blue-grey" href="/.auth/logout">
+          <v-btn block color="blue-grey" href="/auth/sign-out">
             Logout
           </v-btn>
         </div>
