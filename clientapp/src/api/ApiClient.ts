@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { auth } from '@/services/auth';
+import { auth, reportUnauthorized } from '@/services/auth';
 
 type ApiResponse = {
   data: any | undefined,
@@ -45,6 +45,10 @@ class ApiClient {
           return new Map(Object.entries(validationErrors));
         }
         return this.createErrorMap('BAD_REQUEST', ['Invalid request']);
+      // The sign-in ran out (or was never there). The app signs the person out and says so.
+      case 401:
+        reportUnauthorized();
+        return this.createErrorMap('SIGNED_OUT', ['Your session has expired. Sign in again to continue.']);
       case 403:
         return this.createErrorMap('FORBIDDEN', ['Access Denied']);
       case 404:
