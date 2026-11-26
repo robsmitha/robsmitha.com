@@ -12,7 +12,9 @@ import repo from '@/pages/repo.vue'
 import search from '@/pages/search.vue'
 
 import { RouteLocationNormalized } from 'vue-router';
-import { auth, isProtected, signInPath } from '@/services/auth'
+import { auth, isProtected, sessionExpiredPath, sessionHasEnded, signInPath } from '@/services/auth'
+import pinia from '@/store'
+import { useAuthStore } from '@/store/auth'
 const routes = [
   {
     path: '/bill/:congress/:billType/:billNumber',
@@ -58,11 +60,20 @@ const router = createRouter({
 
 // A page for signed-in people sends anyone else to sign in, and brings them back afterwards. This replaces
 // the Static Web App's allowedRoles; the API's own rules are what protect the data.
+//
+// Someone whose session has run out is told so on the sign-in page, instead of being shown a page whose
+// every call would fail.
 router.beforeEach(async to => {
-  if (!isProtected(to.path) || await auth.currentUser()) {
+  if (!isProtected(to.path)) {
     return true
   }
-  return signInPath(to.fullPath)
+  if (!(await auth.currentUser())) {
+    return signInPath(to.fullPath)
+  }
+  if (useAuthStore(pinia).sessionExpired || await sessionHasEnded()) {
+    return sessionExpiredPath(to.fullPath)
+  }
+  return true
 })
 
 export default router

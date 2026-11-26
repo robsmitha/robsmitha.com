@@ -1,14 +1,17 @@
 // Utilities
 import { defineStore } from 'pinia'
 import apiClient from '@/api/elysianClient'
-import { auth } from '@/services/auth'
+import { auth, sessionHasEnded } from '@/services/auth'
 
 type State = {
   userDetails: string | undefined,
   identityProvider: string | undefined,
   hasGitHubAccessToken: boolean | undefined,
   // True once sign-in has been checked, so pages can tell signed out from not checked yet.
-  checked: boolean
+  checked: boolean,
+  // True when the person was signed in and their session ran out. Stays until the next page load, which
+  // is what a new sign-in ends with.
+  sessionExpired: boolean
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -16,7 +19,8 @@ export const useAuthStore = defineStore('auth', {
     userDetails: undefined,
     identityProvider: undefined,
     hasGitHubAccessToken: undefined,
-    checked: false
+    checked: false,
+    sessionExpired: false
   }),
   getters: {
     // auth
@@ -26,7 +30,15 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async fetchAuth(): Promise<void> {
       // Their name or email, or null. Nobody who has never signed in downloads the sign-in library for this.
-      const user = await auth.currentUser()
+      let user = await auth.currentUser()
+
+      // Remembered as signed in, but the session can't be renewed: they are signed out, and told so,
+      // before any call is sent that could only fail
+      if (user && (this.sessionExpired || await sessionHasEnded())) {
+        this.expire()
+        user = null
+      }
+
       this.userDetails = user ?? undefined
       this.identityProvider = user ? 'aad' : undefined
       // Set before the GitHub check below, which pages don't need to wait for.
@@ -41,6 +53,13 @@ export const useAuthStore = defineStore('auth', {
           console.error("Failed to check GitHub OAuth token.")
         }
       }
+    },
+    /** The session ran out: show the person as signed out and remember why */
+    expire(): void {
+      this.userDetails = undefined
+      this.identityProvider = undefined
+      this.hasGitHubAccessToken = undefined
+      this.sessionExpired = true
     },
     async requestGitHubAccessToken(code: string, state: string | undefined): Promise<void> {
       const response = await apiClient?.postData('/api/GitHubOAuthCallback', { code, state })
